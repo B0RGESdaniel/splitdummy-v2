@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -54,9 +56,9 @@ export default async function BillPage({
 
       {isOwner && <InviteQrPanel billId={bill.id} invite={invite} />}
 
-      <p className="text-muted-foreground text-sm">
-        Itens e divisão vão aparecer aqui nos próximos passos.
-      </p>
+      <Button asChild variant="outline" className="w-fit">
+        <Link href={`/bills/${bill.id}/items`}>Ver itens</Link>
+      </Button>
     </div>
   );
 }
