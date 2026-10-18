@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { connection } from "next/server";
 
+import { CreateBillDialog } from "@/components/bills/create-bill-dialog";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
@@ -33,9 +33,7 @@ export default async function DashboardPage() {
         <h1 className="text-xl font-semibold">
           Olá, {profile?.display_name ?? "tudo certo"}
         </h1>
-        <Button asChild>
-          <Link href="/bills/new">Nova conta</Link>
-        </Button>
+        <CreateBillDialog />
       </div>
 
       {!bills?.length ? (
@@ -45,17 +43,19 @@ export default async function DashboardPage() {
       ) : (
         <div className="flex flex-col gap-2">
           {bills.map((bill) => (
-            <Card key={bill.id}>
-              <CardHeader className="flex-row items-center justify-between gap-2">
-                <CardTitle className="text-base">{bill.name}</CardTitle>
-                <Badge variant={bill.status === "open" ? "default" : "secondary"}>
-                  {bill.status === "open" ? "aberta" : "fechada"}
-                </Badge>
-              </CardHeader>
-              <CardContent className="text-muted-foreground text-xs">
-                {new Date(bill.created_at).toLocaleDateString("pt-BR")}
-              </CardContent>
-            </Card>
+            <Link key={bill.id} href={`/bills/${bill.id}`}>
+              <Card className="transition-colors hover:bg-accent/50">
+                <CardHeader className="flex-row items-center justify-between gap-2">
+                  <CardTitle className="text-base">{bill.name}</CardTitle>
+                  <Badge variant={bill.status === "open" ? "default" : "secondary"}>
+                    {bill.status === "open" ? "aberta" : "fechada"}
+                  </Badge>
+                </CardHeader>
+                <CardContent className="text-muted-foreground text-xs">
+                  {new Date(bill.created_at).toLocaleDateString("pt-BR")}
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

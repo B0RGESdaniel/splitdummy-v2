@@ -21,14 +21,16 @@ export async function createBill(formData: FormData) {
 
   // The owner is added to bill_participants automatically by the
   // add_bill_owner_as_participant trigger.
-  const { error: billError } = await supabase
+  const { data: bill, error: billError } = await supabase
     .from("bills")
-    .insert({ name, owner_id: userId });
+    .insert({ name, owner_id: userId })
+    .select("id")
+    .single();
 
   if (billError) {
     throw new Error(billError.message);
   }
 
   revalidatePath("/");
-  redirect("/");
+  redirect(`/bills/${bill.id}`);
 }
