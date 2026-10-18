@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 
@@ -15,15 +16,32 @@ export default async function BillPage({
   const { billId } = await params;
   const supabase = await createClient();
 
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
+
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, service_tax_percent")
+    .select("id, name, status, service_tax_percent, owner_id")
     .eq("id", billId)
     .single();
 
   if (!bill) {
     notFound();
   }
+
+  const isOwner = userId === bill.owner_id;
+
+  const { data: invite } = isOwner
+    ? await supabase
+        .from("bill_invites")
+        .select("id, token")
+        .eq("bill_id", billId)
+        .is("revoked_at", null)
+        .gt("expires_at", new Date().toISOString())
+        .order("created_at", { ascending: false })
+        .limit(1)
+        .maybeSingle()
+    : { data: null };
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -33,8 +51,11 @@ export default async function BillPage({
           {bill.status === "open" ? "aberta" : "fechada"}
         </Badge>
       </div>
+
+      {isOwner && <InviteQrPanel billId={bill.id} invite={invite} />}
+
       <p className="text-muted-foreground text-sm">
-        Convite, itens e divisão vão aparecer aqui nos próximos passos.
+        Itens e divisão vão aparecer aqui nos próximos passos.
       </p>
     </div>
   );
