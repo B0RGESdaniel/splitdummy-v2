@@ -1,4 +1,5 @@
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { createClient } from "@/lib/supabase/server";
@@ -12,6 +13,10 @@ export default async function DashboardLayout({
 }: {
   children: React.ReactNode;
 }) {
+  // Defer to request time before touching cookies()/the Supabase client —
+  // without this, Next still attempts a static shell and trips on a
+  // synchronous Date.now() call inside the Supabase client's init.
+  await connection();
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
