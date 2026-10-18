@@ -7,13 +7,18 @@ import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ next?: string }>;
+}) {
   await connection();
+  const { next } = await searchParams;
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
   if (data?.claims) {
-    redirect("/");
+    redirect(next ?? "/");
   }
 
   return (
@@ -23,7 +28,7 @@ export default async function LoginPage() {
           <CardTitle>Splitdummy</CardTitle>
         </CardHeader>
         <CardContent>
-          <GoogleSignInButton />
+          <GoogleSignInButton next={next} />
         </CardContent>
       </Card>
     </div>
