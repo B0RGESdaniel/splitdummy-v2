@@ -2,21 +2,13 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
-import { createItem, deleteItem, updateItem } from "./actions";
-import { DeleteItemButton } from "@/components/bills/delete-item-button";
+import { createItem } from "./actions";
 import { ItemFormDialog } from "@/components/bills/item-form-dialog";
+import { ItemsList } from "@/components/bills/items-list";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
-
-function formatCurrency(value: number) {
-  return value.toLocaleString("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-  });
-}
 
 export default async function ItemsPage({
   params,
@@ -72,56 +64,7 @@ export default async function ItemsPage({
         </div>
       </div>
 
-      {!items?.length ? (
-        <p className="text-muted-foreground text-sm">
-          Nenhum item adicionado ainda.
-        </p>
-      ) : (
-        <div className="flex flex-col gap-2">
-          {items.map((item) => (
-            <Card key={item.id}>
-              <CardContent className="flex items-center justify-between gap-4">
-                <div className="flex flex-col">
-                  <span className="font-medium">{item.description}</span>
-                  <span className="text-muted-foreground text-xs">
-                    {item.quantity} × {formatCurrency(item.unit_price)} ={" "}
-                    {formatCurrency(item.unit_price * item.quantity)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-1">
-                  <Button asChild variant="outline" size="sm">
-                    <Link href={`/bills/${billId}/items/${item.id}/split`}>
-                      Dividir
-                    </Link>
-                  </Button>
-                  {isOpen && (
-                    <>
-                      <ItemFormDialog
-                        action={updateItem.bind(null, billId, item.id)}
-                        trigger={
-                          <Button variant="outline" size="sm">
-                            Editar
-                          </Button>
-                        }
-                        title="Editar item"
-                        submitLabel="Salvar"
-                        initialValues={{
-                          description: item.description,
-                          unit_price: item.unit_price,
-                          quantity: item.quantity,
-                        }}
-                      />
-                      <DeleteItemButton
-                        action={deleteItem.bind(null, billId, item.id)}
-                      />
-                    </>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      )}
+      <ItemsList billId={billId} initialItems={items ?? []} isOpen={isOpen} />
     </div>
   );
 }
