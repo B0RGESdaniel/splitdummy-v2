@@ -83,28 +83,35 @@ export default async function ItemsPage({
                     {formatCurrency(item.unit_price * item.quantity)}
                   </span>
                 </div>
-                {isOpen && (
-                  <div className="flex items-center gap-1">
-                    <ItemFormDialog
-                      action={updateItem.bind(null, billId, item.id)}
-                      trigger={
-                        <Button variant="outline" size="sm">
-                          Editar
-                        </Button>
-                      }
-                      title="Editar item"
-                      submitLabel="Salvar"
-                      initialValues={{
-                        description: item.description,
-                        unit_price: item.unit_price,
-                        quantity: item.quantity,
-                      }}
-                    />
-                    <DeleteItemButton
-                      action={deleteItem.bind(null, billId, item.id)}
-                    />
-                  </div>
-                )}
+                <div className="flex items-center gap-1">
+                  <Button asChild variant="outline" size="sm">
+                    <Link href={`/bills/${billId}/items/${item.id}/split`}>
+                      Dividir
+                    </Link>
+                  </Button>
+                  {isOpen && (
+                    <>
+                      <ItemFormDialog
+                        action={updateItem.bind(null, billId, item.id)}
+                        trigger={
+                          <Button variant="outline" size="sm">
+                            Editar
+                          </Button>
+                        }
+                        title="Editar item"
+                        submitLabel="Salvar"
+                        initialValues={{
+                          description: item.description,
+                          unit_price: item.unit_price,
+                          quantity: item.quantity,
+                        }}
+                      />
+                      <DeleteItemButton
+                        action={deleteItem.bind(null, billId, item.id)}
+                      />
+                    </>
+                  )}
+                </div>
               </CardContent>
             </Card>
           ))}
