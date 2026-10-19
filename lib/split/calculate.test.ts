@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { calculateBillTotals, itemTotalCents, splitPartsCents } from "./calculate";
+import {
+  applyServiceTax,
+  calculateBillTotals,
+  getUnsplitItemIds,
+  itemTotalCents,
+  splitPartsCents,
+} from "./calculate";
 
 describe("itemTotalCents", () => {
   it("multiplica quantidade por preço unitário e converte para centavos", () => {
@@ -111,5 +117,106 @@ describe("calculateBillTotals", () => {
 
     expect(totals.size).toBe(1);
     expect(totals.get("a")).toBe(2000);
+  });
+
+  it("ignora itens com participantes mas todas as partes zeradas", () => {
+    const totals = calculateBillTotals([
+      {
+        id: "item-1",
+        quantity: 1,
+        unitPrice: 10,
+        shares: [
+          { profileId: "a", parts: 0 },
+          { profileId: "b", parts: 0 },
+        ],
+      },
+      {
+        id: "item-2",
+        quantity: 1,
+        unitPrice: 20,
+        shares: [{ profileId: "a", parts: 1 }],
+      },
+    ]);
+
+    expect(totals.size).toBe(1);
+    expect(totals.get("a")).toBe(2000);
+  });
+});
+
+describe("getUnsplitItemIds", () => {
+  it("retorna itens sem nenhuma parte atribuída", () => {
+    const ids = getUnsplitItemIds([
+      { id: "item-1", quantity: 1, unitPrice: 10, shares: [] },
+      {
+        id: "item-2",
+        quantity: 1,
+        unitPrice: 10,
+        shares: [
+          { profileId: "a", parts: 0 },
+          { profileId: "b", parts: 0 },
+        ],
+      },
+      {
+        id: "item-3",
+        quantity: 1,
+        unitPrice: 10,
+        shares: [{ profileId: "a", parts: 1 }],
+      },
+    ]);
+
+    expect(ids).toEqual(["item-1", "item-2"]);
+  });
+
+  it("retorna lista vazia quando todos os itens foram divididos", () => {
+    const ids = getUnsplitItemIds([
+      {
+        id: "item-1",
+        quantity: 1,
+        unitPrice: 10,
+        shares: [{ profileId: "a", parts: 1 }],
+      },
+    ]);
+
+    expect(ids).toEqual([]);
+  });
+});
+
+describe("applyServiceTax", () => {
+  it("aplica a taxa proporcionalmente quando a divisão é exata", () => {
+    const result = applyServiceTax(
+      new Map([
+        ["a", 1000],
+        ["b", 2000],
+      ]),
+      10,
+    );
+
+    expect(result.get("a")).toBe(1100);
+    expect(result.get("b")).toBe(2200);
+  });
+
+  it("distribui o resto pelo maior resto quando a taxa gera fração", () => {
+    const subtotals = new Map([
+      ["a", 100],
+      ["b", 100],
+      ["c", 100],
+    ]);
+    const result = applyServiceTax(subtotals, 3.33);
+
+    const grandTotal = Math.round(300 * 1.0333);
+    expect([...result.values()].reduce((sum, v) => sum + v, 0)).toBe(grandTotal);
+  });
+
+  it("não quebra quando ninguém tem subtotal ainda", () => {
+    const result = applyServiceTax(
+      new Map([
+        ["a", 0],
+        ["b", 0],
+      ]),
+      10,
+    );
+
+    expect(result.get("a")).toBe(0);
+    expect(result.get("b")).toBe(0);
   });
 });
