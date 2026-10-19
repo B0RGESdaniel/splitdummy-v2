@@ -1,0 +1,83 @@
+# TCC — Splitdummy v2
+
+Documentação de apoio pra escrita do artigo do TCC (Sistemas de Informação). Não é a fonte de verdade operacional do projeto (isso é o `CLAUDE.md`) — este arquivo registra **o que foi feito, com que ferramenta e por quê**, pra servir de matéria-prima quando for escrever o artigo. Atualizado a cada funcionalidade/ferramenta nova (ver regra no `CLAUDE.md`).
+
+## Contexto
+
+Evolução do [splitdummy v1](https://github.com/B0RGESdaniel/splitdummy) — SPA mono-usuário, React + Vite + TS + Tailwind + Radix, estado 100% em `localStorage`, sem conta, sem backend, sem colaboração — pra um app **multi-usuário e colaborativo em tempo real** de divisão de contas de bar/restaurante.
+
+## Stack
+
+| Camada | Escolha | Versão (na época da decisão) |
+|---|---|---|
+| Framework | Next.js App Router | 16.4.2 |
+| Linguagem | TypeScript, strict mode | ^5 |
+| UI | React | 19.3.0 |
+| Estilo | Tailwind CSS | ^4 |
+| Componentes | shadcn/ui (base radix, preset nova) + `radix-ui` | ^1.8.1 |
+| Ícones | lucide-react | ^1.59.0 |
+| Backend | Supabase (Postgres + Auth + Realtime + Storage), provisionado via Vercel Marketplace | — |
+| Acesso a dados | `@supabase/supabase-js` direto, sem ORM — autorização inteira via RLS | ^2.118.0 |
+| SSR/cookies Supabase | `@supabase/ssr` | ^0.12.7 |
+| Login | Supabase Auth, só Google OAuth (sem convidado anônimo) | — |
+| Estado/colaboração cliente | TanStack Query (`@tanstack/react-query`) | ^5.104.4 |
+| Colaboração em tempo real | Supabase Realtime (`postgres_changes`, via publication `supabase_realtime`) | — |
+| Convite | Link + QR code (mesmo link) via `qrcode.react` | ^4.2.0 |
+| Notificações in-app | sonner | ^2.0.8 |
+| Testes | Vitest | ^5.0.5 |
+| Deploy | Vercel | — |
+
+Ainda não incorporado (planejado): Vercel AI SDK (`generateObject` + Zod via AI Gateway) pra leitura de cupom fiscal (Fase 2).
+
+## Regras de negócio
+
+### Pilares do produto
+1. Contas multi-usuário e compartilháveis (convite por link + QR code).
+2. Histórico de contas.
+3. Leitura de cupom fiscal por foto via IA (pré-popula itens, revisão humana obrigatória antes de gravar) — ainda não implementado.
+4. Grupos recorrentes simples (lista privada de participantes pra agilizar convite) — ainda não implementado.
+5. Divisão por partes, porcentagem ou valor fixo. Exportar/compartilhar resultado — só o modo `parts` implementado até agora.
+
+### Decisões de modelagem/arquitetura
+- **Autorização**: 100% via RLS do Postgres, sem camada de autorização na aplicação.
+- **Permissões dentro de uma conta**: totalmente colaborativo — qualquer participante edita itens/partes de qualquer um; só o dono convida/remove participantes; autorremoção sempre permitida.
+- **Convite**: um link ativo por conta; "regenerar" revoga o atual e cria um novo. Entrada só por link/QR, sem e-mail.
+- **Fechamento de conta**: imutável, sem reabrir. Ao fechar, um trigger de banco (`protect_bill_lifecycle`) grava `closed_at` e gera `share_token` (pra página pública de compartilhamento, Fase 3). Só o dono pode fechar.
+- **Arredondamento**: método do maior resto (largest remainder) — garante que a soma dos valores por participante sempre reconcilia exatamente com o total, tanto na divisão por partes de um item quanto na aplicação da taxa de serviço sobre o total da conta.
+- **Taxa de serviço**: aplicada sobre o subtotal de cada participante, redistribuindo o total-com-taxa proporcionalmente (mesmo método do maior resto), não um cálculo independente por pessoa.
+
+## Decisões técnicas notáveis (material pra discussão no artigo)
+
+### Por que largest remainder em vez do arredondamento do v1
+O v1 calculava `partPrice = totalPrice / totalParts` (arredondado pra 2 casas) e multiplicava por `part` pra cada participante, cada conta arredondada **independentemente**. Isso não garante que a soma bata com o total — ex.: item de R$10,00 em 3 partes iguais perde 1 centavo (3 × R$3,33 = R$9,99). O v2 resolve isso trabalhando em centavos inteiros e redistribuindo o resíduo de arredondamento (a diferença entre o total e a soma dos valores truncados) pros participantes com maior resíduo fracionário, até a soma fechar exatamente — é o mesmo método usado em sistemas de apuração eleitoral e em sistemas financeiros pra fechar centavos. Implementado em `lib/split/calculate.ts`.
+
+Importante: isso **não substitui** a detecção de "item não dividido" (ninguém com partes > 0) — essa é uma validação separada, ortogonal ao arredondamento, e o v1 já tinha algo parecido (`getNotDivivedItems()`). No v2 isso é `getUnsplitItemIds()`, usado na tela de resumo.
+
+### Gotcha de RLS: INSERT...RETURNING filtrado pela policy de SELECT
+`INSERT ... RETURNING` é filtrado pela política de **SELECT** da tabela, não só pelo `WITH CHECK` do insert — e isso acontece **antes** de qualquer trigger `AFTER INSERT`. Se a política de select de uma tabela depende de uma linha-filha criada só depois (ex.: dono só é "participante" depois de inserir em `bill_participants`), o `RETURNING` do insert do pai falha com RLS mesmo com sessão válida. Encontrado em `bills` (corrigido alargando a política de select pra `owner_id = auth.uid() OR is_bill_participant(id)`), documentado pra não repetir em `groups`/`group_members` (Fase 3).
+
+### Supabase Realtime exige tabela na publication
+`postgres_changes` do Supabase Realtime só entrega eventos de tabelas explicitamente adicionadas à publication `supabase_realtime` — isso **não é automático** e não aparece em nenhuma config de nível de app, só é visível inspecionando `pg_publication_tables` direto no Postgres. A RLS normal da tabela já controla quem recebe o quê (sem precisar de policy específica de realtime).
+
+## Changelog de funcionalidades e ferramentas
+
+### Fase 0 — Fundação
+- Scaffold Next.js 16 App Router + TypeScript strict + Tailwind + shadcn/ui.
+- Supabase provisionado via Vercel Marketplace (Postgres + Auth + Realtime + Storage).
+- Schema inicial completo (`profiles`, `groups`+`group_members`, `bills`, `bill_participants`, `bill_invites`, `items`, `item_shares`, `receipts`) + RLS + triggers.
+- `profiles` auto-criado no signup (trigger em `auth.users`).
+- Login Google OAuth ponta a ponta.
+
+### Fase 1 — Núcleo colaborativo
+- **Passo 1** — `createBill` (Server Action) + listagem no dashboard. Dono adicionado como participante automaticamente via trigger.
+- **Passo 2** — Geração de convite: tabela `bill_invites` (token, expiração, revogável) + componente `InviteQrPanel` (link + QR via `qrcode.react`).
+- **Passo 3** — Rotas públicas de convite: `join/[inviteToken]` (resolve via cliente service-role, já que quem acessa ainda não é participante) + `api/invites/accept` (grava `bill_participants` via service-role, pós-login).
+- **Passo 4** — CRUD de `items` (Server Actions `createItem`/`updateItem`/`deleteItem`), sem realtime ainda nesse momento.
+- **Passo 5** — `lib/split/calculate.ts` + `validate.ts` pro modo `parts`, com arredondamento por maior resto (ver seção de decisões técnicas). 24 testes Vitest cobrindo divisão exata, resto distribuído, proporções desiguais, validação e agregação entre itens. Primeira introdução do Vitest no projeto.
+- **Passo 6** — Tela `items/[itemId]/split`: stepper de partes (+/-) por participante, Server Actions fazendo upsert em `item_shares`.
+- **Passo 7** — Tela `summary/page.tsx`: total por participante (subtotal + taxa de serviço via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta" (só dono, conta aberta). Esse passo expôs e corrigiu um bug em `calculateBillTotals` (item com participantes mas todas as partes zeradas lançava erro em vez de ser tratado como "não dividido").
+- **Passo 8 (em andamento)** — Introdução de TanStack Query + Supabase Realtime pra colaboração em tempo real:
+  - Infra: `QueryClientProvider` global + hook genérico `lib/realtime/use-realtime-table.ts` (assina `postgres_changes` filtrado por `bill_id`, invalida a query do React Query correspondente a cada evento).
+  - Habilitada publication `supabase_realtime` pra `items` e `item_shares` (nenhuma tabela estava habilitada até então — é um passo manual, não automático).
+  - Tela de itens (`ItemsList`) e tela de split (`ItemSplit`) migradas de fetch só-servidor pra `useQuery` com `initialData` do SSR + realtime.
+  - Resumo ainda pendente de receber o mesmo tratamento.

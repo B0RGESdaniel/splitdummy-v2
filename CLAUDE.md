@@ -23,13 +23,13 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 | Convite | Link + QR code (mesmo link), sem e-mail |
 | IA do cupom | Vercel AI SDK `generateObject` + Zod via AI Gateway (modelo a escolher na hora) |
 | UI | Tailwind + shadcn/ui (base `radix`, preset `nova`) |
-| Estado/colaboração | TanStack Query + Supabase Realtime (`postgres_changes`) — **ainda não introduzido**, ver Fase 1 passo 8 |
+| Estado/colaboração | TanStack Query + Supabase Realtime (`postgres_changes`) — introduzido na Fase 1 passo 8 (itens e split; resumo ainda falta) |
 | Permissões dentro de uma conta | Totalmente colaborativo: qualquer participante edita itens/partes de qualquer um; só o dono convida/remove; autorremoção sempre permitida |
 | Fechamento de conta | Imutável, sem reabrir |
 | Grupos | Lista simples e privada (1 dono, membros = perfis que já têm conta) — ainda não implementado (Fase 3) |
 
 ### Defaults técnicos assumidos
-- Arredondamento: método do maior resto (largest remainder), ainda não implementado.
+- Arredondamento: método do maior resto (largest remainder) — implementado em `lib/split/calculate.ts`.
 - Link de convite: um ativo por conta; "regenerar" = revoga o atual + cria novo.
 - Troca de modo de divisão num item com partes já atribuídas: apaga as partes existentes (com confirmação do usuário) — ainda não relevante até modos percent/fixed existirem.
 - Página pública de compartilhamento: só resumo final + itens, de contas fechadas.
@@ -50,22 +50,28 @@ Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do c
 - Ao terminar cada unidade de trabalho do tamanho de um commit, **parar, relatar o que mudou e pedir pra ele comitar antes de seguir pro próximo passo**. Não empacotar vários passos do plano numa única entrega.
 - Só sugerir mensagem de commit quando ele pedir.
 - O usuário gosta de validar manualmente no navegador antes de avançar; quando possível, validar primeiro direto no banco (via `psql`) para não depender do navegador pra pegar bug de RLS/lógica.
+- **Manter o `TCC.md` atualizado.** Esse projeto é o TCC do usuário — `TCC.md` (raiz do repo) registra a stack completa, as regras de negócio e um changelog de funcionalidades/ferramentas, com breve justificativa de cada uma, pra servir de matéria-prima quando ele for escrever o artigo. Toda vez que uma funcionalidade ou ferramenta nova for introduzida (biblioteca, padrão de arquitetura, tabela, decisão técnica não-óbvia), adicionar uma entrada curta no changelog do `TCC.md` **antes de reportar a unidade de trabalho como concluída** — não deixar acumular pra fazer depois. Decisões/bugs interessantes pro artigo (ex.: por que largest remainder, gotchas de RLS, exigências do Realtime) entram na seção "Decisões técnicas notáveis", não só no changelog.
 
 ## Estrutura do app
 
 ```
 app/(auth)/login, auth/callback
-app/(dashboard)/page.tsx                      # histórico de contas (dialog "Nova conta")
-app/(dashboard)/bills/actions.ts              # createBill, createInvite, regenerateInvite
-app/(dashboard)/bills/[billId]/page.tsx       # overview + painel de convite (dono) + link pra itens
-app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}  # CRUD de itens, sem realtime ainda
-app/(public)/join/[inviteToken]/page.tsx      # resolve convite via service-role
-app/api/invites/accept/route.ts               # aceita convite via service-role (insert owner-only em bill_participants)
+app/(dashboard)/page.tsx                                       # histórico de contas (dialog "Nova conta")
+app/(dashboard)/bills/actions.ts                                # createBill, createInvite, regenerateInvite, closeBill
+app/(dashboard)/bills/[billId]/page.tsx                         # overview + painel de convite (dono) + links itens/resumo
+app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}      # CRUD de itens (ItemsList client, realtime)
+app/(dashboard)/bills/[billId]/items/[itemId]/split/{page.tsx,actions.ts}  # stepper de partes (ItemSplit client, realtime)
+app/(dashboard)/bills/[billId]/summary/page.tsx                 # resumo, taxa, aviso de não-divididos, fechar conta (sem realtime ainda)
+app/(public)/join/[inviteToken]/page.tsx                        # resolve convite via service-role
+app/api/invites/accept/route.ts                                 # aceita convite via service-role (insert owner-only em bill_participants)
 lib/supabase/{server,client,service-role}.ts, database.types.ts
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button}.tsx
+lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
+lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
+components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,parts-stepper,item-split,close-bill-button}.tsx
 ```
 
-Ainda não existentes, previstos no plano: `bills/[billId]/{participants,items/[itemId]/split,receipt,summary}`, `groups`, `lib/split/{calculate,validate}.ts`, `lib/realtime/use-realtime-table.ts`.
+Ainda não existentes, previstos no plano: `bills/[billId]/participants`, `receipt`, `groups`.
 
 ## Progresso
 
@@ -76,11 +82,14 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 1. ✅ `createBill` + listagem no dashboard (via dialog, redireciona pra página da conta).
 2. ✅ Geração de convite: `bill_invites` + `InviteQrPanel` (link + QR via `qrcode.react`).
 3. ✅ Rotas públicas `join/[inviteToken]` (resolve via service-role) + `api/invites/accept` (grava `bill_participants` via service-role, pós-login, com `next=` propagado pelo fluxo de login).
-4. ✅ CRUD de `items` em `items/page.tsx`, sem realtime (fetch simples).
-5. ⬜ `lib/split/calculate.ts` + `validate.ts` só pro modo `parts` + testes Vitest. **Próximo passo.**
-6. ⬜ Tela `items/[itemId]/split` pro modo `parts` (incrementar/decrementar partes por participante).
-7. ⬜ Tela `summary/page.tsx`: total por participante, taxa de serviço, aviso de itens não divididos, ação "Fechar conta".
-8. ⬜ Introduzir TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`) — só depois do CRUD funcionar sem realtime.
+4. ✅ CRUD de `items` em `items/page.tsx`.
+5. ✅ `lib/split/calculate.ts` + `validate.ts` pro modo `parts` (arredondamento por maior resto) + 24 testes Vitest.
+6. ✅ Tela `items/[itemId]/split` pro modo `parts` (stepper +/- de partes por participante).
+7. ✅ Tela `summary/page.tsx`: total por participante (subtotal + taxa via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta".
+8. 🟡 Introduzir TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`) — em andamento, feito em commits separados por tela:
+   - ✅ Infra (`QueryClientProvider`, hook de realtime) + tela de itens.
+   - ✅ Tela de split.
+   - ⬜ Tela de resumo. **Próximo passo.**
 9. ⬜ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime.
 10. ⬜ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar.
 
@@ -94,5 +103,5 @@ Bucket privado `receipts`, upload, `api/ai/extract-receipt` (`generateObject` + 
 Exportar PDF/imagem, notificações, polimento mobile/acessibilidade, Playwright.
 
 ## Testes
-- Vitest ainda não instalado — alvo prioritário é `lib/split/{calculate,validate}.ts` (Fase 1 passo 5): 3 modos isolados, combinações entre itens, arredondamento (maior resto), casos de borda de validação.
+- Vitest instalado, foco em `lib/split/{calculate,validate}.ts` (24 testes): modo `parts` isolado, combinações entre itens, arredondamento (maior resto), taxa de serviço, itens não divididos, casos de borda de validação.
 - RLS: validar direto contra o Postgres remoto via `psql` com JWT simulado (ver gotcha acima) antes de testar no navegador.
