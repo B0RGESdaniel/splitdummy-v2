@@ -23,7 +23,7 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 | Convite | Link + QR code (mesmo link), sem e-mail |
 | IA do cupom | Vercel AI SDK `generateObject` + Zod via AI Gateway (modelo a escolher na hora) |
 | UI | Tailwind + shadcn/ui (base `radix`, preset `nova`) |
-| Estado/colaboração | TanStack Query + Supabase Realtime (`postgres_changes`) — introduzido na Fase 1 passo 8 (itens e split; resumo ainda falta) |
+| Estado/colaboração | TanStack Query + Supabase Realtime (`postgres_changes`) — introduzido na Fase 1 passo 8 (itens, split e resumo; `bills`/`bill_participants` ainda sem realtime) |
 | Permissões dentro de uma conta | Totalmente colaborativo: qualquer participante edita itens/partes de qualquer um; só o dono convida/remove; autorremoção sempre permitida |
 | Fechamento de conta | Imutável, sem reabrir |
 | Grupos | Lista simples e privada (1 dono, membros = perfis que já têm conta) — ainda não implementado (Fase 3) |
@@ -61,14 +61,14 @@ app/(dashboard)/bills/actions.ts                                # createBill, cr
 app/(dashboard)/bills/[billId]/page.tsx                         # overview + painel de convite (dono) + links itens/resumo
 app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}      # CRUD de itens (ItemsList client, realtime)
 app/(dashboard)/bills/[billId]/items/[itemId]/split/{page.tsx,actions.ts}  # stepper de partes (ItemSplit client, realtime)
-app/(dashboard)/bills/[billId]/summary/page.tsx                 # resumo, taxa, aviso de não-divididos, fechar conta (sem realtime ainda)
+app/(dashboard)/bills/[billId]/summary/page.tsx                 # resumo, taxa, aviso de não-divididos, fechar conta (BillSummary client, realtime)
 app/(public)/join/[inviteToken]/page.tsx                        # resolve convite via service-role
 app/api/invites/accept/route.ts                                 # aceita convite via service-role (insert owner-only em bill_participants)
 lib/supabase/{server,client,service-role}.ts, database.types.ts
 lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
 lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
 components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,parts-stepper,item-split,close-bill-button}.tsx
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,parts-stepper,item-split,close-bill-button,bill-summary}.tsx
 ```
 
 Ainda não existentes, previstos no plano: `bills/[billId]/participants`, `receipt`, `groups`.
@@ -86,11 +86,8 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 5. ✅ `lib/split/calculate.ts` + `validate.ts` pro modo `parts` (arredondamento por maior resto) + 24 testes Vitest.
 6. ✅ Tela `items/[itemId]/split` pro modo `parts` (stepper +/- de partes por participante).
 7. ✅ Tela `summary/page.tsx`: total por participante (subtotal + taxa via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta".
-8. 🟡 Introduzir TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`) — em andamento, feito em commits separados por tela:
-   - ✅ Infra (`QueryClientProvider`, hook de realtime) + tela de itens.
-   - ✅ Tela de split.
-   - ⬜ Tela de resumo. **Próximo passo.**
-9. ⬜ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime.
+8. ✅ TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`), em commits separados por tela: infra + itens, split, resumo. `bills`/`bill_participants` ficaram fora dessa rodada (sem realtime ainda).
+9. ⬜ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime. **Próximo passo.**
 10. ⬜ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar.
 
 ### Fase 2 — IA de leitura de cupom (não iniciada)

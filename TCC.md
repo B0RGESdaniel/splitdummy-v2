@@ -76,8 +76,8 @@ Importante: isso **não substitui** a detecção de "item não dividido" (ningu�
 - **Passo 5** — `lib/split/calculate.ts` + `validate.ts` pro modo `parts`, com arredondamento por maior resto (ver seção de decisões técnicas). 24 testes Vitest cobrindo divisão exata, resto distribuído, proporções desiguais, validação e agregação entre itens. Primeira introdução do Vitest no projeto.
 - **Passo 6** — Tela `items/[itemId]/split`: stepper de partes (+/-) por participante, Server Actions fazendo upsert em `item_shares`.
 - **Passo 7** — Tela `summary/page.tsx`: total por participante (subtotal + taxa de serviço via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta" (só dono, conta aberta). Esse passo expôs e corrigiu um bug em `calculateBillTotals` (item com participantes mas todas as partes zeradas lançava erro em vez de ser tratado como "não dividido").
-- **Passo 8 (em andamento)** — Introdução de TanStack Query + Supabase Realtime pra colaboração em tempo real:
+- **Passo 8 ✅** — Introdução de TanStack Query + Supabase Realtime pra colaboração em tempo real:
   - Infra: `QueryClientProvider` global + hook genérico `lib/realtime/use-realtime-table.ts` (assina `postgres_changes` filtrado por `bill_id`, invalida a query do React Query correspondente a cada evento).
   - Habilitada publication `supabase_realtime` pra `items` e `item_shares` (nenhuma tabela estava habilitada até então — é um passo manual, não automático).
-  - Tela de itens (`ItemsList`) e tela de split (`ItemSplit`) migradas de fetch só-servidor pra `useQuery` com `initialData` do SSR + realtime.
-  - Resumo ainda pendente de receber o mesmo tratamento.
+  - Telas de itens (`ItemsList`), split (`ItemSplit`) e resumo (`BillSummary`) migradas de fetch só-servidor pra `useQuery` com `initialData` do SSR + realtime. O resumo reusa a mesma `queryKey` `["items", billId]` da tela de itens (cache compartilhado dentro da mesma navegação client-side) e adiciona uma query própria pra `item_shares` escopada no `bill_id` inteiro (diferente da query da tela de split, que é por `item_id`).
+  - `bills`/`bill_participants` ficaram de fora dessa rodada (status da conta e lista de participantes continuam só server-rendered) — participantes entrando/saindo ou a conta sendo fechada por outra aba só aparecem ao recarregar. Fica pra quando isso virar um problema real de uso.
