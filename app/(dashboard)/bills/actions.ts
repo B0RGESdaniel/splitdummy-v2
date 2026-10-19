@@ -55,6 +55,22 @@ export async function createInvite(billId: string) {
   revalidatePath(`/bills/${billId}`);
 }
 
+export async function closeBill(billId: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("bills")
+    .update({ status: "closed" })
+    .eq("id", billId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}`);
+  revalidatePath(`/bills/${billId}/summary`);
+}
+
 export async function regenerateInvite(billId: string, inviteId: string) {
   const supabase = await createClient();
 

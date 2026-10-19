@@ -56,9 +56,14 @@ export default async function BillPage({
 
       {isOwner && <InviteQrPanel billId={bill.id} invite={invite} />}
 
-      <Button asChild variant="outline" className="w-fit">
-        <Link href={`/bills/${bill.id}/items`}>Ver itens</Link>
-      </Button>
+      <div className="flex gap-2">
+        <Button asChild variant="outline" className="w-fit">
+          <Link href={`/bills/${bill.id}/items`}>Ver itens</Link>
+        </Button>
+        <Button asChild variant="outline" className="w-fit">
+          <Link href={`/bills/${bill.id}/summary`}>Resumo</Link>
+        </Button>
+      </div>
     </div>
   );
 }

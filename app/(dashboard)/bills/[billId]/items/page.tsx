@@ -57,14 +57,19 @@ export default async function ItemsPage({
           </Link>
           <h1 className="text-xl font-semibold">Itens</h1>
         </div>
-        {isOpen && (
-          <ItemFormDialog
-            action={createItem.bind(null, billId)}
-            trigger={<Button>Novo item</Button>}
-            title="Novo item"
-            submitLabel="Adicionar item"
-          />
-        )}
+        <div className="flex items-center gap-2">
+          <Button asChild variant="outline">
+            <Link href={`/bills/${billId}/summary`}>Resumo</Link>
+          </Button>
+          {isOpen && (
+            <ItemFormDialog
+              action={createItem.bind(null, billId)}
+              trigger={<Button>Novo item</Button>}
+              title="Novo item"
+              submitLabel="Adicionar item"
+            />
+          )}
+        </div>
       </div>
 
       {!items?.length ? (
