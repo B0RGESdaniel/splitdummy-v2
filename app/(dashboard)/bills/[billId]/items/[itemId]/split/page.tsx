@@ -2,11 +2,9 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
-import { decrementItemPart, incrementItemPart } from "./actions";
-import { PartsStepper } from "@/components/bills/parts-stepper";
-import { Card, CardContent } from "@/components/ui/card";
+import { ItemSplit } from "@/components/bills/item-split";
 import { createClient } from "@/lib/supabase/server";
-import { itemTotalCents, splitPartsCents } from "@/lib/split/calculate";
+import { itemTotalCents } from "@/lib/split/calculate";
 
 export const instant = false;
 
@@ -58,31 +56,10 @@ export default async function ItemSplitPage({
       .eq("item_id", itemId),
   ]);
 
-  const isOpen = bill.status === "open";
-  const partsByProfile = new Map(
-    (shares ?? []).map((share) => [share.profile_id, share.parts ?? 0]),
-  );
-
   const totalCents = itemTotalCents({
     quantity: item.quantity,
     unitPrice: item.unit_price,
   });
-
-  const totalParts = [...partsByProfile.values()].reduce(
-    (sum, parts) => sum + parts,
-    0,
-  );
-
-  const amountsByProfile =
-    totalParts > 0
-      ? splitPartsCents(
-          totalCents,
-          (participants ?? []).map((p) => ({
-            profileId: p.profile_id,
-            parts: partsByProfile.get(p.profile_id) ?? 0,
-          })),
-        )
-      : null;
 
   return (
     <div className="flex flex-1 flex-col gap-4">
@@ -100,49 +77,17 @@ export default async function ItemSplitPage({
         </p>
       </div>
 
-      {totalParts === 0 && (
-        <p className="text-sm text-amber-600">
-          Este item ainda não foi dividido entre os participantes.
-        </p>
-      )}
-
-      <div className="flex flex-col gap-2">
-        {(participants ?? []).map((participant) => {
-          const parts = partsByProfile.get(participant.profile_id) ?? 0;
-          const amount = amountsByProfile?.get(participant.profile_id) ?? 0;
-
-          return (
-            <Card key={participant.profile_id}>
-              <CardContent className="flex items-center justify-between gap-4">
-                <span className="font-medium">
-                  {participant.profiles?.display_name}
-                </span>
-                <div className="flex items-center gap-4">
-                  <PartsStepper
-                    parts={parts}
-                    disabled={!isOpen}
-                    increment={incrementItemPart.bind(
-                      null,
-                      billId,
-                      itemId,
-                      participant.profile_id,
-                    )}
-                    decrement={decrementItemPart.bind(
-                      null,
-                      billId,
-                      itemId,
-                      participant.profile_id,
-                    )}
-                  />
-                  <span className="text-muted-foreground w-20 text-right text-sm">
-                    {amountsByProfile ? formatCurrency(amount) : "—"}
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+      <ItemSplit
+        billId={billId}
+        itemId={itemId}
+        totalCents={totalCents}
+        isOpen={bill.status === "open"}
+        participants={(participants ?? []).map((p) => ({
+          profile_id: p.profile_id,
+          display_name: p.profiles?.display_name,
+        }))}
+        initialShares={shares ?? []}
+      />
     </div>
   );
 }
