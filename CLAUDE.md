@@ -68,7 +68,7 @@ lib/supabase/{server,client,service-role}.ts, database.types.ts
 lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
 lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
 components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,parts-stepper,item-split,close-bill-button,bill-summary}.tsx
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary}.tsx
 ```
 
 Ainda não existentes, previstos no plano: `bills/[billId]/participants`, `receipt`, `groups`.
@@ -87,9 +87,7 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 6. ✅ Tela `items/[itemId]/split` pro modo `parts` (stepper +/- de partes por participante).
 7. ✅ Tela `summary/page.tsx`: total por participante (subtotal + taxa via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta".
 8. ✅ TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`), em commits separados por tela: infra + itens, split, resumo. `bills`/`bill_participants` ficaram fora dessa rodada (sem realtime ainda).
-9. 🟡 Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime:
-   - ✅ Stepper de partes (`useMutation` + `onMutate`/`onError`).
-   - ⬜ CRUD de itens (criar/editar/remover). **Próximo passo.**
+9. ✅ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime (stepper de partes + CRUD de itens, todos via `useMutation` + `onMutate`/`onError`).
 10. ⬜ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar.
 
 ### Fase 2 — IA de leitura de cupom (não iniciada)

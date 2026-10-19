@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { deleteItem, updateItem } from "@/app/(dashboard)/bills/[billId]/items/actions";
 import { DeleteItemButton } from "@/components/bills/delete-item-button";
@@ -35,6 +35,7 @@ export function ItemsList({
   isOpen: boolean;
 }) {
   const queryKey = ["items", billId];
+  const queryClient = useQueryClient();
 
   const { data: items } = useQuery({
     queryKey,
@@ -53,6 +54,54 @@ export function ItemsList({
   });
 
   useRealtimeTable({ table: "items", billId, queryKey });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ itemId, formData }: { itemId: string; formData: FormData }) =>
+      updateItem(billId, itemId, formData),
+    onMutate: async ({ itemId, formData }) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Item[]>(queryKey);
+
+      queryClient.setQueryData<Item[]>(queryKey, (current = []) =>
+        current.map((item) =>
+          item.id === itemId
+            ? {
+                ...item,
+                description: String(formData.get("description") ?? item.description),
+                unit_price: Number(formData.get("unit_price")),
+                quantity: Number(formData.get("quantity") ?? item.quantity),
+              }
+            : item,
+        ),
+      );
+
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (itemId: string) => deleteItem(billId, itemId),
+    onMutate: async (itemId: string) => {
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Item[]>(queryKey);
+
+      queryClient.setQueryData<Item[]>(queryKey, (current = []) =>
+        current.filter((item) => item.id !== itemId),
+      );
+
+      return { previous };
+    },
+    onError: (_err, _itemId, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+    },
+  });
 
   if (!items.length) {
     return (
@@ -83,7 +132,9 @@ export function ItemsList({
               {isOpen && (
                 <>
                   <ItemFormDialog
-                    action={updateItem.bind(null, billId, item.id)}
+                    action={(formData) =>
+                      updateMutation.mutateAsync({ itemId: item.id, formData })
+                    }
                     trigger={
                       <Button variant="outline" size="sm">
                         Editar
@@ -98,7 +149,7 @@ export function ItemsList({
                     }}
                   />
                   <DeleteItemButton
-                    action={deleteItem.bind(null, billId, item.id)}
+                    action={() => deleteMutation.mutateAsync(item.id)}
                   />
                 </>
               )}

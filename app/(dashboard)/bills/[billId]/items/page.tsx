@@ -2,8 +2,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
-import { createItem } from "./actions";
-import { ItemFormDialog } from "@/components/bills/item-form-dialog";
+import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
@@ -53,14 +52,7 @@ export default async function ItemsPage({
           <Button asChild variant="outline">
             <Link href={`/bills/${billId}/summary`}>Resumo</Link>
           </Button>
-          {isOpen && (
-            <ItemFormDialog
-              action={createItem.bind(null, billId)}
-              trigger={<Button>Novo item</Button>}
-              title="Novo item"
-              submitLabel="Adicionar item"
-            />
-          )}
+          {isOpen && <CreateItemButton billId={billId} />}
         </div>
       </div>
 
