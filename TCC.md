@@ -59,6 +59,11 @@ Importante: isso **não substitui** a detecção de "item não dividido" (ningu�
 ### Supabase Realtime exige tabela na publication
 `postgres_changes` do Supabase Realtime só entrega eventos de tabelas explicitamente adicionadas à publication `supabase_realtime` — isso **não é automático** e não aparece em nenhuma config de nível de app, só é visível inspecionando `pg_publication_tables` direto no Postgres. A RLS normal da tabela já controla quem recebe o quê (sem precisar de policy específica de realtime).
 
+### Update otimista + eco do Realtime: por que não causa flicker/duplicação
+Sem update otimista, cada clique no stepper de partes dependia de um round-trip completo: Server Action grava no banco → Postgres propaga a mudança pro Realtime → o próprio autor da mudança recebe o eco do seu evento → o listener invalida a query → refetch. Em redes mais lentas isso é perceptível (o número fica "preso" no valor antigo por um instante). A solução foi usar `onMutate` do TanStack Query (`useMutation`) pra escrever o novo valor **direto no cache local**, de forma síncrona, no clique — sem esperar o servidor. Quando o eco do Realtime chega (ou o Server Action falha), a query é invalidada/revertida e o valor otimista é substituído pelo valor real — na prática, imperceptível quando tudo dá certo, e com rollback automático (`onError` restaura o snapshot anterior) quando não dá.
+
+Importante: o valor otimista não "briga" com o eco porque os dois fazem a mesma coisa de formas diferentes — o otimista aplica o delta **imediatamente e localmente**, o eco **confirma a verdade do servidor depois**. Não há necessidade de ignorar/debounce um dos dois.
+
 ## Changelog de funcionalidades e ferramentas
 
 ### Fase 0 — Fundação
@@ -81,3 +86,6 @@ Importante: isso **não substitui** a detecção de "item não dividido" (ningu�
   - Habilitada publication `supabase_realtime` pra `items` e `item_shares` (nenhuma tabela estava habilitada até então — é um passo manual, não automático).
   - Telas de itens (`ItemsList`), split (`ItemSplit`) e resumo (`BillSummary`) migradas de fetch só-servidor pra `useQuery` com `initialData` do SSR + realtime. O resumo reusa a mesma `queryKey` `["items", billId]` da tela de itens (cache compartilhado dentro da mesma navegação client-side) e adiciona uma query própria pra `item_shares` escopada no `bill_id` inteiro (diferente da query da tela de split, que é por `item_id`).
   - `bills`/`bill_participants` ficaram de fora dessa rodada (status da conta e lista de participantes continuam só server-rendered) — participantes entrando/saindo ou a conta sendo fechada por outra aba só aparecem ao recarregar. Fica pra quando isso virar um problema real de uso.
+- **Passo 9 (em andamento)** — Updates otimistas nas mutações, reconciliando com o eco do Realtime (ver seção de decisões técnicas):
+  - Stepper de partes (`ItemSplit`/`PartsStepper`): migrado de `<form action>` (Server Action direto) pra `useMutation` com `onMutate` escrevendo o delta no cache local na hora do clique, e `onError` revertendo pro snapshot anterior se a Server Action falhar.
+  - CRUD de itens (criar/editar/remover) ainda não migrado — próximo.

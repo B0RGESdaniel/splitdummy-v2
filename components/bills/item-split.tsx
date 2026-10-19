@@ -1,6 +1,6 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
   decrementItemPart,
@@ -21,6 +21,20 @@ function formatCurrency(cents: number) {
   });
 }
 
+function applyDelta(shares: Share[], profileId: string, delta: 1 | -1): Share[] {
+  const existing = shares.find((share) => share.profile_id === profileId);
+
+  if (!existing) {
+    return [...shares, { profile_id: profileId, parts: Math.max(0, delta) }];
+  }
+
+  return shares.map((share) =>
+    share.profile_id === profileId
+      ? { ...share, parts: Math.max(0, (share.parts ?? 0) + delta) }
+      : share,
+  );
+}
+
 export function ItemSplit({
   billId,
   itemId,
@@ -37,6 +51,7 @@ export function ItemSplit({
   initialShares: Share[];
 }) {
   const queryKey = ["item-shares", itemId];
+  const queryClient = useQueryClient();
 
   const { data: shares } = useQuery({
     queryKey,
@@ -54,6 +69,30 @@ export function ItemSplit({
   });
 
   useRealtimeTable({ table: "item_shares", billId, queryKey });
+
+  function useStepMutation(delta: 1 | -1) {
+    const action = delta === 1 ? incrementItemPart : decrementItemPart;
+
+    return useMutation({
+      mutationFn: (profileId: string) => action(billId, itemId, profileId),
+      onMutate: async (profileId: string) => {
+        await queryClient.cancelQueries({ queryKey });
+        const previous = queryClient.getQueryData<Share[]>(queryKey);
+        queryClient.setQueryData<Share[]>(queryKey, (current = []) =>
+          applyDelta(current, profileId, delta),
+        );
+        return { previous };
+      },
+      onError: (_err, _profileId, context) => {
+        if (context?.previous) {
+          queryClient.setQueryData(queryKey, context.previous);
+        }
+      },
+    });
+  }
+
+  const increment = useStepMutation(1);
+  const decrement = useStepMutation(-1);
 
   const partsByProfile = new Map(
     shares.map((share) => [share.profile_id, share.parts ?? 0]),
@@ -98,18 +137,8 @@ export function ItemSplit({
                   <PartsStepper
                     parts={parts}
                     disabled={!isOpen}
-                    increment={incrementItemPart.bind(
-                      null,
-                      billId,
-                      itemId,
-                      participant.profile_id,
-                    )}
-                    decrement={decrementItemPart.bind(
-                      null,
-                      billId,
-                      itemId,
-                      participant.profile_id,
-                    )}
+                    onIncrement={() => increment.mutate(participant.profile_id)}
+                    onDecrement={() => decrement.mutate(participant.profile_id)}
                   />
                   <span className="text-muted-foreground w-20 text-right text-sm">
                     {amountsByProfile ? formatCurrency(amount) : "—"}
