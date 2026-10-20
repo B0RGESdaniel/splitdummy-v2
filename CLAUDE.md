@@ -78,7 +78,7 @@ Ainda não existentes, previstos no plano: `bills/[billId]/participants`, `recei
 ### Fase 0 — Fundação ✅ completa
 Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schema inicial + RLS + triggers, `profiles` auto-criado no signup, login Google funcionando ponta a ponta.
 
-### Fase 1 — Núcleo colaborativo (em andamento)
+### Fase 1 — Núcleo colaborativo ✅ completa
 1. ✅ `createBill` + listagem no dashboard (via dialog, redireciona pra página da conta).
 2. ✅ Geração de convite: `bill_invites` + `InviteQrPanel` (link + QR via `qrcode.react`).
 3. ✅ Rotas públicas `join/[inviteToken]` (resolve via service-role) + `api/invites/accept` (grava `bill_participants` via service-role, pós-login, com `next=` propagado pelo fluxo de login).
@@ -88,9 +88,9 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 7. ✅ Tela `summary/page.tsx`: total por participante (subtotal + taxa via `applyServiceTax`), aviso de itens não divididos, ação "Fechar conta".
 8. ✅ TanStack Query + `lib/realtime/use-realtime-table.ts` (`postgres_changes` por `bill_id`), em commits separados por tela: infra + itens, split, resumo. `bills`/`bill_participants` ficaram fora dessa rodada (sem realtime ainda).
 9. ✅ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime (stepper de partes + CRUD de itens, todos via `useMutation` + `onMutate`/`onError`).
-10. ⬜ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar.
+10. ✅ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar. Validado pelo usuário em 2026-10-20, sem bugs.
 
-### Fase 2 — IA de leitura de cupom (não iniciada)
+### Fase 2 — IA de leitura de cupom (**próxima fase**)
 Bucket privado `receipts`, upload, `api/ai/extract-receipt` (`generateObject` + Zod via AI Gateway), tela de revisão obrigatória antes de gravar em `items`.
 
 ### Fase 3 — Grupos, % / valor fixo, compartilhamento público (não iniciada)
