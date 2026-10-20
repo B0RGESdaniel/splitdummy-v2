@@ -25,12 +25,14 @@ export default async function DashboardLayout({
   }
 
   return (
-    <div className="flex flex-1 flex-col">
-      <header className="flex items-center justify-between border-b px-4 py-3">
-        <span className="font-semibold">Splitdummy</span>
-        <SignOutButton />
-      </header>
-      <main className="flex flex-1 flex-col p-4">{children}</main>
+    <div className="flex flex-1 flex-col items-center">
+      <div className="flex w-full max-w-md flex-1 flex-col">
+        <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-background/95 px-4 py-3 backdrop-blur-sm">
+          <span className="font-semibold">Splitdummy</span>
+          <SignOutButton />
+        </header>
+        <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
+      </div>
     </div>
   );
 }
