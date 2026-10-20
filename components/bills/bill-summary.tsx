@@ -5,6 +5,12 @@ import { useQuery } from "@tanstack/react-query";
 import { closeBill } from "@/app/(dashboard)/bills/actions";
 import { CloseBillButton } from "@/components/bills/close-bill-button";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
@@ -12,6 +18,8 @@ import {
   applyServiceTax,
   calculateBillTotals,
   getUnsplitItemIds,
+  itemTotalCents,
+  splitPartsCents,
   type ItemForSplit,
 } from "@/lib/split/calculate";
 import type { PartsShareInput } from "@/lib/split/validate";
@@ -113,6 +121,34 @@ export function BillSummary({
     0,
   );
 
+  const itemSplitsById = new Map<string, Map<string, number>>();
+  for (const item of itemsForSplit) {
+    const totalParts = item.shares.reduce((sum, share) => sum + share.parts, 0);
+    if (totalParts === 0) continue;
+    itemSplitsById.set(item.id, splitPartsCents(itemTotalCents(item), item.shares));
+  }
+
+  function getParticipantItems(profileId: string) {
+    return items.flatMap((item) => {
+      const itemShares = sharesByItem.get(item.id) ?? [];
+      const totalParts = itemShares.reduce((sum, share) => sum + share.parts, 0);
+      const myParts = itemShares.find((share) => share.profileId === profileId)?.parts ?? 0;
+
+      if (myParts === 0 || totalParts === 0) return [];
+
+      return [
+        {
+          id: item.id,
+          description: item.description,
+          quantity: item.quantity,
+          myParts,
+          totalParts,
+          amount: itemSplitsById.get(item.id)?.get(profileId) ?? 0,
+        },
+      ];
+    });
+  }
+
   return (
     <>
       {unsplitDescriptions.length > 0 && (
@@ -128,39 +164,64 @@ export function BillSummary({
         </Alert>
       )}
 
-      <div className="flex flex-col gap-2">
-        {participants.map((participant) => {
-          const subtotal = subtotals.get(participant.profile_id) ?? 0;
-          const total = totalsWithTax.get(participant.profile_id) ?? 0;
+      <Card>
+        <CardContent>
+          <Accordion type="single" collapsible>
+            {participants.map((participant) => {
+              const subtotal = subtotals.get(participant.profile_id) ?? 0;
+              const total = totalsWithTax.get(participant.profile_id) ?? 0;
+              const participantItems = getParticipantItems(participant.profile_id);
 
-          return (
-            <Card key={participant.profile_id}>
-              <CardContent className="flex items-center justify-between gap-4">
-                <span className="font-medium">
-                  {participant.display_name}
-                </span>
-                <div className="flex flex-col items-end">
-                  <span className="font-semibold">
-                    {formatCurrency(total)}
-                  </span>
-                  <span className="text-muted-foreground text-xs">
-                    {formatCurrency(subtotal)} + taxa
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
-          );
-        })}
-      </div>
+              return (
+                <AccordionItem key={participant.profile_id} value={participant.profile_id}>
+                  <AccordionTrigger className="gap-2">
+                    <span className="flex w-full items-center justify-between">
+                      <span className="font-medium">{participant.display_name}</span>
+                      <span className="font-semibold">{formatCurrency(total)}</span>
+                    </span>
+                  </AccordionTrigger>
+                  <AccordionContent>
+                    {participantItems.length === 0 ? (
+                      <p className="text-muted-foreground text-xs">Não consumiu nada</p>
+                    ) : (
+                      <div className="flex flex-col gap-2">
+                        {participantItems.map((item) => (
+                          <div
+                            key={item.id}
+                            className="flex items-center justify-between gap-2 text-xs"
+                          >
+                            <span className="text-muted-foreground">
+                              <span className="font-medium text-foreground">
+                                {item.myParts}/{item.totalParts}
+                              </span>{" "}
+                              {item.quantity}x {item.description}
+                            </span>
+                            <span className="text-foreground">
+                              {formatCurrency(item.amount)}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                    <p className="text-muted-foreground mt-2 text-xs">
+                      {formatCurrency(subtotal)} + taxa
+                    </p>
+                  </AccordionContent>
+                </AccordionItem>
+              );
+            })}
+          </Accordion>
+        </CardContent>
+      </Card>
 
-      <div className="flex items-center justify-between border-t pt-4">
-        <div>
-          <p className="text-muted-foreground text-xs">
+      <div className="flex flex-col gap-3 border-t pt-4">
+        <div className="flex items-center justify-between">
+          <span className="text-muted-foreground text-xs">
             Taxa de serviço: {serviceTaxPercent}%
-          </p>
-          <p className="text-lg font-semibold">
-            Total: {formatCurrency(grandTotalCents)}
-          </p>
+          </span>
+          <span className="text-lg font-semibold">
+            {formatCurrency(grandTotalCents)}
+          </span>
         </div>
         {isOwner && isOpen && (
           <CloseBillButton action={closeBill.bind(null, billId)} />

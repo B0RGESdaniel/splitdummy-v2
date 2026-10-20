@@ -59,7 +59,7 @@ export default async function BillSummaryPage({
           >
             ← {bill.name}
           </Link>
-          <h1 className="text-xl font-semibold">Resumo</h1>
+          <h1 className="text-lg font-semibold">Resumo</h1>
         </div>
         <Badge variant={isOpen ? "default" : "secondary"}>
           {isOpen ? "aberta" : "fechada"}
