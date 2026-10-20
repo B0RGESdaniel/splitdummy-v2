@@ -61,7 +61,7 @@ export default async function BillSummaryPage({
           </Link>
           <h1 className="text-lg font-semibold">Resumo</h1>
         </div>
-        <Badge variant={isOpen ? "default" : "secondary"}>
+        <Badge variant={isOpen ? "success" : "destructive"}>
           {isOpen ? "aberta" : "fechada"}
         </Badge>
       </div>

@@ -1,13 +1,19 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { QrCode } from "lucide-react";
+import { useState } from "react";
+import { Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useFormStatus } from "react-dom";
 
 import { createInvite, regenerateInvite } from "@/app/(dashboard)/bills/actions";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
 function SubmitButton({
@@ -32,56 +38,58 @@ export function InviteQrPanel({
   billId: string;
   invite: { id: string; token: string } | null;
 }) {
-  const [origin, setOrigin] = useState("");
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
+  const origin = typeof window !== "undefined" ? window.location.origin : "";
   const link = invite && origin ? `${origin}/join/${invite.token}` : null;
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <QrCode className="size-4 text-muted-foreground" />
-          Convidar participantes
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="flex flex-col items-center gap-4">
-        {!invite ? (
-          <form action={createInvite.bind(null, billId)} className="w-full">
-            <SubmitButton>Gerar link de convite</SubmitButton>
-          </form>
-        ) : (
-          <>
-            {link && (
-              <div className="rounded-lg bg-white p-3">
-                <QRCodeSVG value={link} size={160} />
-              </div>
-            )}
-            <div className="flex w-full gap-2">
-              <Input readOnly value={link ?? ""} />
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => {
-                  if (!link) return;
-                  navigator.clipboard.writeText(link);
-                  setCopied(true);
-                  setTimeout(() => setCopied(false), 1500);
-                }}
-              >
-                {copied ? "Copiado!" : "Copiar"}
-              </Button>
-            </div>
-            <form action={regenerateInvite.bind(null, billId, invite.id)}>
-              <SubmitButton variant="outline">Gerar novo link</SubmitButton>
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="w-full">
+          <Share2 data-icon="inline-start" />
+          Compartilhar
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Convidar participantes</DialogTitle>
+        </DialogHeader>
+        <div className="flex flex-col items-center gap-6">
+          {!invite ? (
+            <form action={createInvite.bind(null, billId)} className="w-full">
+              <SubmitButton>Gerar link de convite</SubmitButton>
             </form>
-          </>
-        )}
-      </CardContent>
-    </Card>
+          ) : (
+            <>
+              {link && (
+                <div className="rounded-lg bg-white p-4">
+                  <QRCodeSVG value={link} size={190} />
+                </div>
+              )}
+              <div className="flex w-full gap-2">
+                <Input readOnly value={link ?? ""} className="h-10 text-sm" />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="h-10"
+                  onClick={() => {
+                    if (!link) return;
+                    navigator.clipboard.writeText(link);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                >
+                  {copied ? "Copiado!" : "Copiar"}
+                </Button>
+              </div>
+              <form action={regenerateInvite.bind(null, billId, invite.id)} className="w-full">
+                <SubmitButton variant="outline">Gerar novo link</SubmitButton>
+              </form>
+            </>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }

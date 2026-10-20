@@ -48,7 +48,7 @@ export default async function DashboardPage() {
               <Card className="transition-colors hover:bg-accent/50">
                 <CardHeader className="flex-row items-center justify-between gap-2">
                   <CardTitle className="text-base">{bill.name}</CardTitle>
-                  <Badge variant={bill.status === "open" ? "default" : "secondary"}>
+                  <Badge variant={bill.status === "open" ? "success" : "destructive"}>
                     {bill.status === "open" ? "aberta" : "fechada"}
                   </Badge>
                 </CardHeader>

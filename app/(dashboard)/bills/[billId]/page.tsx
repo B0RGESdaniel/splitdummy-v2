@@ -50,7 +50,7 @@ export default async function BillPage({
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex items-center justify-between">
         <h1 className="text-lg font-semibold">{bill.name}</h1>
-        <Badge variant={bill.status === "open" ? "default" : "secondary"}>
+        <Badge variant={bill.status === "open" ? "success" : "destructive"}>
           {bill.status === "open" ? "aberta" : "fechada"}
         </Badge>
       </div>
