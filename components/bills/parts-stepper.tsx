@@ -14,16 +14,26 @@ export function PartsStepper({
   disabled?: boolean;
 }) {
   if (disabled) {
-    return <span className="w-8 text-center font-medium">{parts}</span>;
+    return <span className="w-8 text-center text-lg font-bold">{parts}</span>;
   }
 
   return (
     <div className="flex items-center gap-2">
-      <Button type="button" variant="outline" size="sm" onClick={onDecrement}>
+      <Button
+        type="button"
+        size="icon-sm"
+        onClick={onDecrement}
+        aria-label="Diminuir partes"
+      >
         −
       </Button>
-      <span className="w-6 text-center font-medium">{parts}</span>
-      <Button type="button" variant="outline" size="sm" onClick={onIncrement}>
+      <span className="w-6 text-center text-lg font-bold">{parts}</span>
+      <Button
+        type="button"
+        size="icon-sm"
+        onClick={onIncrement}
+        aria-label="Aumentar partes"
+      >
         +
       </Button>
     </div>

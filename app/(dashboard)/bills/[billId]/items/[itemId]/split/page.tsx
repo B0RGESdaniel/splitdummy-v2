@@ -70,7 +70,7 @@ export default async function ItemSplitPage({
         >
           ← Itens
         </Link>
-        <h1 className="text-xl font-semibold">{item.description}</h1>
+        <h1 className="text-lg font-semibold">{item.description}</h1>
         <p className="text-muted-foreground text-sm">
           {item.quantity} × {formatCurrency(Math.round(item.unit_price * 100))}{" "}
           = {formatCurrency(totalCents)}

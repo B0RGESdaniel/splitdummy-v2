@@ -117,7 +117,7 @@ export function ItemSplit({
   return (
     <>
       {totalParts === 0 && (
-        <p className="text-sm text-amber-600">
+        <p className="text-sm text-amber-400">
           Este item ainda não foi dividido entre os participantes.
         </p>
       )}
