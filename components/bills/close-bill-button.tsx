@@ -1,13 +1,23 @@
 "use client";
 
+import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-function SubmitButton() {
+function ConfirmButton() {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant="destructive" disabled={pending} className="w-full">
+    <Button type="submit" variant="destructive" disabled={pending}>
       {pending ? "Fechando..." : "Fechar conta"}
     </Button>
   );
@@ -18,20 +28,32 @@ export function CloseBillButton({
 }: {
   action: () => void | Promise<void>;
 }) {
+  const [open, setOpen] = useState(false);
+
   return (
-    <form
-      action={action}
-      onSubmit={(event) => {
-        if (
-          !window.confirm(
-            "Fechar a conta é definitivo e não pode ser desfeita. Continuar?",
-          )
-        ) {
-          event.preventDefault();
-        }
-      }}
-    >
-      <SubmitButton />
-    </form>
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant="destructive" className="w-full">
+          Fechar conta
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Fechar esta conta?</DialogTitle>
+          <DialogDescription>
+            Essa ação é definitiva e não pode ser desfeita — a conta não poderá mais
+            ser editada depois de fechada.
+          </DialogDescription>
+        </DialogHeader>
+        <DialogFooter>
+          <Button variant="outline" onClick={() => setOpen(false)}>
+            Cancelar
+          </Button>
+          <form action={action} className="contents">
+            <ConfirmButton />
+          </form>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }
