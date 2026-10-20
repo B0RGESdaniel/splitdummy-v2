@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import { createItem } from "@/app/(dashboard)/bills/[billId]/items/actions";
@@ -47,7 +48,12 @@ export function CreateItemButton({ billId }: { billId: string }) {
   return (
     <ItemFormDialog
       action={(formData) => mutation.mutateAsync(formData)}
-      trigger={<Button>Novo item</Button>}
+      trigger={
+        <Button>
+          <Plus data-icon="inline-start" />
+          Novo item
+        </Button>
+      }
       title="Novo item"
       submitLabel="Adicionar item"
     />

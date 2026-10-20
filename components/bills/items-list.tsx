@@ -1,5 +1,6 @@
 "use client";
 
+import { Divide, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -105,9 +106,11 @@ export function ItemsList({
 
   if (!items.length) {
     return (
-      <p className="text-muted-foreground text-sm">
-        Nenhum item adicionado ainda.
-      </p>
+      <Card className="border-dashed bg-transparent ring-foreground/15">
+        <CardContent className="text-center text-sm text-muted-foreground">
+          Nenhum item adicionado ainda.
+        </CardContent>
+      </Card>
     );
   }
 
@@ -124,9 +127,9 @@ export function ItemsList({
               </span>
             </div>
             <div className="flex items-center gap-1">
-              <Button asChild variant="outline" size="sm">
+              <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
                 <Link href={`/bills/${billId}/items/${item.id}/split`}>
-                  Dividir
+                  <Divide />
                 </Link>
               </Button>
               {isOpen && (
@@ -136,8 +139,8 @@ export function ItemsList({
                       updateMutation.mutateAsync({ itemId: item.id, formData })
                     }
                     trigger={
-                      <Button variant="outline" size="sm">
-                        Editar
+                      <Button variant="outline" size="icon-sm" aria-label="Editar item">
+                        <Pencil />
                       </Button>
                     }
                     title="Editar item"

@@ -1,3 +1,4 @@
+import { ReceiptText } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -46,11 +47,13 @@ export default async function ItemsPage({
           >
             ← {bill.name}
           </Link>
-          <h1 className="text-xl font-semibold">Itens</h1>
+          <h1 className="text-lg font-semibold">Itens</h1>
         </div>
         <div className="flex items-center gap-2">
-          <Button asChild variant="outline">
-            <Link href={`/bills/${billId}/summary`}>Resumo</Link>
+          <Button asChild variant="ghost" size="icon-sm" aria-label="Ver resumo">
+            <Link href={`/bills/${billId}/summary`}>
+              <ReceiptText />
+            </Link>
           </Button>
           {isOpen && <CreateItemButton billId={billId} />}
         </div>
