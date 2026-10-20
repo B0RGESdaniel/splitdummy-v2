@@ -29,17 +29,18 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">
-          Olá, {profile?.display_name ?? "tudo certo"}
-        </h1>
-        <CreateBillDialog />
-      </div>
+      <h1 className="text-lg font-semibold">
+        Olá, {profile?.display_name ?? "tudo certo"}
+      </h1>
+
+      <CreateBillDialog />
 
       {!bills?.length ? (
-        <p className="text-muted-foreground text-sm">
-          Você ainda não participa de nenhuma conta.
-        </p>
+        <Card className="border-dashed bg-transparent py-8 ring-foreground/15">
+          <CardContent className="text-center text-sm text-muted-foreground">
+            Você ainda não participa de nenhuma conta.
+          </CardContent>
+        </Card>
       ) : (
         <div className="flex flex-col gap-2">
           {bills.map((bill) => (

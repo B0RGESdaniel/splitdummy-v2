@@ -1,5 +1,6 @@
 "use client";
 
+import { Plus } from "lucide-react";
 import { useState } from "react";
 import { useFormStatus } from "react-dom";
 
@@ -30,7 +31,10 @@ export function CreateBillDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Nova conta</Button>
+        <Button className="w-full">
+          <Plus data-icon="inline-start" />
+          Nova conta
+        </Button>
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
