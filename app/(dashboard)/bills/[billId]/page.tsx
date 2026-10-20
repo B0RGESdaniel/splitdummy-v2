@@ -1,3 +1,4 @@
+import { ListOrdered, ReceiptText } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -48,22 +49,28 @@ export default async function BillPage({
   return (
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold">{bill.name}</h1>
+        <h1 className="text-lg font-semibold">{bill.name}</h1>
         <Badge variant={bill.status === "open" ? "default" : "secondary"}>
           {bill.status === "open" ? "aberta" : "fechada"}
         </Badge>
       </div>
 
-      {isOwner && <InviteQrPanel billId={bill.id} invite={invite} />}
-
-      <div className="flex gap-2">
-        <Button asChild variant="outline" className="w-fit">
-          <Link href={`/bills/${bill.id}/items`}>Ver itens</Link>
+      <div className="flex flex-col gap-2">
+        <Button asChild variant="outline" className="w-full justify-start">
+          <Link href={`/bills/${bill.id}/items`}>
+            <ListOrdered data-icon="inline-start" />
+            Ver itens
+          </Link>
         </Button>
-        <Button asChild variant="outline" className="w-fit">
-          <Link href={`/bills/${bill.id}/summary`}>Resumo</Link>
+        <Button asChild variant="outline" className="w-full justify-start">
+          <Link href={`/bills/${bill.id}/summary`}>
+            <ReceiptText data-icon="inline-start" />
+            Resumo
+          </Link>
         </Button>
       </div>
+
+      {isOwner && <InviteQrPanel billId={bill.id} invite={invite} />}
     </div>
   );
 }

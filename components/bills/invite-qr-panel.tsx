@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { QrCode } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useFormStatus } from "react-dom";
 
@@ -18,7 +19,7 @@ function SubmitButton({
 }) {
   const { pending } = useFormStatus();
   return (
-    <Button type="submit" variant={variant} disabled={pending}>
+    <Button type="submit" variant={variant} disabled={pending} className="w-full">
       {pending ? "Gerando..." : children}
     </Button>
   );
@@ -43,16 +44,23 @@ export function InviteQrPanel({
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Convidar participantes</CardTitle>
+        <CardTitle className="flex items-center gap-2">
+          <QrCode className="size-4 text-muted-foreground" />
+          Convidar participantes
+        </CardTitle>
       </CardHeader>
       <CardContent className="flex flex-col items-center gap-4">
         {!invite ? (
-          <form action={createInvite.bind(null, billId)}>
+          <form action={createInvite.bind(null, billId)} className="w-full">
             <SubmitButton>Gerar link de convite</SubmitButton>
           </form>
         ) : (
           <>
-            {link && <QRCodeSVG value={link} size={160} />}
+            {link && (
+              <div className="rounded-lg bg-white p-3">
+                <QRCodeSVG value={link} size={160} />
+              </div>
+            )}
             <div className="flex w-full gap-2">
               <Input readOnly value={link ?? ""} />
               <Button
