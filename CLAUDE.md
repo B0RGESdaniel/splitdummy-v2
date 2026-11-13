@@ -61,10 +61,10 @@ Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do c
 app/(auth)/login, auth/callback
 app/(dashboard)/page.tsx                                       # histórico de contas (dialog "Nova conta")
 app/(dashboard)/bills/actions.ts                                # createBill, createInvite, regenerateInvite, closeBill
-app/(dashboard)/bills/[billId]/page.tsx                         # overview + painel de convite (dono) + links itens/resumo
+app/(dashboard)/bills/[billId]/page.tsx                         # sem conteúdo próprio: redireciona pra /items (landing da conta)
 app/(dashboard)/bills/[billId]/participants/{page.tsx,actions.ts}  # lista + adicionar convidado (sem conta) + remover
-app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}      # CRUD de itens (ItemsList client, realtime)
-app/(dashboard)/bills/[billId]/items/[itemId]/split/{page.tsx,actions.ts}  # stepper de partes (ItemSplit client, realtime)
+app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}      # CRUD de itens (ItemsList client, realtime) + ações de partes (increment/decrementItemPart, usadas pela aba Dividir)
+app/(dashboard)/bills/[billId]/split/page.tsx                   # aba "Dividir": seletor de item (SplitWorkspace client) + participantes sempre visíveis, sem navegação de rota; aceita ?item= pra abrir com um item pré-selecionado
 app/(dashboard)/bills/[billId]/summary/page.tsx                 # resumo, taxa, aviso de não-divididos, fechar conta (BillSummary client, realtime)
 app/(public)/join/[inviteToken]/page.tsx                        # resolve convite via service-role
 app/api/invites/accept/route.ts                                 # aceita convite via service-role: cria participante novo ou reivindica um convidado existente
@@ -72,7 +72,7 @@ lib/supabase/{server,client,service-role}.ts, database.types.ts
 lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
 lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
 components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,remove-participant-button}.tsx
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,bill-tabs,split-workspace,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,remove-participant-button}.tsx
 ```
 
 Ainda não existentes, previstos no plano: `receipt`, `groups`.

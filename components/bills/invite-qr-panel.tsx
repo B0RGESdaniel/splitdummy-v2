@@ -46,7 +46,7 @@ export function InviteQrPanel({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" className="w-full">
+        <Button variant="outline">
           <Share2 data-icon="inline-start" />
           Compartilhar
         </Button>

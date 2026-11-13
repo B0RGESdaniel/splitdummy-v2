@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
-import Link from "next/link";
 import { connection } from "next/server";
 
+import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillSummary } from "@/components/bills/bill-summary";
+import { BillTabs } from "@/components/bills/bill-tabs";
+import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 
@@ -48,28 +50,27 @@ export default async function BillSummaryPage({
     ]);
 
   const isOpen = bill.status === "open";
+  const isOwner = userId === bill.owner_id;
+  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
 
   return (
     <div className="flex flex-1 flex-col gap-4">
       <div className="flex items-center justify-between">
-        <div>
-          <Link
-            href={`/bills/${billId}/items`}
-            className="text-muted-foreground text-xs hover:underline"
-          >
-            ← {bill.name}
-          </Link>
-          <h1 className="text-lg font-semibold">Resumo</h1>
+        <h1 className="text-lg font-semibold">{bill.name}</h1>
+        <div className="flex items-center gap-2">
+          {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
+          <Badge variant={isOpen ? "success" : "destructive"}>
+            {isOpen ? "aberta" : "fechada"}
+          </Badge>
         </div>
-        <Badge variant={isOpen ? "success" : "destructive"}>
-          {isOpen ? "aberta" : "fechada"}
-        </Badge>
       </div>
+
+      <BillTabs billId={billId} />
 
       <BillSummary
         billId={billId}
         serviceTaxPercent={bill.service_tax_percent}
-        isOwner={userId === bill.owner_id}
+        isOwner={isOwner}
         isOpen={isOpen}
         participants={(participants ?? []).map((p) => ({
           participant_id: p.id,

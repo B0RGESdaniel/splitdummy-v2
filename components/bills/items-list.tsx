@@ -128,7 +128,7 @@ export function ItemsList({
             </div>
             <div className="flex items-center gap-1">
               <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
-                <Link href={`/bills/${billId}/items/${item.id}/split`}>
+                <Link href={`/bills/${billId}/split?item=${item.id}`}>
                   <Divide />
                 </Link>
               </Button>
