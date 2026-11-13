@@ -96,4 +96,5 @@ Importante: o valor otimista não "briga" com o eco porque os dois fazem a mesma
 
 Lote de ajustes levantados usando o app de verdade, antes de entrar na Fase 2 (IA de cupom): convite com menos fricção, taxa de serviço editável, modelo de participante sem conta (reabre uma decisão fechada da Fase 0), tela de divisão orientada por participante, e paleta de dark mode. Plano completo: `curried-wibbling-cherny.md`'s sucessor, `unified-jumping-hennessy.md` (`~/.claude/plans/`).
 
-- **Bloco 1.1 ✅** — Convite sem clique extra: `getOrCreateActiveInvite` (`bills/actions.ts`) busca o convite ativo ou já cria um, chamado direto na `BillPage` antes de renderizar. `InviteQrPanel` perdeu o estado "sem convite ainda" (que exigia clicar em "Gerar link de convite" só pra ver o QR) — agora o dono sempre abre o diálogo já com QR/link prontos.
+- **Bloco 1.1 ✅** — Convite deixa de exigir um clique extra: o link já vem gerado quando o dono abre a tela de compartilhamento.
+- **Bloco 1.2 ✅** — Taxa de serviço passa a ser editável a qualquer momento (antes só era definida na criação da conta), seguindo a mesma regra colaborativa já usada em itens/partes — qualquer participante edita, não só o dono.

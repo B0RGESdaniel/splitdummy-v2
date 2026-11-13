@@ -51,6 +51,9 @@ Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do c
 - Só sugerir mensagem de commit quando ele pedir.
 - O usuário gosta de validar manualmente no navegador antes de avançar; quando possível, validar primeiro direto no banco (via `psql`) para não depender do navegador pra pegar bug de RLS/lógica.
 - **Manter o `TCC.md` atualizado.** Esse projeto é o TCC do usuário — `TCC.md` (raiz do repo) registra a stack completa, as regras de negócio e um changelog de funcionalidades/ferramentas, com breve justificativa de cada uma, pra servir de matéria-prima quando ele for escrever o artigo. Toda vez que uma funcionalidade ou ferramenta nova for introduzida (biblioteca, padrão de arquitetura, tabela, decisão técnica não-óbvia), adicionar uma entrada curta no changelog do `TCC.md` **antes de reportar a unidade de trabalho como concluída** — não deixar acumular pra fazer depois. Decisões/bugs interessantes pro artigo (ex.: por que largest remainder, gotchas de RLS, exigências do Realtime) entram na seção "Decisões técnicas notáveis", não só no changelog.
+  - **Nível de detalhe**: entrada de changelog é nível produto/arquitetura (o quê e por quê), não code review. Cite nome de arquivo/função só quando isso for parte do que vale explicar no artigo (ex. um padrão técnico novo, tipo o passo 8 da Fase 1 sobre Realtime). Pra um ajuste pontual de UX/produto, uma frase basta.
+    - ❌ Detalhe demais: "`getOrCreateActiveInvite` (`bills/actions.ts`) busca o convite ativo ou já cria um, chamado direto na `BillPage` antes de renderizar."
+    - ✅ Nível certo: "Convite deixa de exigir um clique extra: o link já vem gerado quando o dono abre a tela de compartilhamento."
 
 ## Estrutura do app
 
