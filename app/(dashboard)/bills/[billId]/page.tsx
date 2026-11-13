@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
+import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -34,17 +35,7 @@ export default async function BillPage({
 
   const isOwner = userId === bill.owner_id;
 
-  const { data: invite } = isOwner
-    ? await supabase
-        .from("bill_invites")
-        .select("id, token")
-        .eq("bill_id", billId)
-        .is("revoked_at", null)
-        .gt("expires_at", new Date().toISOString())
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle()
-    : { data: null };
+  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
 
   return (
     <div className="flex flex-1 flex-col gap-4">

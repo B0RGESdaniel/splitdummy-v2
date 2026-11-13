@@ -55,6 +55,43 @@ export async function createInvite(billId: string) {
   revalidatePath(`/bills/${billId}`);
 }
 
+export async function getOrCreateActiveInvite(billId: string) {
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("bill_invites")
+    .select("id, token")
+    .eq("bill_id", billId)
+    .is("revoked_at", null)
+    .gt("expires_at", new Date().toISOString())
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (existing) {
+    return existing;
+  }
+
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
+
+  if (!userId) {
+    return null;
+  }
+
+  const { data: created, error } = await supabase
+    .from("bill_invites")
+    .insert({ bill_id: billId, created_by: userId })
+    .select("id, token")
+    .single();
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  return created;
+}
+
 export async function closeBill(billId: string) {
   const supabase = await createClient();
 

@@ -5,7 +5,7 @@ import { Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useFormStatus } from "react-dom";
 
-import { createInvite, regenerateInvite } from "@/app/(dashboard)/bills/actions";
+import { regenerateInvite } from "@/app/(dashboard)/bills/actions";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -57,9 +57,9 @@ export function InviteQrPanel({
         </DialogHeader>
         <div className="flex flex-col items-center gap-6">
           {!invite ? (
-            <form action={createInvite.bind(null, billId)} className="w-full">
-              <SubmitButton>Gerar link de convite</SubmitButton>
-            </form>
+            <p className="text-muted-foreground text-sm">
+              Não foi possível gerar o link de convite.
+            </p>
           ) : (
             <>
               {link && (
