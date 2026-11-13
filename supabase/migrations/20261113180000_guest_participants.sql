@@ -39,14 +39,7 @@ create unique index bill_participants_bill_profile_unique
 -- ============================================================
 
 alter table public.item_shares
-  add column participant_id uuid references public.bill_participants (id) on delete cascade;
-
-update public.item_shares s
-set participant_id = bp.id
-from public.bill_participants bp
-where bp.bill_id = s.bill_id and bp.profile_id = s.profile_id;
-
-alter table public.item_shares alter column participant_id set not null;
+  add column participant_id uuid not null references public.bill_participants (id) on delete cascade;
 
 alter table public.item_shares
   add constraint item_shares_item_id_participant_id_key unique (item_id, participant_id);
