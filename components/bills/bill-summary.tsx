@@ -2,8 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query";
 
-import { closeBill } from "@/app/(dashboard)/bills/actions";
+import { closeBill, updateServiceTax } from "@/app/(dashboard)/bills/actions";
 import { CloseBillButton } from "@/components/bills/close-bill-button";
+import { ServiceTaxEditor } from "@/components/bills/service-tax-editor";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import {
   Accordion,
@@ -216,9 +217,16 @@ export function BillSummary({
 
       <div className="flex flex-col gap-3 border-t pt-4">
         <div className="flex items-center justify-between">
-          <span className="text-muted-foreground text-xs">
-            Taxa de serviço: {serviceTaxPercent}%
-          </span>
+          {isOpen ? (
+            <ServiceTaxEditor
+              serviceTaxPercent={serviceTaxPercent}
+              action={updateServiceTax.bind(null, billId)}
+            />
+          ) : (
+            <span className="text-muted-foreground text-xs">
+              Taxa de serviço: {serviceTaxPercent}%
+            </span>
+          )}
           <span className="text-lg font-semibold">
             {formatCurrency(grandTotalCents)}
           </span>

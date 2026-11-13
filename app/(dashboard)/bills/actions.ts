@@ -92,6 +92,26 @@ export async function getOrCreateActiveInvite(billId: string) {
   return created;
 }
 
+export async function updateServiceTax(billId: string, formData: FormData) {
+  const percent = Number(formData.get("service_tax_percent"));
+
+  if (!Number.isFinite(percent) || percent < 0 || percent > 100) {
+    throw new Error("Taxa de serviço inválida.");
+  }
+
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("bills")
+    .update({ service_tax_percent: percent })
+    .eq("id", billId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}/summary`);
+}
+
 export async function closeBill(billId: string) {
   const supabase = await createClient();
 
