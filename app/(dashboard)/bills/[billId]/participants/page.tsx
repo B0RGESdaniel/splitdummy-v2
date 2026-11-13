@@ -67,16 +67,27 @@ export default async function ParticipantsPage({
           const name =
             participant.display_name ?? participant.profiles?.display_name ?? "Sem nome";
           const isGuest = !participant.profile_id;
-          const canRemove = isOpen && (isOwner || participant.profile_id === userId);
+          const isBillOwner = participant.profile_id === bill.owner_id;
+          const canRemove =
+            isOpen && !isBillOwner && (isOwner || participant.profile_id === userId);
 
           return (
             <Card key={participant.id}>
               <CardContent className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{name}</span>
-                  <Badge variant={isGuest ? "outline" : "secondary"}>
-                    {isGuest ? "convidado" : "ativo"}
-                  </Badge>
+                  {isBillOwner ? (
+                    <Badge
+                      variant="outline"
+                      className="border-transparent bg-blue-500/10 text-blue-500 dark:bg-blue-500/20"
+                    >
+                      owner
+                    </Badge>
+                  ) : (
+                    <Badge variant={isGuest ? "outline" : "secondary"}>
+                      {isGuest ? "convidado" : "ativo"}
+                    </Badge>
+                  )}
                 </div>
                 {canRemove && (
                   <RemoveParticipantButton
