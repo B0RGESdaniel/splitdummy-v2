@@ -91,3 +91,9 @@ Importante: o valor otimista não "briga" com o eco porque os dois fazem a mesma
   - CRUD de itens: `CreateItemButton` (novo componente, dono da mutação de criar — antes o dialog vivia direto na página server-rendered) e `ItemsList` (editar/remover) seguem o mesmo padrão. `ItemFormDialog`/`DeleteItemButton` não precisaram mudar nada — continuam só recebendo uma função `action`, seja ela a Server Action direto ou um `mutation.mutateAsync` por cima dela.
   - Criação otimista usa um id temporário (`optimistic-<uuid>`) só pra existir como `key` do React até o eco do Realtime trazer o id real e substituir a linha otimista.
 - **Passo 10 ✅ — Checkpoint de saída da Fase 1.** Validado manualmente com duas contas Google reais em dois navegadores: convite por link, itens e partes sincronizando entre as duas sessões sem recarregar (tanto o lado de quem edita — update otimista — quanto o lado de quem só observa — eco do Realtime), resumo batendo, e fechamento de conta travando edição corretamente. Confirmado pelo usuário em 2026-10-20, sem bugs encontrados. **Fecha a Fase 1 — núcleo colaborativo completo.**
+
+### Pós-Fase 1 — Ajustes de uso real (antes da Fase 2)
+
+Lote de ajustes levantados usando o app de verdade, antes de entrar na Fase 2 (IA de cupom): convite com menos fricção, taxa de serviço editável, modelo de participante sem conta (reabre uma decisão fechada da Fase 0), tela de divisão orientada por participante, e paleta de dark mode. Plano completo: `curried-wibbling-cherny.md`'s sucessor, `unified-jumping-hennessy.md` (`~/.claude/plans/`).
+
+- **Bloco 1.1 ✅** — Convite sem clique extra: `getOrCreateActiveInvite` (`bills/actions.ts`) busca o convite ativo ou já cria um, chamado direto na `BillPage` antes de renderizar. `InviteQrPanel` perdeu o estado "sem convite ainda" (que exigia clicar em "Gerar link de convite" só pra ver o QR) — agora o dono sempre abre o diálogo já com QR/link prontos.
