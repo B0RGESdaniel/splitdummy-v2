@@ -7,6 +7,7 @@ export async function POST(request: NextRequest) {
   const { origin } = new URL(request.url);
   const formData = await request.formData();
   const token = String(formData.get("token") ?? "");
+  const claimParticipantId = formData.get("claim_participant_id");
 
   if (!token) {
     return NextResponse.redirect(`${origin}/login`);
@@ -35,15 +36,29 @@ export async function POST(request: NextRequest) {
     return NextResponse.redirect(`${origin}/join/${token}`);
   }
 
-  const { error } = await serviceRole
-    .from("bill_participants")
-    .upsert(
-      { bill_id: invite.bill_id, profile_id: userId },
-      { onConflict: "bill_id,profile_id", ignoreDuplicates: true },
-    );
+  if (claimParticipantId) {
+    const { error, data } = await serviceRole
+      .from("bill_participants")
+      .update({ profile_id: userId })
+      .eq("id", String(claimParticipantId))
+      .eq("bill_id", invite.bill_id)
+      .is("profile_id", null)
+      .select("id");
 
-  if (error) {
-    return NextResponse.redirect(`${origin}/join/${token}`);
+    if (error || !data?.length) {
+      return NextResponse.redirect(`${origin}/join/${token}`);
+    }
+  } else {
+    const { error } = await serviceRole
+      .from("bill_participants")
+      .upsert(
+        { bill_id: invite.bill_id, profile_id: userId },
+        { onConflict: "bill_id,profile_id", ignoreDuplicates: true },
+      );
+
+    if (error) {
+      return NextResponse.redirect(`${origin}/join/${token}`);
+    }
   }
 
   return NextResponse.redirect(`${origin}/bills/${invite.bill_id}`);

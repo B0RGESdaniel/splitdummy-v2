@@ -61,15 +61,44 @@ export default async function JoinPage({
     );
   }
 
+  const { data: unclaimed } = await serviceRole
+    .from("bill_participants")
+    .select("id, display_name")
+    .eq("bill_id", bill.id)
+    .is("profile_id", null);
+
   return (
     <JoinCard title={bill.name}>
       <p className="text-muted-foreground text-sm">
-        Você foi convidado para participar dessa conta.
+        {unclaimed && unclaimed.length > 0
+          ? "Você é um dos participantes abaixo, ou é novo por aqui?"
+          : "Você foi convidado para participar dessa conta."}
       </p>
+
+      {unclaimed && unclaimed.length > 0 && (
+        <div className="flex flex-col gap-2">
+          {unclaimed.map((participant) => (
+            <form key={participant.id} action="/api/invites/accept" method="POST">
+              <input type="hidden" name="token" value={inviteToken} />
+              <input
+                type="hidden"
+                name="claim_participant_id"
+                value={participant.id}
+              />
+              <Button type="submit" variant="outline" className="w-full">
+                Sou {participant.display_name}
+              </Button>
+            </form>
+          ))}
+        </div>
+      )}
+
       <form action="/api/invites/accept" method="POST">
         <input type="hidden" name="token" value={inviteToken} />
         <Button type="submit" className="w-full">
-          Entrar na conta
+          {unclaimed && unclaimed.length > 0
+            ? "Sou um participante novo"
+            : "Entrar na conta"}
         </Button>
       </form>
     </JoinCard>

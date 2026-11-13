@@ -67,7 +67,7 @@ app/(dashboard)/bills/[billId]/items/{page.tsx,actions.ts}      # CRUD de itens 
 app/(dashboard)/bills/[billId]/items/[itemId]/split/{page.tsx,actions.ts}  # stepper de partes (ItemSplit client, realtime)
 app/(dashboard)/bills/[billId]/summary/page.tsx                 # resumo, taxa, aviso de não-divididos, fechar conta (BillSummary client, realtime)
 app/(public)/join/[inviteToken]/page.tsx                        # resolve convite via service-role
-app/api/invites/accept/route.ts                                 # aceita convite via service-role (insert owner-only em bill_participants)
+app/api/invites/accept/route.ts                                 # aceita convite via service-role: cria participante novo ou reivindica um convidado existente
 lib/supabase/{server,client,service-role}.ts, database.types.ts
 lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
 lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
