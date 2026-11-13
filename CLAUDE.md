@@ -94,6 +94,13 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 9. ✅ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime (stepper de partes + CRUD de itens, todos via `useMutation` + `onMutate`/`onError`).
 10. ✅ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar. Validado pelo usuário em 2026-10-20, sem bugs.
 
+### Pós-Fase 1 — Ajustes de uso real (em andamento, antes da Fase 2)
+Plano completo: `/Users/danielborges/.claude/plans/unified-jumping-hennessy.md`.
+1. ✅ Bloco 1 — convite sem clique extra (`getOrCreateActiveInvite`) + taxa de serviço editável (`updateServiceTax`).
+2. ✅ Bloco A — participante sem conta: `bill_participants.profile_id` nullable + `display_name`, `item_shares.participant_id`, tela `participants/page.tsx` (adicionar convidado/remover), fluxo de reivindicação em `join/[inviteToken]` + `api/invites/accept`.
+3. ✅ Bloco B — navegação por abas (Itens/Participantes/Dividir/Resumo, `BillTabs`) substituindo a antiga tela "hub" com lista de botões (removida — `/bills/[billId]` só redireciona pra `/items`); "Dividir" é aba própria (`split/page.tsx` + `SplitWorkspace`, seletor de item, aceita `?item=` pra deep link a partir da lista de itens); botão "Compartilhar" (`InviteQrPanel`) migrou pra aparecer no topo de qualquer aba, não mais numa tela própria.
+4. ⬜ **Bloco C — próximo passo**: paleta de dark mode. Hoje `app/globals.css` usa cinza quase puro (baixo croma) em quase tudo, só com azul isolado em `--primary`/`--ring` do dark mode — sem profundidade real entre superfícies. Adotar os tokens oficiais do tema "zinc" do shadcn pra `background/foreground/card/popover/secondary/muted/accent/border/input` (claro e escuro), mantendo uma única cor de destaque (`primary`/`ring`, `oklch(0.488 0.243 264.376)`) aplicada também no light mode. Editar só `app/globals.css` (`:root`/`.dark`), sem tocar `components.json`. Checkpoint: comparar light/dark lado a lado em páginas reais e confirmar profundidade sem depender só do azul. Detalhe completo no plano linkado acima.
+
 ### Fase 2 — IA de leitura de cupom (**próxima fase**)
 Bucket privado `receipts`, upload, `api/ai/extract-receipt` (`generateObject` + Zod via AI Gateway), tela de revisão obrigatória antes de gravar em `items`.
 
