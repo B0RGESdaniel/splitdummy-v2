@@ -1,4 +1,4 @@
-import { ListOrdered, ReceiptText } from "lucide-react";
+import { ListOrdered, ReceiptText, Users } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
@@ -51,6 +51,12 @@ export default async function BillPage({
           <Link href={`/bills/${bill.id}/items`}>
             <ListOrdered data-icon="inline-start" />
             Ver itens
+          </Link>
+        </Button>
+        <Button asChild variant="outline" className="w-full justify-start">
+          <Link href={`/bills/${bill.id}/participants`}>
+            <Users data-icon="inline-start" />
+            Participantes
           </Link>
         </Button>
         <Button asChild variant="outline" className="w-full justify-start">
