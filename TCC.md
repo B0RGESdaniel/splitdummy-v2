@@ -64,6 +64,9 @@ Sem update otimista, cada clique no stepper de partes dependia de um round-trip 
 
 Importante: o valor otimista não "briga" com o eco porque os dois fazem a mesma coisa de formas diferentes — o otimista aplica o delta **imediatamente e localmente**, o eco **confirma a verdade do servidor depois**. Não há necessidade de ignorar/debounce um dos dois.
 
+### Por que reabrir "só Google OAuth, sem convidado anônimo"
+Essa era uma decisão fechada desde a Fase 0. Na prática, numa conta com muita gente, exigir que todo mundo logue só pra ter o nome registrado é fricção desproporcional ao valor — a maioria só quer ver quanto deve, não interagir. A solução não é abrir acesso anônimo ao app (login continua obrigatório pra quem *edita* algo); é permitir que `bill_participants` represente uma pessoa sem conta (um nome cadastrado pelo organizador), que pode depois ser "reivindicada" por alguém que loga de verdade. Efeito colateral de modelagem: `item_shares` deixou de apontar direto pra `profiles` e passou a apontar pra `bill_participants` — assim uma parte pode ser atribuída a alguém que ainda não tem conta.
+
 ## Changelog de funcionalidades e ferramentas
 
 ### Fase 0 — Fundação
@@ -98,3 +101,4 @@ Lote de ajustes levantados usando o app de verdade, antes de entrar na Fase 2 (I
 
 - **Bloco 1.1 ✅** — Convite deixa de exigir um clique extra: o link já vem gerado quando o dono abre a tela de compartilhamento.
 - **Bloco 1.2 ✅** — Taxa de serviço passa a ser editável a qualquer momento (antes só era definida na criação da conta), seguindo a mesma regra colaborativa já usada em itens/partes — qualquer participante edita, não só o dono.
+- **Bloco A, parte 1/3 ✅** — Schema preparado pra participantes sem conta: `bill_participants.profile_id` fica opcional (ver "Decisões técnicas notáveis") e `item_shares` passa a vincular ao participante da conta em vez do perfil direto. Telas existentes (itens, divisão, resumo) adaptadas pro novo vínculo — ainda sem UI pra cadastrar convidado nem pra reivindicar, isso vem nas próximas partes.

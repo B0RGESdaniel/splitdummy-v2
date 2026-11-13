@@ -18,7 +18,7 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 |---|---|
 | App | Next.js 16 App Router, TypeScript strict, Cache Components habilitado |
 | Backend | Supabase (Postgres + Auth + Realtime + Storage) via Vercel Marketplace |
-| Login | Supabase Auth, **só Google OAuth** — sem convidado anônimo |
+| Login | Supabase Auth, **só Google OAuth** pra quem edita algo. **Participante pode existir sem conta** (cadastrado pelo organizador, só com nome) — reabertura da decisão original, ver TCC.md |
 | Acesso a dados | `@supabase/supabase-js` direto, sem ORM. RLS faz toda a autorização |
 | Convite | Link + QR code (mesmo link), sem e-mail |
 | IA do cupom | Vercel AI SDK `generateObject` + Zod via AI Gateway (modelo a escolher na hora) |

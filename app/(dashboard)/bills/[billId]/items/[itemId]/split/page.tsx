@@ -48,11 +48,11 @@ export default async function ItemSplitPage({
   const [{ data: participants }, { data: shares }] = await Promise.all([
     supabase
       .from("bill_participants")
-      .select("profile_id, profiles(display_name)")
+      .select("id, display_name, profiles(display_name)")
       .eq("bill_id", billId),
     supabase
       .from("item_shares")
-      .select("profile_id, parts")
+      .select("participant_id, parts")
       .eq("item_id", itemId),
   ]);
 
@@ -83,8 +83,8 @@ export default async function ItemSplitPage({
         totalCents={totalCents}
         isOpen={bill.status === "open"}
         participants={(participants ?? []).map((p) => ({
-          profile_id: p.profile_id,
-          display_name: p.profiles?.display_name,
+          participant_id: p.id,
+          display_name: p.display_name ?? p.profiles?.display_name,
         }))}
         initialShares={shares ?? []}
       />

@@ -32,7 +32,7 @@ type Item = {
   quantity: number;
 };
 
-type Share = { item_id: string; profile_id: string; parts: number | null };
+type Share = { item_id: string; participant_id: string; parts: number | null };
 
 function formatCurrency(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -54,7 +54,7 @@ export function BillSummary({
   serviceTaxPercent: number;
   isOwner: boolean;
   isOpen: boolean;
-  participants: { profile_id: string; display_name: string | undefined }[];
+  participants: { participant_id: string; display_name: string | undefined }[];
   initialItems: Item[];
   initialShares: Share[];
 }) {
@@ -83,7 +83,7 @@ export function BillSummary({
       const supabase = createClient();
       const { data, error } = await supabase
         .from("item_shares")
-        .select("item_id, profile_id, parts")
+        .select("item_id, participant_id, parts")
         .eq("bill_id", billId);
 
       if (error) throw error;
@@ -98,7 +98,7 @@ export function BillSummary({
   const sharesByItem = new Map<string, PartsShareInput[]>();
   for (const share of shares) {
     const list = sharesByItem.get(share.item_id) ?? [];
-    list.push({ profileId: share.profile_id, parts: share.parts ?? 0 });
+    list.push({ profileId: share.participant_id, parts: share.parts ?? 0 });
     sharesByItem.set(share.item_id, list);
   }
 
@@ -129,11 +129,12 @@ export function BillSummary({
     itemSplitsById.set(item.id, splitPartsCents(itemTotalCents(item), item.shares));
   }
 
-  function getParticipantItems(profileId: string) {
+  function getParticipantItems(participantId: string) {
     return items.flatMap((item) => {
       const itemShares = sharesByItem.get(item.id) ?? [];
       const totalParts = itemShares.reduce((sum, share) => sum + share.parts, 0);
-      const myParts = itemShares.find((share) => share.profileId === profileId)?.parts ?? 0;
+      const myParts =
+        itemShares.find((share) => share.profileId === participantId)?.parts ?? 0;
 
       if (myParts === 0 || totalParts === 0) return [];
 
@@ -144,7 +145,7 @@ export function BillSummary({
           quantity: item.quantity,
           myParts,
           totalParts,
-          amount: itemSplitsById.get(item.id)?.get(profileId) ?? 0,
+          amount: itemSplitsById.get(item.id)?.get(participantId) ?? 0,
         },
       ];
     });
@@ -169,12 +170,15 @@ export function BillSummary({
         <CardContent>
           <Accordion type="single" collapsible>
             {participants.map((participant) => {
-              const subtotal = subtotals.get(participant.profile_id) ?? 0;
-              const total = totalsWithTax.get(participant.profile_id) ?? 0;
-              const participantItems = getParticipantItems(participant.profile_id);
+              const subtotal = subtotals.get(participant.participant_id) ?? 0;
+              const total = totalsWithTax.get(participant.participant_id) ?? 0;
+              const participantItems = getParticipantItems(participant.participant_id);
 
               return (
-                <AccordionItem key={participant.profile_id} value={participant.profile_id}>
+                <AccordionItem
+                  key={participant.participant_id}
+                  value={participant.participant_id}
+                >
                   <AccordionTrigger className="gap-2">
                     <span className="flex w-full items-center justify-between">
                       <span className="font-medium">{participant.display_name}</span>

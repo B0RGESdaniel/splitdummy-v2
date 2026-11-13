@@ -34,7 +34,7 @@ export default async function BillSummaryPage({
     await Promise.all([
       supabase
         .from("bill_participants")
-        .select("profile_id, profiles(display_name)")
+        .select("id, display_name, profiles(display_name)")
         .eq("bill_id", billId),
       supabase
         .from("items")
@@ -43,7 +43,7 @@ export default async function BillSummaryPage({
         .order("created_at", { ascending: true }),
       supabase
         .from("item_shares")
-        .select("item_id, profile_id, parts")
+        .select("item_id, participant_id, parts")
         .eq("bill_id", billId),
     ]);
 
@@ -72,8 +72,8 @@ export default async function BillSummaryPage({
         isOwner={userId === bill.owner_id}
         isOpen={isOpen}
         participants={(participants ?? []).map((p) => ({
-          profile_id: p.profile_id,
-          display_name: p.profiles?.display_name,
+          participant_id: p.id,
+          display_name: p.display_name ?? p.profiles?.display_name,
         }))}
         initialItems={items ?? []}
         initialShares={shares ?? []}

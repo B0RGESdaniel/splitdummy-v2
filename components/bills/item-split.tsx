@@ -12,7 +12,7 @@ import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
 import { splitPartsCents } from "@/lib/split/calculate";
 
-type Share = { profile_id: string; parts: number | null };
+type Share = { participant_id: string; parts: number | null };
 
 function formatCurrency(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -21,15 +21,19 @@ function formatCurrency(cents: number) {
   });
 }
 
-function applyDelta(shares: Share[], profileId: string, delta: 1 | -1): Share[] {
-  const existing = shares.find((share) => share.profile_id === profileId);
+function applyDelta(
+  shares: Share[],
+  participantId: string,
+  delta: 1 | -1,
+): Share[] {
+  const existing = shares.find((share) => share.participant_id === participantId);
 
   if (!existing) {
-    return [...shares, { profile_id: profileId, parts: Math.max(0, delta) }];
+    return [...shares, { participant_id: participantId, parts: Math.max(0, delta) }];
   }
 
   return shares.map((share) =>
-    share.profile_id === profileId
+    share.participant_id === participantId
       ? { ...share, parts: Math.max(0, (share.parts ?? 0) + delta) }
       : share,
   );
@@ -47,7 +51,7 @@ export function ItemSplit({
   itemId: string;
   totalCents: number;
   isOpen: boolean;
-  participants: { profile_id: string; display_name: string | undefined }[];
+  participants: { participant_id: string; display_name: string | undefined }[];
   initialShares: Share[];
 }) {
   const queryKey = ["item-shares", itemId];
@@ -59,7 +63,7 @@ export function ItemSplit({
       const supabase = createClient();
       const { data, error } = await supabase
         .from("item_shares")
-        .select("profile_id, parts")
+        .select("participant_id, parts")
         .eq("item_id", itemId);
 
       if (error) throw error;
@@ -74,16 +78,16 @@ export function ItemSplit({
     const action = delta === 1 ? incrementItemPart : decrementItemPart;
 
     return useMutation({
-      mutationFn: (profileId: string) => action(billId, itemId, profileId),
-      onMutate: async (profileId: string) => {
+      mutationFn: (participantId: string) => action(billId, itemId, participantId),
+      onMutate: async (participantId: string) => {
         await queryClient.cancelQueries({ queryKey });
         const previous = queryClient.getQueryData<Share[]>(queryKey);
         queryClient.setQueryData<Share[]>(queryKey, (current = []) =>
-          applyDelta(current, profileId, delta),
+          applyDelta(current, participantId, delta),
         );
         return { previous };
       },
-      onError: (_err, _profileId, context) => {
+      onError: (_err, _participantId, context) => {
         if (context?.previous) {
           queryClient.setQueryData(queryKey, context.previous);
         }
@@ -94,22 +98,22 @@ export function ItemSplit({
   const increment = useStepMutation(1);
   const decrement = useStepMutation(-1);
 
-  const partsByProfile = new Map(
-    shares.map((share) => [share.profile_id, share.parts ?? 0]),
+  const partsByParticipant = new Map(
+    shares.map((share) => [share.participant_id, share.parts ?? 0]),
   );
 
-  const totalParts = [...partsByProfile.values()].reduce(
+  const totalParts = [...partsByParticipant.values()].reduce(
     (sum, parts) => sum + parts,
     0,
   );
 
-  const amountsByProfile =
+  const amountsByParticipant =
     totalParts > 0
       ? splitPartsCents(
           totalCents,
           participants.map((p) => ({
-            profileId: p.profile_id,
-            parts: partsByProfile.get(p.profile_id) ?? 0,
+            profileId: p.participant_id,
+            parts: partsByParticipant.get(p.participant_id) ?? 0,
           })),
         )
       : null;
@@ -124,11 +128,11 @@ export function ItemSplit({
 
       <div className="flex flex-col gap-2">
         {participants.map((participant) => {
-          const parts = partsByProfile.get(participant.profile_id) ?? 0;
-          const amount = amountsByProfile?.get(participant.profile_id) ?? 0;
+          const parts = partsByParticipant.get(participant.participant_id) ?? 0;
+          const amount = amountsByParticipant?.get(participant.participant_id) ?? 0;
 
           return (
-            <Card key={participant.profile_id}>
+            <Card key={participant.participant_id}>
               <CardContent className="flex items-center justify-between gap-4">
                 <span className="font-medium">
                   {participant.display_name}
@@ -137,11 +141,11 @@ export function ItemSplit({
                   <PartsStepper
                     parts={parts}
                     disabled={!isOpen}
-                    onIncrement={() => increment.mutate(participant.profile_id)}
-                    onDecrement={() => decrement.mutate(participant.profile_id)}
+                    onIncrement={() => increment.mutate(participant.participant_id)}
+                    onDecrement={() => decrement.mutate(participant.participant_id)}
                   />
                   <span className="text-muted-foreground w-20 text-right text-sm">
-                    {amountsByProfile ? formatCurrency(amount) : "—"}
+                    {amountsByParticipant ? formatCurrency(amount) : "—"}
                   </span>
                 </div>
               </CardContent>

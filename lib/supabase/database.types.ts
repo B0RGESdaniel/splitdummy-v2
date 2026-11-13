@@ -87,18 +87,24 @@ export type Database = {
       bill_participants: {
         Row: {
           bill_id: string
+          display_name: string | null
+          id: string
           joined_at: string
-          profile_id: string
+          profile_id: string | null
         }
         Insert: {
           bill_id: string
+          display_name?: string | null
+          id?: string
           joined_at?: string
-          profile_id: string
+          profile_id?: string | null
         }
         Update: {
           bill_id?: string
+          display_name?: string | null
+          id?: string
           joined_at?: string
-          profile_id?: string
+          profile_id?: string | null
         }
         Relationships: [
           {
@@ -226,9 +232,9 @@ export type Database = {
           fixed_amount: number | null
           id: string
           item_id: string
+          participant_id: string
           parts: number | null
           percent: number | null
-          profile_id: string
           share_type: string
           updated_at: string
         }
@@ -237,9 +243,9 @@ export type Database = {
           fixed_amount?: number | null
           id?: string
           item_id: string
+          participant_id: string
           parts?: number | null
           percent?: number | null
-          profile_id: string
           share_type: string
           updated_at?: string
         }
@@ -248,9 +254,9 @@ export type Database = {
           fixed_amount?: number | null
           id?: string
           item_id?: string
+          participant_id?: string
           parts?: number | null
           percent?: number | null
-          profile_id?: string
           share_type?: string
           updated_at?: string
         }
@@ -270,10 +276,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "item_shares_profile_id_fkey"
-            columns: ["profile_id"]
+            foreignKeyName: "item_shares_participant_id_fkey"
+            columns: ["participant_id"]
             isOneToOne: false
-            referencedRelation: "profiles"
+            referencedRelation: "bill_participants"
             referencedColumns: ["id"]
           },
         ]

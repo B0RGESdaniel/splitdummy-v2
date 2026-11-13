@@ -7,7 +7,7 @@ import { createClient } from "@/lib/supabase/server";
 async function setPartsDelta(
   billId: string,
   itemId: string,
-  profileId: string,
+  participantId: string,
   delta: 1 | -1,
 ) {
   const supabase = await createClient();
@@ -16,7 +16,7 @@ async function setPartsDelta(
     .from("item_shares")
     .select("parts")
     .eq("item_id", itemId)
-    .eq("profile_id", profileId)
+    .eq("participant_id", participantId)
     .maybeSingle();
 
   const nextParts = Math.max(0, (existing?.parts ?? 0) + delta);
@@ -25,11 +25,11 @@ async function setPartsDelta(
     {
       item_id: itemId,
       bill_id: billId,
-      profile_id: profileId,
+      participant_id: participantId,
       share_type: "parts",
       parts: nextParts,
     },
-    { onConflict: "item_id,profile_id" },
+    { onConflict: "item_id,participant_id" },
   );
 
   if (error) {
@@ -42,15 +42,15 @@ async function setPartsDelta(
 export async function incrementItemPart(
   billId: string,
   itemId: string,
-  profileId: string,
+  participantId: string,
 ) {
-  await setPartsDelta(billId, itemId, profileId, 1);
+  await setPartsDelta(billId, itemId, participantId, 1);
 }
 
 export async function decrementItemPart(
   billId: string,
   itemId: string,
-  profileId: string,
+  participantId: string,
 ) {
-  await setPartsDelta(billId, itemId, profileId, -1);
+  await setPartsDelta(billId, itemId, participantId, -1);
 }
