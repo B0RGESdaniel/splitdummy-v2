@@ -77,12 +77,7 @@ export default async function ParticipantsPage({
                 <div className="flex items-center gap-2">
                   <span className="font-medium">{name}</span>
                   {isBillOwner ? (
-                    <Badge
-                      variant="outline"
-                      className="border-transparent bg-blue-500/10 text-blue-500 dark:bg-blue-500/20"
-                    >
-                      owner
-                    </Badge>
+                    <Badge variant="secondary">dono</Badge>
                   ) : (
                     <Badge variant={isGuest ? "outline" : "secondary"}>
                       {isGuest ? "convidado" : "ativo"}
