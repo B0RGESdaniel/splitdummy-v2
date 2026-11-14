@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function SaveButton() {
   const { pending } = useFormStatus();
@@ -33,6 +34,7 @@ export function ServiceTaxEditor({
   action: (formData: FormData) => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -45,7 +47,7 @@ export function ServiceTaxEditor({
           <Pencil className="size-3" />
         </button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>Taxa de serviço</DialogTitle>
         </DialogHeader>

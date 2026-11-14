@@ -1,9 +1,6 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
-import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
-import { BillTabs } from "@/components/bills/bill-tabs";
-import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { SplitWorkspace } from "@/components/bills/split-workspace";
 import { createClient } from "@/lib/supabase/server";
 
@@ -21,21 +18,15 @@ export default async function SplitPage({
   const { item } = await searchParams;
   const supabase = await createClient();
 
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims.sub;
-
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, owner_id")
+    .select("id, status")
     .eq("id", billId)
     .single();
 
   if (!bill) {
     notFound();
   }
-
-  const isOwner = userId === bill.owner_id;
-  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
 
   const [{ data: items }, { data: participants }, { data: shares }] =
     await Promise.all([
@@ -63,14 +54,7 @@ export default async function SplitPage({
   }
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">{bill.name}</h1>
-        {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
-      </div>
-
-      <BillTabs billId={billId} isOpen={bill.status === "open"} />
-
+    <div className="flex flex-1 flex-col">
       <SplitWorkspace
         billId={billId}
         initialItems={items ?? []}

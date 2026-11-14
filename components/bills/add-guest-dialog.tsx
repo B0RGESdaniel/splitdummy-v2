@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function SubmitButton() {
   const { pending } = useFormStatus();
@@ -31,6 +32,7 @@ export function AddGuestDialog({
   action: (formData: FormData) => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -40,7 +42,7 @@ export function AddGuestDialog({
           Adicionar convidado
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>Adicionar convidado</DialogTitle>
         </DialogHeader>

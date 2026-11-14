@@ -1,10 +1,7 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
 
-import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillSummary } from "@/components/bills/bill-summary";
-import { BillTabs } from "@/components/bills/bill-tabs";
-import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -23,7 +20,7 @@ export default async function BillSummaryPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, service_tax_percent, owner_id")
+    .select("id, status, service_tax_percent, owner_id")
     .eq("id", billId)
     .single();
 
@@ -50,19 +47,9 @@ export default async function BillSummaryPage({
 
   const isOpen = bill.status === "open";
   const isOwner = userId === bill.owner_id;
-  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
 
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold">{bill.name}</h1>
-        <div className="flex items-center gap-2">
-          {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
-        </div>
-      </div>
-
-      <BillTabs billId={billId} isOpen={isOpen} />
-
       <BillSummary
         billId={billId}
         serviceTaxPercent={bill.service_tax_percent}

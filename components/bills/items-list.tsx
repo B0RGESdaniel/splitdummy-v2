@@ -8,7 +8,6 @@ import { deleteItem, updateItem } from "@/app/(dashboard)/bills/[billId]/items/a
 import { DeleteItemButton } from "@/components/bills/delete-item-button";
 import { ItemFormDialog } from "@/components/bills/item-form-dialog";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
 
@@ -106,60 +105,60 @@ export function ItemsList({
 
   if (!items.length) {
     return (
-      <Card className="border-dashed bg-transparent ring-foreground/15">
-        <CardContent className="text-center text-sm text-muted-foreground">
-          Nenhum item cadastrado ainda.
-        </CardContent>
-      </Card>
+      <div className="rounded-md border border-dashed border-border py-6 text-center">
+        <p className="font-handwritten text-lg text-muted-foreground">
+          Nada escrito aqui ainda — adicione o primeiro item.
+        </p>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-col gap-2">
+    <ul className="flex flex-col divide-y divide-border">
       {items.map((item) => (
-        <Card key={item.id}>
-          <CardContent className="flex items-center justify-between gap-4">
-            <div className="flex flex-col">
-              <span className="font-medium">{item.description}</span>
-              <span className="text-muted-foreground text-xs">
-                {item.quantity} × {formatCurrency(item.unit_price)} ={" "}
-                {formatCurrency(item.unit_price * item.quantity)}
-              </span>
-            </div>
-            <div className="flex items-center gap-1">
-              <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
-                <Link href={`/bills/${billId}/split?item=${item.id}`}>
-                  <Divide />
-                </Link>
-              </Button>
-              {isOpen && (
-                <>
-                  <ItemFormDialog
-                    action={(formData) =>
-                      updateMutation.mutateAsync({ itemId: item.id, formData })
-                    }
-                    trigger={
-                      <Button variant="outline" size="icon-sm" aria-label="Editar item">
-                        <Pencil />
-                      </Button>
-                    }
-                    title="Editar item"
-                    submitLabel="Salvar"
-                    initialValues={{
-                      description: item.description,
-                      unit_price: item.unit_price,
-                      quantity: item.quantity,
-                    }}
-                  />
-                  <DeleteItemButton
-                    action={() => deleteMutation.mutateAsync(item.id)}
-                  />
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+        <li key={item.id} className="flex items-center justify-between gap-4 py-3">
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate font-handwritten text-2xl leading-tight text-foreground">
+              {item.description}
+            </span>
+            <span className="font-mono text-xs tabular-nums text-muted-foreground">
+              {item.quantity} × {formatCurrency(item.unit_price)} ={" "}
+              {formatCurrency(item.unit_price * item.quantity)}
+            </span>
+          </div>
+          <div className="flex shrink-0 items-center gap-1">
+            <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
+              <Link href={`/bills/${billId}/split?item=${item.id}`}>
+                <Divide />
+              </Link>
+            </Button>
+            {isOpen && (
+              <>
+                <ItemFormDialog
+                  action={(formData) =>
+                    updateMutation.mutateAsync({ itemId: item.id, formData })
+                  }
+                  trigger={
+                    <Button variant="outline" size="icon-sm" aria-label="Editar item">
+                      <Pencil />
+                    </Button>
+                  }
+                  title="Editar item"
+                  submitLabel="Salvar"
+                  initialValues={{
+                    description: item.description,
+                    unit_price: item.unit_price,
+                    quantity: item.quantity,
+                  }}
+                />
+                <DeleteItemButton
+                  action={() => deleteMutation.mutateAsync(item.id)}
+                />
+              </>
+            )}
+          </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }

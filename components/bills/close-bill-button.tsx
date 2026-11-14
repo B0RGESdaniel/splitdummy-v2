@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function ConfirmButton() {
   const { pending } = useFormStatus();
@@ -29,6 +30,7 @@ export function CloseBillButton({
   action: () => void | Promise<void>;
 }) {
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -37,7 +39,7 @@ export function CloseBillButton({
           Fechar conta
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>Fechar esta conta?</DialogTitle>
           <DialogDescription>

@@ -15,6 +15,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function SubmitButton({
   children,
@@ -39,6 +40,7 @@ export function InviteQrPanel({
   invite: { id: string; token: string } | null;
 }) {
   const [copied, setCopied] = useState(false);
+  const portalContainer = usePortalContainer();
 
   const origin = typeof window !== "undefined" ? window.location.origin : "";
   const link = invite && origin ? `${origin}/join/${invite.token}` : null;
@@ -51,7 +53,7 @@ export function InviteQrPanel({
           Compartilhar
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>Convidar participantes</DialogTitle>
         </DialogHeader>

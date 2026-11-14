@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function ConfirmButton({
   confirmLabel,
@@ -45,11 +46,12 @@ export function ConfirmDeleteButton({
   pendingLabel: string;
 }) {
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
           <DialogDescription>{description}</DialogDescription>

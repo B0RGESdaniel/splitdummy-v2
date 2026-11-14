@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { usePortalContainer } from "@/components/theme-scope";
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -42,11 +43,12 @@ export function ItemFormDialog({
   };
 }) {
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>{title}</DialogTitle>
         </DialogHeader>

@@ -49,9 +49,12 @@ export function CreateItemButton({ billId }: { billId: string }) {
     <ItemFormDialog
       action={(formData) => mutation.mutateAsync(formData)}
       trigger={
-        <Button>
-          <Plus data-icon="inline-start" />
-          Novo item
+        <Button
+          variant="ghost"
+          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 font-handwritten text-xl text-muted-foreground hover:bg-transparent hover:text-foreground"
+        >
+          <Plus className="size-4" data-icon="inline-start" />
+          Escrever próximo item
         </Button>
       }
       title="Novo item"

@@ -39,6 +39,8 @@
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
+  --font-display: var(--font-display);
+  --font-handwritten: var(--font-handwritten);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -115,6 +117,34 @@
   --sidebar-accent-foreground: oklch(0.985 0 0);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.6 0.19 264);
+}
+
+/*
+ * Guest-check paper world — scoped to routes wrapped in .paper-check
+ * (currently only the bill Items screen). Overrides the ambient .dark
+ * tokens for that subtree instead of replacing them globally: see the
+ * Items surface brief for the pilot decision.
+ */
+.paper-check {
+  --background: oklch(0.96 0.025 85);
+  --foreground: oklch(0.32 0.08 262);
+  --card: oklch(0.96 0.025 85);
+  --card-foreground: oklch(0.32 0.08 262);
+  --popover: oklch(0.98 0.015 85);
+  --popover-foreground: oklch(0.32 0.08 262);
+  --primary: oklch(0.32 0.08 262);
+  --primary-foreground: oklch(0.97 0.02 85);
+  --secondary: oklch(0.91 0.025 85);
+  --secondary-foreground: oklch(0.32 0.08 262);
+  --muted: oklch(0.93 0.02 85);
+  --muted-foreground: oklch(0.48 0.06 262);
+  --accent: oklch(0.91 0.025 85);
+  --accent-foreground: oklch(0.32 0.08 262);
+  --destructive: oklch(0.55 0.2 25);
+  --border: oklch(0.8 0.035 262 / 40%);
+  --input: oklch(0.8 0.035 262 / 40%);
+  --ring: oklch(0.5 0.08 262 / 55%);
+  --radius: 0.3rem;
 }
 
 @layer base {
