@@ -4,8 +4,10 @@ import { Bitter, Caveat, JetBrains_Mono } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { BillTabs } from "@/components/bills/bill-tabs";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
+import { ReceiptMark } from "@/components/bills/receipt-mark";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
@@ -67,22 +69,28 @@ export default async function BillLayout({
       className={`${bitter.variable} ${caveat.variable} ${jetBrainsMono.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b border-dashed border-border bg-background/95 px-4 py-3 backdrop-blur-sm">
-          <span className="font-display text-sm font-bold tracking-tight text-foreground">
-            Splitdummy
-          </span>
-          <SignOutButton />
+        <header className="sticky top-0 z-10 border-b border-dashed border-border bg-background/95 backdrop-blur-sm">
+          <div className="relative flex items-center justify-center px-10 py-3">
+            <ReceiptMark className="absolute left-4 size-5 text-foreground" />
+            <h1 className="truncate font-display text-lg font-bold tracking-tight text-foreground">
+              {bill.name}
+            </h1>
+            <div className="absolute right-4">
+              <BillStatusBadge isOpen={bill.status === "open"} />
+            </div>
+          </div>
+          <div className="flex items-center justify-between gap-2 border-t border-dashed border-border px-4 py-2">
+            {isOwner ? (
+              <InviteQrPanel billId={billId} invite={invite} />
+            ) : (
+              <span />
+            )}
+            <SignOutButton />
+          </div>
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4">
-          <div className="flex items-center justify-between gap-3 border-b border-dashed border-border pb-3">
-            <h1 className="truncate font-display text-xl font-bold tracking-tight text-foreground">
-              {bill.name}
-            </h1>
-            {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
-          </div>
-
-          <BillTabs billId={billId} isOpen={bill.status === "open"} />
+          <BillTabs billId={billId} />
 
           {children}
         </main>
