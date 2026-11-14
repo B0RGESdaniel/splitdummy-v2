@@ -34,7 +34,7 @@ export function AddGuestDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
+        <Button>
           <UserPlus data-icon="inline-start" />
           Adicionar convidado
         </Button>

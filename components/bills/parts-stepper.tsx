@@ -21,6 +21,7 @@ export function PartsStepper({
     <div className="flex items-center gap-2">
       <Button
         type="button"
+        variant="outline"
         size="icon-sm"
         onClick={onDecrement}
         aria-label="Diminuir partes"
@@ -30,6 +31,7 @@ export function PartsStepper({
       <span className="w-6 text-center text-lg font-bold">{parts}</span>
       <Button
         type="button"
+        variant="outline"
         size="icon-sm"
         onClick={onIncrement}
         aria-label="Aumentar partes"
