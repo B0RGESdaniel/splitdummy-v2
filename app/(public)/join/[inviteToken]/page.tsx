@@ -1,4 +1,5 @@
 import { connection } from "next/server";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -27,12 +28,19 @@ export default async function JoinPage({
 
   const bill = invite?.bills;
 
+  const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const fallbackHref = claims?.claims ? "/dashboard" : "/login";
+
   if (!bill) {
     return (
       <JoinCard title="Convite inválido">
         <p className="text-muted-foreground text-sm">
           Esse link de convite não existe, expirou ou foi revogado.
         </p>
+        <Button asChild variant="outline" className="w-full">
+          <Link href={fallbackHref}>Voltar</Link>
+        </Button>
       </JoinCard>
     );
   }
@@ -43,12 +51,12 @@ export default async function JoinPage({
         <p className="text-muted-foreground text-sm">
           Essa conta já foi fechada e não aceita novos participantes.
         </p>
+        <Button asChild variant="outline" className="w-full">
+          <Link href={fallbackHref}>Voltar</Link>
+        </Button>
       </JoinCard>
     );
   }
-
-  const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
 
   if (!claims?.claims) {
     return (
