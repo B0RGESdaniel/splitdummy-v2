@@ -69,7 +69,7 @@ export default async function SplitPage({
         {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
       </div>
 
-      <BillTabs billId={billId} />
+      <BillTabs billId={billId} isOpen={bill.status === "open"} />
 
       <SplitWorkspace
         billId={billId}

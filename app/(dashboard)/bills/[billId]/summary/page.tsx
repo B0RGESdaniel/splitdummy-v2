@@ -5,7 +5,6 @@ import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillSummary } from "@/components/bills/bill-summary";
 import { BillTabs } from "@/components/bills/bill-tabs";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
-import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -59,13 +58,10 @@ export default async function BillSummaryPage({
         <h1 className="text-lg font-semibold">{bill.name}</h1>
         <div className="flex items-center gap-2">
           {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
-          <Badge variant={isOpen ? "success" : "destructive"}>
-            {isOpen ? "aberta" : "fechada"}
-          </Badge>
         </div>
       </div>
 
-      <BillTabs billId={billId} />
+      <BillTabs billId={billId} isOpen={isOpen} />
 
       <BillSummary
         billId={billId}

@@ -52,7 +52,7 @@ export default async function ItemsPage({
         </div>
       </div>
 
-      <BillTabs billId={billId} />
+      <BillTabs billId={billId} isOpen={isOpen} />
 
       <ItemsList billId={billId} initialItems={items ?? []} isOpen={isOpen} />
     </div>

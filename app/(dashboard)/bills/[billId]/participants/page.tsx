@@ -60,7 +60,7 @@ export default async function ParticipantsPage({
         </div>
       </div>
 
-      <BillTabs billId={billId} />
+      <BillTabs billId={billId} isOpen={isOpen} />
 
       <div className="flex flex-col gap-2">
         {(participants ?? []).map((participant) => {
