@@ -1,25 +1,9 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useFormStatus } from "react-dom";
 
+import { ConfirmDeleteButton } from "@/components/bills/confirm-delete-button";
 import { Button } from "@/components/ui/button";
-
-function SubmitButton() {
-  const { pending } = useFormStatus();
-  return (
-    <Button
-      type="submit"
-      variant="ghost"
-      size="icon-sm"
-      disabled={pending}
-      aria-label="Remover participante"
-      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
-    >
-      <Trash2 />
-    </Button>
-  );
-}
 
 export function RemoveParticipantButton({
   action,
@@ -27,8 +11,22 @@ export function RemoveParticipantButton({
   action: () => void | Promise<void>;
 }) {
   return (
-    <form action={action}>
-      <SubmitButton />
-    </form>
+    <ConfirmDeleteButton
+      action={action}
+      trigger={
+        <Button
+          variant="ghost"
+          size="icon-sm"
+          aria-label="Remover participante"
+          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+        >
+          <Trash2 />
+        </Button>
+      }
+      title="Remover participante?"
+      description="Essa ação não pode ser desfeita. O participante perderá acesso a esta conta."
+      confirmLabel="Remover"
+      pendingLabel="Removendo..."
+    />
   );
 }
