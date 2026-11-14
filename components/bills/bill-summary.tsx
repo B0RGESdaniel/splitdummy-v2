@@ -154,7 +154,7 @@ export function BillSummary({
   return (
     <>
       {unsplitDescriptions.length > 0 && (
-        <Alert variant="destructive">
+        <Alert variant="warning">
           <AlertTitle>Itens ainda não divididos</AlertTitle>
           <AlertDescription>
             <ul className="list-inside list-disc">
