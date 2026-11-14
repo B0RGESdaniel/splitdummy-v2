@@ -52,12 +52,12 @@ export function ItemSplit({
   totalCents: number;
   isOpen: boolean;
   participants: { participant_id: string; display_name: string | undefined }[];
-  initialShares: Share[];
+  initialShares?: Share[];
 }) {
   const queryKey = ["item-shares", itemId];
   const queryClient = useQueryClient();
 
-  const { data: shares } = useQuery({
+  const { data: shares = [] } = useQuery({
     queryKey,
     queryFn: async () => {
       const supabase = createClient();

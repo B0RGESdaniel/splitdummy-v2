@@ -1,12 +1,12 @@
 "use client";
 
 import { Divide, Pencil } from "lucide-react";
-import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import { deleteItem, updateItem } from "@/app/(bill)/bills/[billId]/items/actions";
 import { DeleteItemButton } from "@/components/bills/delete-item-button";
 import { ItemFormDialog } from "@/components/bills/item-form-dialog";
+import { ItemSplitDialog } from "@/components/bills/item-split-dialog";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
@@ -29,10 +29,12 @@ export function ItemsList({
   billId,
   initialItems,
   isOpen,
+  participants,
 }: {
   billId: string;
   initialItems: Item[];
   isOpen: boolean;
+  participants: { participant_id: string; display_name: string | undefined }[];
 }) {
   const queryKey = ["items", billId];
   const queryClient = useQueryClient();
@@ -134,11 +136,17 @@ export function ItemsList({
             </span>
           </div>
           <div className="flex shrink-0 items-center gap-1 py-2">
-            <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
-              <Link href={`/bills/${billId}/split?item=${item.id}`}>
-                <Divide />
-              </Link>
-            </Button>
+            <ItemSplitDialog
+              billId={billId}
+              item={item}
+              isOpen={isOpen}
+              participants={participants}
+              trigger={
+                <Button variant="outline" size="icon-sm" aria-label="Dividir item">
+                  <Divide />
+                </Button>
+              }
+            />
             {isOpen && (
               <>
                 <ItemFormDialog

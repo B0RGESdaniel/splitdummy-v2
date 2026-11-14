@@ -9,7 +9,6 @@ import { Badge } from "@/components/ui/badge";
 const TABS = [
   { segment: "items", label: "Itens" },
   { segment: "participants", label: "Participantes" },
-  { segment: "split", label: "Dividir" },
   { segment: "summary", label: "Resumo" },
 ] as const;
 

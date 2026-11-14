@@ -26,17 +26,31 @@ export default async function ItemsPage({
     notFound();
   }
 
-  const { data: items } = await supabase
-    .from("items")
-    .select("id, description, unit_price, quantity")
-    .eq("bill_id", billId)
-    .order("created_at", { ascending: true });
+  const [{ data: items }, { data: participants }] = await Promise.all([
+    supabase
+      .from("items")
+      .select("id, description, unit_price, quantity")
+      .eq("bill_id", billId)
+      .order("created_at", { ascending: true }),
+    supabase
+      .from("bill_participants")
+      .select("id, display_name, profiles(display_name)")
+      .eq("bill_id", billId),
+  ]);
 
   const isOpen = bill.status === "open";
 
   return (
     <div className="flex flex-1 flex-col">
-      <ItemsList billId={billId} initialItems={items ?? []} isOpen={isOpen} />
+      <ItemsList
+        billId={billId}
+        initialItems={items ?? []}
+        isOpen={isOpen}
+        participants={(participants ?? []).map((p) => ({
+          participant_id: p.id,
+          display_name: p.display_name ?? p.profiles?.display_name,
+        }))}
+      />
       {isOpen && <CreateItemButton billId={billId} />}
     </div>
   );
