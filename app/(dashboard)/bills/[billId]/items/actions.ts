@@ -11,7 +11,7 @@ export async function createItem(billId: string, formData: FormData) {
   const quantity = Number(formData.get("quantity") ?? 1);
 
   if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
-    return;
+    throw new Error("Preencha a descrição e um preço válido.");
   }
 
   const supabase = await createClient();
@@ -47,7 +47,7 @@ export async function updateItem(
   const quantity = Number(formData.get("quantity") ?? 1);
 
   if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
-    return;
+    throw new Error("Preencha a descrição e um preço válido.");
   }
 
   const supabase = await createClient();
