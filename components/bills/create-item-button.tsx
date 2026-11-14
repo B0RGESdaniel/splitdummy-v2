@@ -3,7 +3,7 @@
 import { Plus } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { createItem } from "@/app/(dashboard)/bills/[billId]/items/actions";
+import { createItem } from "@/app/(bill)/bills/[billId]/items/actions";
 import { ItemFormDialog } from "@/components/bills/item-form-dialog";
 import { Button } from "@/components/ui/button";
 

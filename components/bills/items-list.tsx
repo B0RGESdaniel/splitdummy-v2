@@ -4,7 +4,7 @@ import { Divide, Pencil } from "lucide-react";
 import Link from "next/link";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import { deleteItem, updateItem } from "@/app/(dashboard)/bills/[billId]/items/actions";
+import { deleteItem, updateItem } from "@/app/(bill)/bills/[billId]/items/actions";
 import { DeleteItemButton } from "@/components/bills/delete-item-button";
 import { ItemFormDialog } from "@/components/bills/item-form-dialog";
 import { Button } from "@/components/ui/button";

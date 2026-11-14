@@ -5,7 +5,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   decrementItemPart,
   incrementItemPart,
-} from "@/app/(dashboard)/bills/[billId]/items/actions";
+} from "@/app/(bill)/bills/[billId]/items/actions";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";

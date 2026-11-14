@@ -4,7 +4,7 @@ import { connection } from "next/server";
 import {
   addGuestParticipant,
   removeParticipant,
-} from "@/app/(dashboard)/bills/[billId]/participants/actions";
+} from "@/app/(bill)/bills/[billId]/participants/actions";
 import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
 import { RemoveParticipantButton } from "@/components/bills/remove-participant-button";
 import { Badge } from "@/components/ui/badge";

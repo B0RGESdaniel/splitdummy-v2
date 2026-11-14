@@ -1,7 +1,7 @@
 ---
 version: 1
-slug: "app-dashboard-bills-billid-items-page-tsx"
-primary_target: "app/(dashboard)/bills/[billId]/items/page.tsx"
+slug: "app-bill-bills-billid-items-page-tsx"
+primary_target: "app/(bill)/bills/[billId]/items/page.tsx"
 related_targets: []
 ---
 

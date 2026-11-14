@@ -14,10 +14,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { createClient } from "@/lib/supabase/client";
+import { usePortalContainer } from "@/components/theme-scope";
 
 export function SignOutButton() {
   const router = useRouter();
   const [open, setOpen] = useState(false);
+  const portalContainer = usePortalContainer();
 
   async function handleSignOut() {
     const supabase = createClient();
@@ -33,7 +35,7 @@ export function SignOutButton() {
           Sair
         </Button>
       </DialogTrigger>
-      <DialogContent>
+      <DialogContent container={portalContainer}>
         <DialogHeader>
           <DialogTitle>Sair da sua conta?</DialogTitle>
           <DialogDescription>
