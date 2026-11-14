@@ -32,12 +32,12 @@ FINISH: unreviewed and undocumented is unfinished; this build ends with the fini
 - First build was colour/font applied to stock shadcn components, not a real redesign (user feedback) — font-family leak root-caused (CSS inheritance only re-reads `var(--font-sans)` where `font-family` is actually declared) and fixed by declaring it on `.paper-check` itself.
 - Palette moved from a lighter/pastel cream to a duller, textured paper tone.
 - Navigation/screen count is genuinely open and now decided (see FIRST VIEWPORT): split merges into Items via dialog, tab count drops from 4 to 3, tab transition becomes a stacked-vias motion instead of flat underline tabs.
+- **Base visual pass done**: base font swapped to JetBrains Mono app-wide within `.paper-check` (Bitter kept only for the header account name); participant-name voice resolved — user picked handwritten (Caveat) first, then reverted same-day back to mono (matching the rest of the structural voice), applied consistently across Participantes/Dividir/Resumo; items list got a real ruled grid (vertical + horizontal rules between qty/description/price columns); buttons squared off to radius zero.
 
 ## Unresolved decisions — pick up next session here, in this order
 
-1. **Base visual pass** (independent, lowest risk): swap base font to JetBrains Mono app-wide within `.paper-check`, keep Bitter only for the header account name; narrow handwritten scope to item description only — **participant-name voice is still undecided, ask the user before implementing, don't assume mono**; add real ruled table grid (vertical + horizontal rules) to the items list; square off button corners, no neobrutalist shadow.
-2. **Split-as-dialog**: remove `/split` route and `SplitWorkspace`/item-selector; each item row opens a Dialog (reusing `ItemSplit`) showing participants + steppers, same interaction pattern as "Editar item".
-3. **Vias navigation**: depends on #2 (3 areas, not 4). Replace `BillTabs` with the stacked carbon-copy-layer interaction described above.
-4. **Header redesign**: minimal logo (no asset yet — Claude proposes a simple inline SVG mark, user reacts), bill name centered in Bitter, status badge moves to a colored corner box.
+1. **Split-as-dialog**: remove `/split` route and `SplitWorkspace`/item-selector; each item row opens a Dialog (reusing `ItemSplit`) showing participants + steppers, same interaction pattern as "Editar item".
+2. **Vias navigation**: depends on #1 (3 areas, not 4). Replace `BillTabs` with the stacked carbon-copy-layer interaction described above.
+3. **Header redesign**: minimal logo (no asset yet — Claude proposes a simple inline SVG mark, user reacts), bill name centered in Bitter, status badge moves to a colored corner box.
 
 Whether this direction extends to dashboard/login is still explicitly out of scope — decided after this bill-section pass is validated.

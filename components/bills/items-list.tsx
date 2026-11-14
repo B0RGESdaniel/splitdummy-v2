@@ -105,7 +105,7 @@ export function ItemsList({
 
   if (!items.length) {
     return (
-      <div className="rounded-md border border-dashed border-border py-6 text-center">
+      <div className="border border-dashed border-border py-6 text-center">
         <p className="font-handwritten text-lg text-muted-foreground">
           Nada escrito aqui ainda — adicione o primeiro item.
         </p>
@@ -114,19 +114,26 @@ export function ItemsList({
   }
 
   return (
-    <ul className="flex flex-col divide-y divide-border">
+    <ul className="flex flex-col divide-y divide-border border border-border">
       {items.map((item) => (
-        <li key={item.id} className="flex items-center justify-between gap-4 py-3">
-          <div className="flex min-w-0 flex-col">
-            <span className="truncate font-handwritten text-2xl leading-tight text-foreground">
-              {item.description}
+        <li key={item.id} className="flex items-stretch gap-2">
+          <div className="grid flex-1 grid-cols-[2.5rem_1fr_auto] divide-x divide-border">
+            <span className="flex items-center justify-center px-1 font-mono text-xs tabular-nums text-muted-foreground">
+              {item.quantity}×
             </span>
-            <span className="font-mono text-xs tabular-nums text-muted-foreground">
-              {item.quantity} × {formatCurrency(item.unit_price)} ={" "}
+            <div className="flex min-w-0 flex-col justify-center px-3 py-2">
+              <span className="truncate font-handwritten text-xl leading-tight text-foreground">
+                {item.description}
+              </span>
+              <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
+                {formatCurrency(item.unit_price)} / un
+              </span>
+            </div>
+            <span className="flex items-center px-3 font-mono text-sm font-semibold tabular-nums text-foreground">
               {formatCurrency(item.unit_price * item.quantity)}
             </span>
           </div>
-          <div className="flex shrink-0 items-center gap-1">
+          <div className="flex shrink-0 items-center gap-1 py-2">
             <Button asChild variant="outline" size="icon-sm" aria-label="Dividir item">
               <Link href={`/bills/${billId}/split?item=${item.id}`}>
                 <Divide />

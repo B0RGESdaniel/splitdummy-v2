@@ -63,7 +63,7 @@ export default async function ParticipantsPage({
           return (
             <li key={participant.id} className="flex items-center justify-between gap-4 py-3">
               <div className="flex items-center gap-2">
-                <span className="font-handwritten text-2xl leading-tight text-foreground">
+                <span className="text-base font-semibold text-foreground">
                   {name}
                 </span>
                 {isBillOwner ? (
