@@ -108,7 +108,7 @@ export function ItemsList({
     return (
       <Card className="border-dashed bg-transparent ring-foreground/15">
         <CardContent className="text-center text-sm text-muted-foreground">
-          Nenhum item adicionado ainda.
+          Nenhum item cadastrado ainda.
         </CardContent>
       </Card>
     );
