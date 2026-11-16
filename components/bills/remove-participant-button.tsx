@@ -1,9 +1,6 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
-
 import { ConfirmDeleteButton } from "@/components/bills/confirm-delete-button";
-import { Button } from "@/components/ui/button";
 
 export function RemoveParticipantButton({
   action,
@@ -14,14 +11,13 @@ export function RemoveParticipantButton({
     <ConfirmDeleteButton
       action={action}
       trigger={
-        <Button
-          variant="ghost"
-          size="icon-sm"
+        <button
+          type="button"
           aria-label="Remover participante"
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="flex h-4 w-4 items-center justify-center border border-destructive bg-background text-[11px] leading-none font-bold text-destructive"
         >
-          <Trash2 />
-        </Button>
+          ×
+        </button>
       }
       title="Remover participante?"
       description="Essa ação não pode ser desfeita. O participante perderá acesso a esta conta."

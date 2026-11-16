@@ -27,7 +27,9 @@ type Participant = {
   canRemove: boolean;
 };
 
-type Seat = { kind: "participant"; participant: Participant } | { kind: "empty" };
+type Seat =
+  | { kind: "participant"; participant: Participant }
+  | { kind: "empty" };
 
 // Chave estável por participante: sem isso, remover alguém da lista não
 // desmonta o diálogo de confirmação daquele assento (só reposiciona o
@@ -62,7 +64,11 @@ function AvatarSlot({
     return (
       <AvatarIcon
         avatarKey={participant.avatarKey}
-        className={size === "lg" ? "h-12 w-12 text-foreground" : "h-10 w-10 text-foreground"}
+        className={
+          size === "lg"
+            ? "h-12 w-12 text-foreground"
+            : "h-10 w-10 text-foreground"
+        }
       />
     );
   }
@@ -111,20 +117,32 @@ function EmptySeatSlot({ billId }: { billId: string }) {
   );
 }
 
-function ParticipantSeat({ billId, participant }: { billId: string; participant: Participant }) {
+function ParticipantSeat({
+  billId,
+  participant,
+}: {
+  billId: string;
+  participant: Participant;
+}) {
   return (
     <div className="flex w-16 flex-col items-center gap-1">
-      <AvatarSlot billId={billId} participant={participant} size="sm" />
-      <span className="truncate text-xs font-semibold text-foreground">{participant.name}</span>
+      <div className="relative">
+        <AvatarSlot billId={billId} participant={participant} size="sm" />
+        {participant.canRemove && (
+          <div className="absolute -top-1 -right-1">
+            <RemoveParticipantButton
+              action={removeParticipant.bind(null, billId, participant.id)}
+            />
+          </div>
+        )}
+      </div>
+      <span className="truncate text-xs font-semibold text-foreground">
+        {participant.name}
+      </span>
       {participant.isGuest && (
         <Badge variant="outline" className="border-dashed">
           convidado
         </Badge>
-      )}
-      {participant.canRemove && (
-        <RemoveParticipantButton
-          action={removeParticipant.bind(null, billId, participant.id)}
-        />
       )}
     </div>
   );
@@ -139,7 +157,8 @@ function Slot({
   seat: Seat | undefined;
   align: "start" | "end";
 }) {
-  const alignClass = align === "end" ? "justify-self-end -mr-2" : "justify-self-start -ml-2";
+  const alignClass =
+    align === "end" ? "justify-self-end mr-2.5" : "justify-self-start ml-2.5";
 
   if (!seat) {
     return <div />;
@@ -180,7 +199,9 @@ export default async function ParticipantsPage({
 
   const { data: participantRows } = await supabase
     .from("bill_participants")
-    .select("id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)")
+    .select(
+      "id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)",
+    )
     .eq("bill_id", billId)
     .order("joined_at", { ascending: true });
 
@@ -194,7 +215,9 @@ export default async function ParticipantsPage({
     return {
       id: row.id,
       name: row.display_name ?? row.profiles?.display_name ?? "Sem nome",
-      avatarKey: (row.avatar_key ?? row.profiles?.avatar_key ?? null) as AvatarKey | null,
+      avatarKey: (row.avatar_key ??
+        row.profiles?.avatar_key ??
+        null) as AvatarKey | null,
       isGuest: !row.profile_id,
       isBillOwner,
       isSelf,
@@ -205,7 +228,10 @@ export default async function ParticipantsPage({
   const owner = participants.find((participant) => participant.isBillOwner);
   const others = participants.filter((participant) => !participant.isBillOwner);
 
-  const seats: Seat[] = others.map((participant) => ({ kind: "participant", participant }));
+  const seats: Seat[] = others.map((participant) => ({
+    kind: "participant",
+    participant,
+  }));
   if (isOwner && isOpen) {
     seats.push({ kind: "empty" });
   }
@@ -225,11 +251,13 @@ export default async function ParticipantsPage({
         </div>
       )}
 
-      <div className="grid grid-cols-[minmax(3.5rem,1fr)_5.5rem_minmax(3.5rem,1fr)] items-center justify-center gap-x-2 gap-y-6 py-2">
+      <div className="grid grid-cols-[minmax(3.5rem,1fr)_8rem_minmax(3.5rem,1fr)] items-center justify-center gap-x-4 gap-y-6 py-2">
         {owner && (
           <div className="col-span-3 -mb-3 flex flex-col items-center justify-self-center gap-1">
             <AvatarSlot billId={billId} participant={owner} size="lg" />
-            <span className="text-sm font-semibold text-foreground">{owner.name}</span>
+            <span className="text-sm font-semibold text-foreground">
+              {owner.name}
+            </span>
             <Badge>dono</Badge>
           </div>
         )}
@@ -245,7 +273,12 @@ export default async function ParticipantsPage({
             {index === 0 && (
               <div
                 className="self-stretch border-[1.5px] border-foreground bg-muted"
-                style={{ gridColumn: "2", gridRow: `2 / span ${rows.length}` }}
+                style={{
+                  gridColumn: "2",
+                  gridRow: `2 / span ${rows.length}`,
+                  boxShadow:
+                    "0 10px 18px -8px color-mix(in oklch, var(--foreground), transparent 55%), inset 0 1px 0 color-mix(in oklch, var(--background), transparent 15%), inset 0 -1px 0 color-mix(in oklch, var(--foreground), transparent 80%)",
+                }}
               />
             )}
             <Slot
