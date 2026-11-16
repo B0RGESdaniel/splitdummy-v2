@@ -2,10 +2,11 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Archivo_Narrow, Bitter, Caveat } from "next/font/google";
 
+import Link from "next/link";
+
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
-import { BillTabs } from "@/components/bills/bill-tabs";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
@@ -92,12 +93,15 @@ export default async function BillLayout({
                 {bill.profiles?.display_name ?? "—"}
               </div>
             </div>
-            <div className="border-r-[1.5px] border-foreground px-3 py-1.5">
+            <Link
+              href={`/bills/${billId}/participants`}
+              className="border-r-[1.5px] border-foreground px-3 py-1.5 hover:bg-muted"
+            >
               <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
                 Participantes
               </div>
               <div className="font-medium">{participantCount ?? 0}</div>
-            </div>
+            </Link>
             <div className="flex items-center px-3 py-1.5">
               <BillStatusBadge isOpen={bill.status === "open"} />
             </div>
@@ -110,11 +114,7 @@ export default async function BillLayout({
           )}
         </header>
 
-        <main className="flex flex-1 flex-col gap-4 p-4">
-          <BillTabs billId={billId} />
-
-          {children}
-        </main>
+        <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
       </div>
     </ThemeScope>
   );

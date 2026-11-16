@@ -1,8 +1,11 @@
+import { ConciergeBell } from "lucide-react";
 import { notFound } from "next/navigation";
+import Link from "next/link";
 import { connection } from "next/server";
 
 import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
+import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -52,6 +55,13 @@ export default async function ItemsPage({
         }))}
       />
       {isOpen && <CreateItemButton billId={billId} />}
+
+      <Button asChild variant="outline" className="mt-4 w-full justify-center gap-2">
+        <Link href={`/bills/${billId}/summary`}>
+          <ConciergeBell />
+          fecha para mim
+        </Link>
+      </Button>
     </div>
   );
 }

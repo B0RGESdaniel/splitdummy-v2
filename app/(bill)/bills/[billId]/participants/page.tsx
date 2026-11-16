@@ -6,6 +6,7 @@ import {
   removeParticipant,
 } from "@/app/(bill)/bills/[billId]/participants/actions";
 import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
+import { BackToItemsLink } from "@/components/bills/back-to-items-link";
 import { RemoveParticipantButton } from "@/components/bills/remove-participant-button";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
@@ -44,7 +45,9 @@ export default async function ParticipantsPage({
   const isOpen = bill.status === "open";
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col gap-3">
+      <BackToItemsLink billId={billId} />
+
       {isOwner && isOpen && (
         <div className="flex justify-end pb-2">
           <AddGuestDialog action={addGuestParticipant.bind(null, billId)} />

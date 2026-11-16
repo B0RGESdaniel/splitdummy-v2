@@ -61,11 +61,11 @@ Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do c
 app/(auth)/login, auth/callback
 app/(dashboard)/page.tsx                                       # histórico de contas (dialog "Nova conta") — ainda no tema antigo (zinc/dark), fora do escopo da direção visual nova
 app/(dashboard)/bills/actions.ts                                # createBill, createInvite, regenerateInvite, closeBill — compartilhado pelos dois grupos de rota abaixo
-app/(bill)/bills/[billId]/layout.tsx                            # piloto da direção visual "guest check": chrome completo da conta (header com logo+Sair, cabeçalho da conta, BillTabs) num grupo de rota próprio, separado de (dashboard) — faz seu próprio auth-gate porque não compartilha ancestral com app/(dashboard)/layout.tsx. Aplica o escopo `.paper-check` (fontes Bitter/Caveat) na tela inteira, não só no conteúdo
-app/(bill)/bills/[billId]/page.tsx                              # sem conteúdo próprio: redireciona pra /items (landing da conta)
-app/(bill)/bills/[billId]/participants/{page.tsx,actions.ts}    # lista + adicionar convidado (sem conta) + remover
-app/(bill)/bills/[billId]/items/{page.tsx,actions.ts}           # CRUD de itens (ItemsList client, realtime) + ações de partes (increment/decrementItemPart); cada linha abre o Dialog de dividir (ItemSplitDialog, reaproveita ItemSplit) em vez de navegar pra outra rota
-app/(bill)/bills/[billId]/summary/page.tsx                      # resumo, taxa, aviso de não-divididos, fechar conta (BillSummary client, realtime)
+app/(bill)/bills/[billId]/layout.tsx                            # piloto da direção visual "guest check": chrome completo da conta (nome+Sair, grade de campos Dono/Participantes/Status) num grupo de rota próprio, separado de (dashboard) — faz seu próprio auth-gate porque não compartilha ancestral com app/(dashboard)/layout.tsx. Itens é a tela principal; não há mais navegação por abas — Participantes se acessa tocando no campo "Participantes" da grade, Resumo por um botão dedicado no fim da lista de Itens. Aplica o escopo `.paper-check` (fontes Bitter/Caveat/Archivo Narrow) na tela inteira, não só no conteúdo
+app/(bill)/bills/[billId]/page.tsx                              # sem conteúdo próprio: redireciona pra /items (landing da conta, agora a tela principal)
+app/(bill)/bills/[billId]/participants/{page.tsx,actions.ts}    # lista + adicionar convidado (sem conta) + remover; link "← Itens" no topo (BackToItemsLink)
+app/(bill)/bills/[billId]/items/{page.tsx,actions.ts}           # CRUD de itens (ItemsList client, realtime) + ações de partes/quantidade (increment/decrementItemPart, increment/decrementItemQuantity); cada linha é uma linha de tabela com stepper de quantidade inline e abre o Dialog de dividir (ItemSplitDialog, reaproveita ItemSplit) em vez de navegar pra outra rota; botão "fecha para mim" no fim leva pro Resumo
+app/(bill)/bills/[billId]/summary/page.tsx                      # resumo "cupom fiscal" (Courier Prime + DotGothic16 nos números), taxa, aviso de não-divididos, fechar conta (BillSummary client, realtime); link "← Itens" no topo (BackToItemsLink)
 components/theme-scope.tsx                                      # ThemeScope/usePortalContainer — publica o nó DOM do escopo de tema pra Dialogs (Radix Portal) herdarem os tokens via `container`, já que portal não é descendente no DOM real
 app/(public)/join/[inviteToken]/page.tsx                        # resolve convite via service-role
 app/api/invites/accept/route.ts                                 # aceita convite via service-role: cria participante novo ou reivindica um convidado existente
@@ -73,7 +73,7 @@ lib/supabase/{server,client,service-role}.ts, database.types.ts
 lib/split/{calculate,validate}.ts                               # matemática pura da divisão (parts) + taxa de serviço
 lib/realtime/use-realtime-table.ts                              # hook genérico: postgres_changes por bill_id -> invalida query do TanStack Query
 components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,bill-tabs,item-split-dialog,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,remove-participant-button,receipt-mark,bill-status-badge}.tsx
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,back-to-items-link,item-split-dialog,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,remove-participant-button,bill-status-badge}.tsx
 ```
 
 Ainda não existentes, previstos no plano: `receipt`, `groups`.
