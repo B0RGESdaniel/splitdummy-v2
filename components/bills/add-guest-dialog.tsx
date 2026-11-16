@@ -5,6 +5,7 @@ import { UserPlus } from "lucide-react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
+import { AvatarPicker } from "@/components/bills/avatar-picker";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,8 +29,10 @@ function SubmitButton() {
 
 export function AddGuestDialog({
   action,
+  trigger,
 }: {
   action: (formData: FormData) => void | Promise<void>;
+  trigger?: React.ReactNode;
 }) {
   const [open, setOpen] = useState(false);
   const portalContainer = usePortalContainer();
@@ -37,10 +40,12 @@ export function AddGuestDialog({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>
-          <UserPlus data-icon="inline-start" />
-          Adicionar convidado
-        </Button>
+        {trigger ?? (
+          <Button>
+            <UserPlus data-icon="inline-start" />
+            Adicionar convidado
+          </Button>
+        )}
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
@@ -70,6 +75,10 @@ export function AddGuestDialog({
               required
               autoFocus
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Avatar</Label>
+            <AvatarPicker name="avatar_key" />
           </div>
           <SubmitButton />
         </form>
