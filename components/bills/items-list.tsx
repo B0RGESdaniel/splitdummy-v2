@@ -143,7 +143,7 @@ export function ItemsList({
   if (!items.length) {
     return (
       <div className="border border-dashed border-border py-6 text-center">
-        <p className="font-handwritten text-lg text-muted-foreground">
+        <p className="text-sm text-muted-foreground">
           Nada escrito aqui ainda — adicione o primeiro item.
         </p>
       </div>

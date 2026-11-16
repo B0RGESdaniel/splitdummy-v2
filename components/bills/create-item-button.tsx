@@ -51,7 +51,7 @@ export function CreateItemButton({ billId }: { billId: string }) {
       trigger={
         <Button
           variant="ghost"
-          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 font-handwritten text-xl text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
         >
           <Plus className="size-4" data-icon="inline-start" />
           Escrever próximo item
