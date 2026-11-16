@@ -29,6 +29,15 @@ type Participant = {
 
 type Seat = { kind: "participant"; participant: Participant } | { kind: "empty" };
 
+// Chave estável por participante: sem isso, remover alguém da lista não
+// desmonta o diálogo de confirmação daquele assento (só reposiciona o
+// próximo participante no mesmo lugar da árvore React), e o estado "aberto"
+// do diálogo vaza pra ele — próximo clique confirma a exclusão errada.
+function seatKey(seat: Seat | undefined, fallback: string) {
+  if (!seat) return fallback;
+  return seat.kind === "empty" ? "empty-seat" : seat.participant.id;
+}
+
 function PendingAvatarSlot({ size }: { size: "sm" | "lg" }) {
   const dimension = size === "lg" ? "h-12 w-12 text-xl" : "h-10 w-10 text-lg";
   return (
@@ -227,14 +236,24 @@ export default async function ParticipantsPage({
 
         {rows.map((row, index) => (
           <Fragment key={index}>
-            <Slot billId={billId} seat={row[0]} align="end" />
+            <Slot
+              key={seatKey(row[0], `blank-${index}-a`)}
+              billId={billId}
+              seat={row[0]}
+              align="end"
+            />
             {index === 0 && (
               <div
-                className="border-[1.5px] border-foreground bg-muted"
+                className="self-stretch border-[1.5px] border-foreground bg-muted"
                 style={{ gridColumn: "2", gridRow: `2 / span ${rows.length}` }}
               />
             )}
-            <Slot billId={billId} seat={row[1]} align="start" />
+            <Slot
+              key={seatKey(row[1], `blank-${index}-b`)}
+              billId={billId}
+              seat={row[1]}
+              align="start"
+            />
           </Fragment>
         ))}
       </div>
