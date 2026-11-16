@@ -1,8 +1,9 @@
-import { ConciergeBell } from "lucide-react";
+import { ChevronRight, ConciergeBell } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
+import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
 import { Button } from "@/components/ui/button";
@@ -21,7 +22,7 @@ export default async function ItemsPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, status")
+    .select("id, status, profiles(display_name)")
     .eq("id", billId)
     .single();
 
@@ -44,7 +45,33 @@ export default async function ItemsPage({
   const isOpen = bill.status === "open";
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col gap-3">
+      <div className="grid grid-cols-[1fr_1fr_auto] border-[1.5px] border-foreground text-xs">
+        <div className="border-r-[1.5px] border-foreground px-3 py-2">
+          <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
+            Dono
+          </div>
+          <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+            {bill.profiles?.display_name ?? "—"}
+          </div>
+        </div>
+        <Link
+          href={`/bills/${billId}/participants`}
+          className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
+        >
+          <div className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wide text-foreground">
+            Participantes
+            <ChevronRight className="size-3" />
+          </div>
+          <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+            {participants?.length ?? 0}
+          </div>
+        </Link>
+        <div className="flex items-center px-3 py-2">
+          <BillStatusBadge isOpen={isOpen} />
+        </div>
+      </div>
+
       <ItemsList
         billId={billId}
         initialItems={items ?? []}

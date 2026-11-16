@@ -2,11 +2,8 @@ import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Archivo_Narrow, Bitter, Kalam } from "next/font/google";
 
-import Link from "next/link";
-
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
-import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
@@ -53,7 +50,7 @@ export default async function BillLayout({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, owner_id, profiles(display_name)")
+    .select("id, name, owner_id")
     .eq("id", billId)
     .single();
 
@@ -63,13 +60,7 @@ export default async function BillLayout({
 
   const isOwner = userId === bill.owner_id;
 
-  const [invite, { count: participantCount }] = await Promise.all([
-    isOwner ? getOrCreateActiveInvite(billId) : Promise.resolve(null),
-    supabase
-      .from("bill_participants")
-      .select("id", { count: "exact", head: true })
-      .eq("bill_id", billId),
-  ]);
+  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
 
   return (
     <ThemeScope
@@ -84,33 +75,6 @@ export default async function BillLayout({
             <div className="flex items-center gap-2">
               {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
               <SignOutButton />
-            </div>
-          </div>
-
-          <div className="border-t border-dashed border-border px-4 py-3">
-            <div className="grid grid-cols-[1fr_1fr_auto] border-[1.5px] border-foreground text-xs">
-              <div className="border-r-[1.5px] border-foreground px-3 py-2">
-                <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
-                  Dono
-                </div>
-                <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-                  {bill.profiles?.display_name ?? "—"}
-                </div>
-              </div>
-              <Link
-                href={`/bills/${billId}/participants`}
-                className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
-              >
-                <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
-                  Participantes
-                </div>
-                <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-                  {participantCount ?? 0}
-                </div>
-              </Link>
-              <div className="flex items-center px-3 py-2">
-                <BillStatusBadge isOpen={bill.status === "open"} />
-              </div>
             </div>
           </div>
         </header>
