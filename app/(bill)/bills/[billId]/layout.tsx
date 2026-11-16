@@ -81,7 +81,10 @@ export default async function BillLayout({
             <h1 className="truncate font-display text-lg font-bold tracking-tight text-foreground">
               {bill.name}
             </h1>
-            <SignOutButton />
+            <div className="flex items-center gap-2">
+              {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
+              <SignOutButton />
+            </div>
           </div>
 
           <div className="border-t border-dashed border-border px-4 py-3">
@@ -110,12 +113,6 @@ export default async function BillLayout({
               </div>
             </div>
           </div>
-
-          {isOwner && (
-            <div className="flex items-center justify-end px-4 py-2">
-              <InviteQrPanel billId={billId} invite={invite} />
-            </div>
-          )}
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>

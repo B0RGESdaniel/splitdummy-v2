@@ -48,9 +48,8 @@ export function InviteQrPanel({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Share2 data-icon="inline-start" />
-          Compartilhar
+        <Button variant="outline" size="icon-sm" aria-label="Compartilhar convite">
+          <Share2 />
         </Button>
       </DialogTrigger>
       <DialogContent container={portalContainer}>
