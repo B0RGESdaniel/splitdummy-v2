@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useFormStatus } from "react-dom";
 import { toast } from "sonner";
 
+import { DeleteItemButton } from "@/components/bills/delete-item-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -27,12 +28,14 @@ function SubmitButton({ label }: { label: string }) {
 
 export function ItemFormDialog({
   action,
+  deleteAction,
   trigger,
   title,
   submitLabel,
   initialValues,
 }: {
   action: (formData: FormData) => void | Promise<void>;
+  deleteAction?: () => void | Promise<void>;
   trigger: React.ReactNode;
   title: string;
   submitLabel: string;
@@ -104,6 +107,16 @@ export function ItemFormDialog({
           </div>
           <SubmitButton label={submitLabel} />
         </form>
+        {deleteAction && (
+          <div className="border-t border-dashed border-border pt-4">
+            <DeleteItemButton
+              action={async () => {
+                await deleteAction();
+                setOpen(false);
+              }}
+            />
+          </div>
+        )}
       </DialogContent>
     </Dialog>
   );

@@ -128,3 +128,34 @@ export async function decrementItemPart(
 ) {
   await setPartsDelta(billId, itemId, participantId, -1);
 }
+
+async function setQuantityDelta(billId: string, itemId: string, delta: 1 | -1) {
+  const supabase = await createClient();
+
+  const { data: existing } = await supabase
+    .from("items")
+    .select("quantity")
+    .eq("id", itemId)
+    .single();
+
+  const nextQuantity = Math.max(1, (existing?.quantity ?? 1) + delta);
+
+  const { error } = await supabase
+    .from("items")
+    .update({ quantity: nextQuantity })
+    .eq("id", itemId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}/items`);
+}
+
+export async function incrementItemQuantity(billId: string, itemId: string) {
+  await setQuantityDelta(billId, itemId, 1);
+}
+
+export async function decrementItemQuantity(billId: string, itemId: string) {
+  await setQuantityDelta(billId, itemId, -1);
+}

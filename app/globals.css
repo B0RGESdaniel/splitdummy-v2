@@ -186,9 +186,24 @@
 }
 
 .paper-check [data-slot="input"] {
-  border-width: 1.5px;
-  border-color: color-mix(in oklch, var(--foreground), transparent 55%);
-  background-color: color-mix(in oklch, var(--background), white 20%);
+  border: none;
+  border-bottom: 1.5px solid color-mix(in oklch, var(--foreground), transparent 45%);
+  border-radius: 0;
+  background-color: transparent;
+  box-shadow: none;
+  padding-inline: 0;
+}
+
+.paper-check [data-slot="input"]:focus-visible {
+  border-bottom-color: var(--foreground);
+  border-bottom-width: 2px;
+  box-shadow: none;
+  outline: none;
+}
+
+.paper-check [data-slot="input"][aria-invalid="true"] {
+  border-bottom-color: var(--destructive);
+  box-shadow: none;
 }
 
 @layer base {

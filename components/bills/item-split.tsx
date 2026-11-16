@@ -57,7 +57,7 @@ export function ItemSplit({
   const queryKey = ["item-shares", itemId];
   const queryClient = useQueryClient();
 
-  const { data: shares = [] } = useQuery({
+  const { data: shares = [], isPending } = useQuery({
     queryKey,
     queryFn: async () => {
       const supabase = createClient();
@@ -120,8 +120,8 @@ export function ItemSplit({
 
   return (
     <>
-      {totalParts === 0 && (
-        <p className="text-sm text-amber-400">
+      {!isPending && totalParts === 0 && (
+        <p className="text-sm text-destructive">
           Este item ainda não foi dividido entre os participantes.
         </p>
       )}

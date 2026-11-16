@@ -15,12 +15,12 @@ export function DeleteItemButton({
       action={action}
       trigger={
         <Button
+          type="button"
           variant="ghost"
-          size="icon-sm"
-          aria-label="Remover item"
-          className="text-destructive hover:bg-destructive/10 hover:text-destructive"
+          className="w-full justify-center gap-2 text-destructive hover:bg-destructive/10 hover:text-destructive"
         >
-          <Trash2 />
+          <Trash2 className="size-4" />
+          Excluir item
         </Button>
       }
       title="Excluir item?"
