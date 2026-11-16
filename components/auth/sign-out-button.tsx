@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LogOut } from "lucide-react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
@@ -31,8 +32,8 @@ export function SignOutButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          Sair
+        <Button variant="ghost" size="icon-sm" aria-label="Sair da conta">
+          <LogOut />
         </Button>
       </DialogTrigger>
       <DialogContent container={portalContainer}>

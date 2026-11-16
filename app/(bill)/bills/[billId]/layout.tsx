@@ -7,7 +7,6 @@ import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { BillTabs } from "@/components/bills/bill-tabs";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
-import { ReceiptMark } from "@/components/bills/receipt-mark";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
@@ -53,7 +52,7 @@ export default async function BillLayout({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, owner_id")
+    .select("id, name, status, owner_id, profiles(display_name)")
     .eq("id", billId)
     .single();
 
@@ -62,7 +61,14 @@ export default async function BillLayout({
   }
 
   const isOwner = userId === bill.owner_id;
-  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
+
+  const [invite, { count: participantCount }] = await Promise.all([
+    isOwner ? getOrCreateActiveInvite(billId) : Promise.resolve(null),
+    supabase
+      .from("bill_participants")
+      .select("id", { count: "exact", head: true })
+      .eq("bill_id", billId),
+  ]);
 
   return (
     <ThemeScope
@@ -70,23 +76,38 @@ export default async function BillLayout({
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 border-b border-dashed border-border bg-background/95 backdrop-blur-sm">
-          <div className="relative flex items-center justify-center px-10 py-3">
-            <ReceiptMark className="absolute left-4 size-5 text-foreground" />
+          <div className="flex items-center justify-between gap-2 px-4 py-3">
             <h1 className="truncate font-display text-lg font-bold tracking-tight text-foreground">
               {bill.name}
             </h1>
-            <div className="absolute right-4">
+            <SignOutButton />
+          </div>
+
+          <div className="grid grid-cols-[1fr_1fr_auto] border-t-[1.5px] border-foreground text-xs">
+            <div className="border-r-[1.5px] border-foreground px-3 py-1.5">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Dono
+              </div>
+              <div className="truncate font-medium">
+                {bill.profiles?.display_name ?? "—"}
+              </div>
+            </div>
+            <div className="border-r-[1.5px] border-foreground px-3 py-1.5">
+              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
+                Participantes
+              </div>
+              <div className="font-medium">{participantCount ?? 0}</div>
+            </div>
+            <div className="flex items-center px-3 py-1.5">
               <BillStatusBadge isOpen={bill.status === "open"} />
             </div>
           </div>
-          <div className="flex items-center justify-between gap-2 border-t border-dashed border-border px-4 py-2">
-            {isOwner ? (
+
+          {isOwner && (
+            <div className="flex items-center justify-center border-t border-dashed border-border px-4 py-2">
               <InviteQrPanel billId={billId} invite={invite} />
-            ) : (
-              <span />
-            )}
-            <SignOutButton />
-          </div>
+            </div>
+          )}
         </header>
 
         <main className="flex flex-1 flex-col gap-4 p-4">
