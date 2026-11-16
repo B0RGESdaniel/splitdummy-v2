@@ -237,6 +237,31 @@
   box-shadow: none;
 }
 
+/*
+ * Sinal visual de mudança remota via Realtime (ver useRemoteChangeFlash):
+ * breve destaque na cor de tinta quando outro participante edita uma linha
+ * que esta tela já está mostrando — eco da própria mutation otimista do
+ * usuário não entra aqui (filtrado antes de chegar à classe).
+ */
+@keyframes realtime-flash {
+  from {
+    background-color: color-mix(in oklch, var(--foreground), transparent 75%);
+  }
+  to {
+    background-color: transparent;
+  }
+}
+
+.realtime-flash {
+  animation: realtime-flash 900ms ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .realtime-flash {
+    animation: none;
+  }
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

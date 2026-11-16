@@ -8,8 +8,10 @@ import {
 } from "@/app/(bill)/bills/[billId]/items/actions";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
+import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 import { splitPartsCents } from "@/lib/split/calculate";
 
 type Share = { participant_id: string; parts: number | null };
@@ -72,7 +74,18 @@ export function ItemSplit({
     initialData: initialShares,
   });
 
-  useRealtimeTable({ table: "item_shares", billId, queryKey });
+  const { flashing, markOwn, handleRemoteChange } = useRemoteChangeFlash();
+
+  useRealtimeTable({
+    table: "item_shares",
+    billId,
+    queryKey,
+    onChange: (row) => {
+      if (row.item_id === itemId && typeof row.participant_id === "string") {
+        handleRemoteChange(row.participant_id);
+      }
+    },
+  });
 
   function useStepMutation(delta: 1 | -1) {
     const action = delta === 1 ? incrementItemPart : decrementItemPart;
@@ -80,6 +93,7 @@ export function ItemSplit({
     return useMutation({
       mutationFn: (participantId: string) => action(billId, itemId, participantId),
       onMutate: async (participantId: string) => {
+        markOwn(participantId);
         await queryClient.cancelQueries({ queryKey });
         const previous = queryClient.getQueryData<Share[]>(queryKey);
         queryClient.setQueryData<Share[]>(queryKey, (current = []) =>
@@ -132,7 +146,12 @@ export function ItemSplit({
           const amount = amountsByParticipant?.get(participant.participant_id) ?? 0;
 
           return (
-            <Card key={participant.participant_id}>
+            <Card
+              key={participant.participant_id}
+              className={cn(
+                flashing.has(participant.participant_id) && "realtime-flash",
+              )}
+            >
               <CardContent className="flex items-center justify-between gap-4">
                 <span className="font-medium">
                   {participant.display_name}

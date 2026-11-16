@@ -13,8 +13,10 @@ import { ItemFormDialog } from "@/components/bills/item-form-dialog";
 import { ItemSplitDialog } from "@/components/bills/item-split-dialog";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Button } from "@/components/ui/button";
+import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
+import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 
 type Item = {
   id: string;
@@ -60,12 +62,22 @@ export function ItemsList({
     initialData: initialItems,
   });
 
-  useRealtimeTable({ table: "items", billId, queryKey });
+  const { flashing, markOwn, handleRemoteChange } = useRemoteChangeFlash();
+
+  useRealtimeTable({
+    table: "items",
+    billId,
+    queryKey,
+    onChange: (row) => {
+      if (typeof row.id === "string") handleRemoteChange(row.id);
+    },
+  });
 
   const updateMutation = useMutation({
     mutationFn: ({ itemId, formData }: { itemId: string; formData: FormData }) =>
       updateItem(billId, itemId, formData),
     onMutate: async ({ itemId, formData }) => {
+      markOwn(itemId);
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<Item[]>(queryKey);
 
@@ -94,6 +106,7 @@ export function ItemsList({
   const deleteMutation = useMutation({
     mutationFn: (itemId: string) => deleteItem(billId, itemId),
     onMutate: async (itemId: string) => {
+      markOwn(itemId);
       await queryClient.cancelQueries({ queryKey });
       const previous = queryClient.getQueryData<Item[]>(queryKey);
 
@@ -116,6 +129,7 @@ export function ItemsList({
     return useMutation({
       mutationFn: (itemId: string) => action(billId, itemId),
       onMutate: async (itemId: string) => {
+        markOwn(itemId);
         await queryClient.cancelQueries({ queryKey });
         const previous = queryClient.getQueryData<Item[]>(queryKey);
 
@@ -183,7 +197,7 @@ export function ItemsList({
           );
 
           return (
-            <tr key={item.id}>
+            <tr key={item.id} className={cn(flashing.has(item.id) && "realtime-flash")}>
               <td className="min-w-0 border-[1.5px] border-foreground px-3 py-2">
                 {isOpen ? (
                   <ItemFormDialog
