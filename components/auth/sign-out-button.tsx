@@ -32,7 +32,7 @@ export function SignOutButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-sm" aria-label="Sair da conta">
+        <Button variant="ghost" size="icon-lg" aria-label="Sair da conta">
           <LogOut />
         </Button>
       </DialogTrigger>

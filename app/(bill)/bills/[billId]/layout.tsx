@@ -68,11 +68,11 @@ export default async function BillLayout({
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-2 px-4 py-3">
-            <h1 className="truncate font-display text-lg font-bold tracking-tight text-foreground">
+          <div className="flex items-center justify-between gap-2 px-4 py-3.5">
+            <h1 className="truncate font-display text-2xl font-bold tracking-tight text-foreground">
               {bill.name}
             </h1>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1">
               {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
               <SignOutButton />
             </div>
