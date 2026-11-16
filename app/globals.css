@@ -206,6 +206,28 @@
 }
 
 /*
+ * Dialog/Card weren't covered by the button/badge radius-zero sweep above
+ * (their `rounded-xl` resolves `--radius-xl`, still nonzero inside
+ * .paper-check), and DialogTitle/CardTitle's `font-heading` utility
+ * declares font-family straight from `--font-sans` (global Poppins) —
+ * the same "explicit declaration wins over inherited value" mechanism
+ * already documented for the base font, just on a different element.
+ */
+.paper-check [data-slot="dialog-content"],
+.paper-check [data-slot="dialog-footer"],
+.paper-check [data-slot="card"],
+.paper-check [data-slot="card-header"],
+.paper-check [data-slot="card-footer"],
+.paper-check [data-slot="popover-content"] {
+  border-radius: 0 !important;
+}
+
+.paper-check [data-slot="dialog-title"],
+.paper-check [data-slot="card-title"] {
+  font-family: var(--font-check-base);
+}
+
+/*
  * "unsplit items" is a notice, not a destructive/closed signal — red stays
  * reserved for those. Express it through the existing ink/dashed vocabulary
  * instead of the stock amber warning color (off-palette, flagged by
@@ -215,6 +237,7 @@
   color: var(--foreground) !important;
   border-style: dashed;
   border-color: var(--foreground);
+  border-radius: 0 !important;
 }
 
 .paper-check [data-slot="alert"][data-variant="warning"] [data-slot="alert-description"] {
