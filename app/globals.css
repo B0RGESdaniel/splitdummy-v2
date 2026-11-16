@@ -134,25 +134,41 @@
  * new voice instead of only the few elements with an explicit font-* class.
  */
 .paper-check {
-  --background: oklch(0.93 0.018 78);
-  --foreground: oklch(0.3 0.07 262);
-  --card: oklch(0.93 0.018 78);
-  --card-foreground: oklch(0.3 0.07 262);
-  --popover: oklch(0.94 0.015 78);
-  --popover-foreground: oklch(0.3 0.07 262);
-  --primary: oklch(0.3 0.08 262);
+  --background: oklch(0.97 0.01 80);
+  /*
+   * Vivid royal blue is now the base ink of this whole scope (not just
+   * grid borders/labels like before) — chosen over a live artifact
+   * comparison against a coffee-menu reference (menu_example.jpeg).
+   * Everything that reads off --foreground/--primary (body text, button
+   * borders, filled badges, button fills) inherits it automatically.
+   */
+  --foreground: oklch(0.42 0.19 262);
+  --card: oklch(0.97 0.01 80);
+  --card-foreground: oklch(0.42 0.19 262);
+  --popover: oklch(0.965 0.009 80);
+  --popover-foreground: oklch(0.42 0.19 262);
+  --primary: oklch(0.42 0.19 262);
   --primary-foreground: oklch(0.96 0.014 78);
-  --secondary: oklch(0.88 0.02 78);
-  --secondary-foreground: oklch(0.3 0.07 262);
-  --muted: oklch(0.89 0.016 78);
+  --secondary: oklch(0.93 0.01 80);
+  --secondary-foreground: oklch(0.42 0.19 262);
+  --muted: oklch(0.94 0.008 80);
   --muted-foreground: oklch(0.46 0.055 262);
-  --accent: oklch(0.88 0.02 78);
-  --accent-foreground: oklch(0.3 0.07 262);
+  --accent: oklch(0.93 0.01 80);
+  --accent-foreground: oklch(0.42 0.19 262);
   --destructive: oklch(0.53 0.19 25);
-  --border: oklch(0.4 0.05 262 / 30%);
-  --input: oklch(0.4 0.05 262 / 22%);
-  --ring: oklch(0.45 0.08 262 / 55%);
+  --border: oklch(0.42 0.19 262 / 28%);
+  --input: oklch(0.42 0.19 262 / 20%);
+  --ring: oklch(0.42 0.19 262 / 55%);
   --radius: 0.2rem;
+
+  /*
+   * Near-black, low-chroma ink — reserved for the handwritten voice only
+   * (item descriptions, field-grid values like the participant count).
+   * Deliberately darker and flatter than the vivid --foreground above, so
+   * the handwritten voice stays legible without collapsing into the same
+   * tone as the printed structure.
+   */
+  --ink-handwritten: oklch(0.22 0.05 262);
 
   --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 

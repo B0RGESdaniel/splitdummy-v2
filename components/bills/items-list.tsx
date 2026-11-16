@@ -165,19 +165,22 @@ export function ItemsList({
   }
 
   return (
-    <table className="w-full border-collapse border-[1.5px] border-foreground text-sm">
+    <table className="w-full table-fixed border-collapse border-[1.5px] border-foreground text-sm">
       <thead>
-        <tr className="text-left font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+        <tr className="text-left font-mono text-[11px] uppercase tracking-wide text-foreground">
           <th scope="col" className="border-[1.5px] border-foreground px-3 py-2 font-medium">
             Descrição
           </th>
           <th
             scope="col"
-            className="border-[1.5px] border-foreground px-3 py-2 text-center font-medium"
+            className="w-28 border-[1.5px] border-foreground px-3 py-2 text-center font-medium"
           >
             Qtd
           </th>
-          <th scope="col" className="border-[1.5px] border-foreground px-3 py-2 font-medium">
+          <th
+            scope="col"
+            className="w-14 border-[1.5px] border-foreground px-3 py-2 font-medium"
+          >
             <span className="sr-only">Dividir</span>
           </th>
         </tr>
@@ -186,12 +189,11 @@ export function ItemsList({
         {items.map((item) => {
           const description = (
             <div className="flex min-w-0 flex-col justify-center text-left">
-              <span className="truncate font-handwritten text-xl leading-tight text-foreground">
+              <span className="truncate font-handwritten text-xl leading-tight text-[color:var(--ink-handwritten)]">
                 {item.description}
               </span>
-              <span className="font-mono text-[11px] tabular-nums text-muted-foreground">
-                {formatCurrency(item.unit_price)} / un · total{" "}
-                {formatCurrency(item.unit_price * item.quantity)}
+              <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                {formatCurrency(item.unit_price)}/un → {formatCurrency(item.unit_price * item.quantity)}
               </span>
             </div>
           );
@@ -234,18 +236,20 @@ export function ItemsList({
                 </div>
               </td>
 
-              <td className="border-[1.5px] border-foreground px-3 py-2 text-right">
-                <ItemSplitDialog
-                  billId={billId}
-                  item={item}
-                  isOpen={isOpen}
-                  participants={participants}
-                  trigger={
-                    <Button variant="outline" size="icon-sm" aria-label="Dividir item">
-                      <Divide />
-                    </Button>
-                  }
-                />
+              <td className="border-[1.5px] border-foreground px-2 py-2">
+                <div className="flex justify-center">
+                  <ItemSplitDialog
+                    billId={billId}
+                    item={item}
+                    isOpen={isOpen}
+                    participants={participants}
+                    trigger={
+                      <Button variant="outline" size="icon-sm" aria-label="Dividir item">
+                        <Divide />
+                      </Button>
+                    }
+                  />
+                </div>
               </td>
             </tr>
           );

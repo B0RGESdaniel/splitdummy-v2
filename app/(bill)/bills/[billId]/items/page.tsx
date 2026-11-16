@@ -56,7 +56,7 @@ export default async function ItemsPage({
       />
       {isOpen && <CreateItemButton billId={billId} />}
 
-      <Button asChild variant="outline" className="mt-4 w-full justify-center gap-2">
+      <Button asChild className="mt-4 w-full justify-center gap-2">
         <Link href={`/bills/${billId}/summary`}>
           <ConciergeBell />
           fecha para mim

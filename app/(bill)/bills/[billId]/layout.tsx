@@ -76,7 +76,7 @@ export default async function BillLayout({
       className={`${bitter.variable} ${kalam.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
-        <header className="sticky top-0 z-10 border-b border-dashed border-border bg-background/95 backdrop-blur-sm">
+        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2 px-4 py-3">
             <h1 className="truncate font-display text-lg font-bold tracking-tight text-foreground">
               {bill.name}
@@ -84,13 +84,13 @@ export default async function BillLayout({
             <SignOutButton />
           </div>
 
-          <div className="px-4 py-3">
+          <div className="border-t border-dashed border-border px-4 py-3">
             <div className="grid grid-cols-[1fr_1fr_auto] border-[1.5px] border-foreground text-xs">
               <div className="border-r-[1.5px] border-foreground px-3 py-2">
-                <div className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+                <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
                   Dono
                 </div>
-                <div className="truncate font-medium">
+                <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
                   {bill.profiles?.display_name ?? "—"}
                 </div>
               </div>
@@ -98,10 +98,12 @@ export default async function BillLayout({
                 href={`/bills/${billId}/participants`}
                 className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
               >
-                <div className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+                <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
                   Participantes
                 </div>
-                <div className="font-medium">{participantCount ?? 0}</div>
+                <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+                  {participantCount ?? 0}
+                </div>
               </Link>
               <div className="flex items-center px-3 py-2">
                 <BillStatusBadge isOpen={bill.status === "open"} />
@@ -110,7 +112,7 @@ export default async function BillLayout({
           </div>
 
           {isOwner && (
-            <div className="flex items-center justify-center border-t border-dashed border-border px-4 py-2">
+            <div className="flex items-center justify-end px-4 py-2">
               <InviteQrPanel billId={billId} invite={invite} />
             </div>
           )}

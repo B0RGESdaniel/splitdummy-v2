@@ -31,7 +31,7 @@ export function ItemSplitDialog({
       <DialogTrigger asChild>{trigger}</DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle className="font-handwritten text-2xl">
+          <DialogTitle className="font-handwritten text-2xl text-[color:var(--ink-handwritten)]">
             {item.description}
           </DialogTitle>
         </DialogHeader>
