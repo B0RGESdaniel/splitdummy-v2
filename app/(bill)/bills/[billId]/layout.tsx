@@ -84,26 +84,28 @@ export default async function BillLayout({
             <SignOutButton />
           </div>
 
-          <div className="grid grid-cols-[1fr_1fr_auto] border-t-[1.5px] border-foreground text-xs">
-            <div className="border-r-[1.5px] border-foreground px-3 py-1.5">
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                Dono
+          <div className="px-4 py-3">
+            <div className="grid grid-cols-[1fr_1fr_auto] border-[1.5px] border-foreground text-xs">
+              <div className="border-r-[1.5px] border-foreground px-3 py-2">
+                <div className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Dono
+                </div>
+                <div className="truncate font-medium">
+                  {bill.profiles?.display_name ?? "—"}
+                </div>
               </div>
-              <div className="truncate font-medium">
-                {bill.profiles?.display_name ?? "—"}
+              <Link
+                href={`/bills/${billId}/participants`}
+                className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
+              >
+                <div className="font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+                  Participantes
+                </div>
+                <div className="font-medium">{participantCount ?? 0}</div>
+              </Link>
+              <div className="flex items-center px-3 py-2">
+                <BillStatusBadge isOpen={bill.status === "open"} />
               </div>
-            </div>
-            <Link
-              href={`/bills/${billId}/participants`}
-              className="border-r-[1.5px] border-foreground px-3 py-1.5 hover:bg-muted"
-            >
-              <div className="text-[10px] uppercase tracking-wide text-muted-foreground">
-                Participantes
-              </div>
-              <div className="font-medium">{participantCount ?? 0}</div>
-            </Link>
-            <div className="flex items-center px-3 py-1.5">
-              <BillStatusBadge isOpen={bill.status === "open"} />
             </div>
           </div>
 

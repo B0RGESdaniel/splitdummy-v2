@@ -154,17 +154,27 @@
   --ring: oklch(0.45 0.08 262 / 55%);
   --radius: 0.2rem;
 
+  --paper-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+
   font-family: var(--font-check-base);
   background-color: var(--background);
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-image: var(--paper-grain);
   background-repeat: repeat;
 }
 
+/*
+ * background-image is not an inherited property, and `inherit` only reads
+ * the computed value from the immediate DOM parent — useless here since
+ * these sit behind plain wrapper divs with no background-image of their
+ * own. --paper-grain is a custom property, which DOES inherit through any
+ * number of intermediate elements, so every surface re-reads it directly.
+ */
 .paper-check [data-slot="card"],
 .paper-check [data-slot="dialog-content"],
-.paper-check [data-slot="popover-content"] {
-  background-image: inherit;
-  background-repeat: inherit;
+.paper-check [data-slot="popover-content"],
+.paper-check header {
+  background-image: var(--paper-grain);
+  background-repeat: repeat;
 }
 
 /*

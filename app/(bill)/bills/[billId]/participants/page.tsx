@@ -70,9 +70,9 @@ export default async function ParticipantsPage({
                   {name}
                 </span>
                 {isBillOwner ? (
-                  <Badge variant="secondary">dono</Badge>
+                  <Badge>dono</Badge>
                 ) : (
-                  <Badge variant={isGuest ? "outline" : "secondary"}>
+                  <Badge variant="outline" className={isGuest ? "border-dashed" : undefined}>
                     {isGuest ? "convidado" : "ativo"}
                   </Badge>
                 )}

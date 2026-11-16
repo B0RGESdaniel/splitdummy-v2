@@ -6,6 +6,7 @@ import {
   decrementItemPart,
   incrementItemPart,
 } from "@/app/(bill)/bills/[billId]/items/actions";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "cn";
@@ -135,9 +136,11 @@ export function ItemSplit({
   return (
     <>
       {!isPending && totalParts === 0 && (
-        <p className="text-sm text-destructive">
-          Este item ainda não foi dividido entre os participantes.
-        </p>
+        <Alert variant="warning">
+          <AlertDescription>
+            Este item ainda não foi dividido entre os participantes.
+          </AlertDescription>
+        </Alert>
       )}
 
       <div className="flex flex-col gap-2">
