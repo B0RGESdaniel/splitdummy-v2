@@ -1,10 +1,23 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
+import { Courier_Prime, DotGothic16 } from "next/font/google";
 
 import { BillSummary } from "@/components/bills/bill-summary";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
+
+const courierPrime = Courier_Prime({
+  variable: "--font-receipt-base",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
+const dotGothic16 = DotGothic16({
+  variable: "--font-receipt-digits",
+  subsets: ["latin"],
+  weight: ["400"],
+});
 
 export default async function BillSummaryPage({
   params,
@@ -49,7 +62,9 @@ export default async function BillSummaryPage({
   const isOwner = userId === bill.owner_id;
 
   return (
-    <div className="flex flex-1 flex-col gap-4">
+    <div
+      className={`${courierPrime.variable} ${dotGothic16.variable} cupom-fiscal flex flex-1 flex-col gap-4`}
+    >
       <BillSummary
         billId={billId}
         serviceTaxPercent={bill.service_tax_percent}

@@ -182,7 +182,9 @@ export function BillSummary({
                   <AccordionTrigger className="gap-2">
                     <span className="flex w-full items-center justify-between">
                       <span className="font-medium">{participant.display_name}</span>
-                      <span className="font-semibold">{formatCurrency(total)}</span>
+                      <span className="font-digits font-semibold">
+                        {formatCurrency(total)}
+                      </span>
                     </span>
                   </AccordionTrigger>
                   <AccordionContent>
@@ -196,12 +198,13 @@ export function BillSummary({
                             className="flex items-center justify-between gap-2 text-xs"
                           >
                             <span className="text-muted-foreground">
-                              <span className="font-medium text-foreground">
+                              <span className="font-digits font-medium text-foreground">
                                 {item.myParts}/{item.totalParts}
                               </span>{" "}
-                              {item.quantity}x {item.description}
+                              <span className="font-digits">{item.quantity}</span>x{" "}
+                              {item.description}
                             </span>
-                            <span className="text-foreground">
+                            <span className="font-digits text-foreground">
                               {formatCurrency(item.amount)}
                             </span>
                           </div>
@@ -209,7 +212,8 @@ export function BillSummary({
                       </div>
                     )}
                     <p className="text-muted-foreground mt-2 text-xs">
-                      {formatCurrency(subtotal)} + taxa
+                      <span className="font-digits">{formatCurrency(subtotal)}</span> +
+                      taxa
                     </p>
                   </AccordionContent>
                 </AccordionItem>
@@ -228,10 +232,10 @@ export function BillSummary({
             />
           ) : (
             <span className="text-muted-foreground text-xs">
-              Taxa de serviço: {serviceTaxPercent}%
+              Taxa de serviço: <span className="font-digits">{serviceTaxPercent}%</span>
             </span>
           )}
-          <span className="text-lg font-semibold">
+          <span className="font-digits text-lg font-semibold">
             {formatCurrency(grandTotalCents)}
           </span>
         </div>

@@ -167,6 +167,20 @@
   background-repeat: inherit;
 }
 
+/*
+ * Resumo ("cupom fiscal") is its own typographic world inside .paper-check,
+ * separate from the comanda's Archivo Narrow: Courier Prime as the base
+ * voice everywhere, DotGothic16 reserved for digits/"R$"/fractions via the
+ * .font-digits utility below — never applied to whole words/labels.
+ */
+.cupom-fiscal {
+  font-family: var(--font-receipt-base);
+}
+
+.cupom-fiscal .font-digits {
+  font-family: var(--font-receipt-digits);
+}
+
 .paper-check [data-slot="button"] {
   font-weight: 600;
   border-radius: 0 !important;

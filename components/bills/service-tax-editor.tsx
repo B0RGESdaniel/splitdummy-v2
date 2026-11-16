@@ -43,7 +43,7 @@ export function ServiceTaxEditor({
           type="button"
           className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs"
         >
-          Taxa de serviço: {serviceTaxPercent}%
+          Taxa de serviço: <span className="font-digits">{serviceTaxPercent}%</span>
           <Pencil className="size-3" />
         </button>
       </DialogTrigger>
