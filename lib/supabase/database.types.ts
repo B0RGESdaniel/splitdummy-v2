@@ -86,6 +86,7 @@ export type Database = {
       }
       bill_participants: {
         Row: {
+          avatar_key: string | null
           bill_id: string
           display_name: string | null
           id: string
@@ -93,6 +94,7 @@ export type Database = {
           profile_id: string | null
         }
         Insert: {
+          avatar_key?: string | null
           bill_id: string
           display_name?: string | null
           id?: string
@@ -100,6 +102,7 @@ export type Database = {
           profile_id?: string | null
         }
         Update: {
+          avatar_key?: string | null
           bill_id?: string
           display_name?: string | null
           id?: string
@@ -334,6 +337,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_key: string | null
           avatar_url: string | null
           created_at: string
           display_name: string
@@ -341,6 +345,7 @@ export type Database = {
           id: string
         }
         Insert: {
+          avatar_key?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name: string
@@ -348,6 +353,7 @@ export type Database = {
           id: string
         }
         Update: {
+          avatar_key?: string | null
           avatar_url?: string | null
           created_at?: string
           display_name?: string
