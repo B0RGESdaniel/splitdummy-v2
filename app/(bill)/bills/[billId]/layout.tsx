@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Bitter, Caveat, JetBrains_Mono } from "next/font/google";
+import { Archivo_Narrow, Bitter, Caveat } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
@@ -28,8 +28,8 @@ const caveat = Caveat({
   weight: ["500", "600"],
 });
 
-const jetBrainsMono = JetBrains_Mono({
-  variable: "--font-check-mono",
+const archivoNarrow = Archivo_Narrow({
+  variable: "--font-check-base",
   subsets: ["latin"],
   weight: ["400", "500", "600"],
 });
@@ -66,7 +66,7 @@ export default async function BillLayout({
 
   return (
     <ThemeScope
-      className={`${bitter.variable} ${caveat.variable} ${jetBrainsMono.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
+      className={`${bitter.variable} ${caveat.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 border-b border-dashed border-border bg-background/95 backdrop-blur-sm">
