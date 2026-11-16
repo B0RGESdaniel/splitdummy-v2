@@ -1,6 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Archivo_Narrow, Bitter, Caveat } from "next/font/google";
+import { Archivo_Narrow, Bitter, Kalam } from "next/font/google";
 
 import Link from "next/link";
 
@@ -22,10 +22,10 @@ const bitter = Bitter({
   weight: ["400", "600", "700"],
 });
 
-const caveat = Caveat({
+const kalam = Kalam({
   variable: "--font-handwritten",
   subsets: ["latin"],
-  weight: ["500", "600"],
+  weight: ["400", "700"],
 });
 
 const archivoNarrow = Archivo_Narrow({
@@ -73,7 +73,7 @@ export default async function BillLayout({
 
   return (
     <ThemeScope
-      className={`${bitter.variable} ${caveat.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
+      className={`${bitter.variable} ${kalam.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 border-b border-dashed border-border bg-background/95 backdrop-blur-sm">
