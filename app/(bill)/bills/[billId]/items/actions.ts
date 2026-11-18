@@ -100,7 +100,6 @@ async function setPartsDelta(
       item_id: itemId,
       bill_id: billId,
       participant_id: participantId,
-      share_type: "parts",
       parts: nextParts,
     },
     { onConflict: "item_id,participant_id" },

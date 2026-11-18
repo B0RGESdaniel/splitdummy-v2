@@ -167,100 +167,29 @@ export type Database = {
           },
         ]
       }
-      group_members: {
-        Row: {
-          added_at: string
-          group_id: string
-          profile_id: string
-        }
-        Insert: {
-          added_at?: string
-          group_id: string
-          profile_id: string
-        }
-        Update: {
-          added_at?: string
-          group_id?: string
-          profile_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "group_members_group_id_fkey"
-            columns: ["group_id"]
-            isOneToOne: false
-            referencedRelation: "groups"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "group_members_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      groups: {
-        Row: {
-          created_at: string
-          id: string
-          name: string
-          owner_id: string
-        }
-        Insert: {
-          created_at?: string
-          id?: string
-          name: string
-          owner_id: string
-        }
-        Update: {
-          created_at?: string
-          id?: string
-          name?: string
-          owner_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "groups_owner_id_fkey"
-            columns: ["owner_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       item_shares: {
         Row: {
           bill_id: string
-          fixed_amount: number | null
           id: string
           item_id: string
           participant_id: string
-          parts: number | null
-          percent: number | null
-          share_type: string
+          parts: number
           updated_at: string
         }
         Insert: {
           bill_id: string
-          fixed_amount?: number | null
           id?: string
           item_id: string
           participant_id: string
-          parts?: number | null
-          percent?: number | null
-          share_type: string
+          parts: number
           updated_at?: string
         }
         Update: {
           bill_id?: string
-          fixed_amount?: number | null
           id?: string
           item_id?: string
           participant_id?: string
-          parts?: number | null
-          percent?: number | null
-          share_type?: string
+          parts?: number
           updated_at?: string
         }
         Relationships: [

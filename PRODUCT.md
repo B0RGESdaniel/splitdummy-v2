@@ -24,11 +24,11 @@ Uso principal acontece na mesa, no celular, com o grupo ainda reunido — mobile
 
 ## Capabilities and Constraints
 
-- Divisão por partes (implementado), porcentagem ou valor fixo (planejado, Fase 3).
+- Divisão por partes (implementado). Porcentagem e valor fixo foram descartados do escopo.
 - Participante sem conta: pode ter itens/partes atribuídos, aparece com badge de "convidado", pode depois "reivindicar" esse registro ao logar pelo link de convite.
 - Autorização inteira via RLS do Postgres (Supabase) — não há camada de autorização na aplicação.
 - Arredondamento por método do maior resto: a soma dos valores por participante sempre reconcilia exatamente com o total (item dividido e taxa de serviço).
-- Histórico de contas (já implementado) e grupos recorrentes simples — lista privada de participantes pra agilizar convite (planejado, Fase 3, ainda não é entidade complexa).
+- Histórico de contas (já implementado) e importar participantes de uma conta anterior (planejado, Fase 3 — substitui os grupos recorrentes do escopo original).
 - Página pública de compartilhamento (planejada, Fase 3): só resumo final + itens, apenas de contas já fechadas.
 - Stack e decisões de arquitetura fechadas (Next.js 16 App Router, Supabase, TanStack Query + Realtime, etc.) estão documentadas em `CLAUDE.md` e `TCC.md` — fonte de verdade operacional pra esse nível de detalhe.
 

@@ -9,8 +9,8 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 1. Contas multi-usuário e compartilháveis (convite por link + QR code).
 2. Histórico de contas.
 3. Leitura de cupom fiscal por foto via IA (pré-popula itens, revisão humana obrigatória antes de gravar).
-4. Grupos recorrentes simples (lista privada de participantes para facilitar convite — não é uma entidade complexa).
-5. Divisão por partes, porcentagem ou valor fixo. Exportar/compartilhar resultado.
+4. ~~Grupos recorrentes~~ → **importar participantes de uma conta anterior** (decidido em 2026-11-18: grupos restritos a perfis com conta deixavam de fora o convidado sem conta, o caso mais comum; tabelas `groups`/`group_members` removidas).
+5. Divisão por partes. Exportar/compartilhar resultado. (Porcentagem e valor fixo estavam no escopo original e foram **descartados pelo usuário em 2026-11-18** — partes cobre o caso real de bar/restaurante. Não reintroduzir.)
 
 ## Arquitetura (decisões fechadas — não reabrir sem motivo forte)
 
@@ -21,22 +21,21 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 | Login | Supabase Auth, **só Google OAuth** pra quem edita algo. **Participante pode existir sem conta** (cadastrado pelo organizador, só com nome) — reabertura da decisão original, ver TCC.md |
 | Acesso a dados | `@supabase/supabase-js` direto, sem ORM. RLS faz toda a autorização |
 | Convite | Link + QR code (mesmo link), sem e-mail |
-| IA do cupom | Vercel AI SDK `generateObject` + Zod via AI Gateway (modelo a escolher na hora) |
+| IA do cupom | Vercel AI SDK 7 `generateText` + `Output.object` + Zod via AI Gateway, modelo `google/gemini-2.5-flash-lite`. Foto nunca é persistida (só em memória) |
 | UI | Tailwind + shadcn/ui (base `radix`, preset `nova`) |
 | Estado/colaboração | TanStack Query + Supabase Realtime (`postgres_changes`) — introduzido na Fase 1 passo 8 (itens, split e resumo; `bills`/`bill_participants` ainda sem realtime) |
 | Permissões dentro de uma conta | Totalmente colaborativo: qualquer participante edita itens/partes de qualquer um; só o dono convida/remove; autorremoção sempre permitida |
 | Fechamento de conta | Imutável, sem reabrir |
-| Grupos | Lista simples e privada (1 dono, membros = perfis que já têm conta) — ainda não implementado (Fase 3) |
+| Grupos | Descartados. Substituídos por importar participantes de uma conta anterior do próprio dono (Fase 3), copiados como convidados |
 
 ### Defaults técnicos assumidos
 - Arredondamento: método do maior resto (largest remainder) — implementado em `lib/split/calculate.ts`.
 - Link de convite: um ativo por conta; "regenerar" = revoga o atual + cria novo.
-- Troca de modo de divisão num item com partes já atribuídas: apaga as partes existentes (com confirmação do usuário) — ainda não relevante até modos percent/fixed existirem.
 - Página pública de compartilhamento: só resumo final + itens, de contas fechadas.
 
 ## Modelo de dados (já todo criado nas migrations)
 
-`profiles` (+ `avatar_key`, 4 valores fixos) · `groups` + `group_members` · `bills` (status open/closed) · `bill_participants` (+ `avatar_key`, mesmo domínio de `profiles`) · `bill_invites` (token, expiração, revogável) · `items` · `item_shares` (share_type: parts/percent/fixed) · `receipts`.
+`profiles` (+ `avatar_key`, 4 valores fixos) · `bills` (status open/closed) · `bill_participants` (+ `avatar_key`, mesmo domínio de `profiles`) · `bill_invites` (token, expiração, revogável) · `items` · `item_shares` (só `parts`, not null — colunas de percent/fixed removidas em `20261118120000_item_shares_parts_only.sql`) · `receipts`.
 
 Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do canal Realtime. `is_bill_participant(bill_id)` é a função helper reutilizada nas políticas.
 
@@ -78,7 +77,9 @@ components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-ite
 
 `BillTabs` e a rota `split/page.tsx` (SplitWorkspace) foram removidos — não há mais navegação por abas (ver Bloco C abaixo).
 
-Ainda não existentes, previstos no plano: `receipt`, `groups`.
+Leitura de cupom (Fase 2): `app/api/ai/extract-receipt/route.ts` (extração via AI Gateway, grava auditoria em `receipts` sem foto) · `components/bills/{receipt-scan-button,extracted-items-review-table}.tsx` (overlay na própria tela de Itens, sem rota própria) · `app/(bill)/bills/[billId]/items/receipt-actions.ts` (confirmar/descartar) · `lib/receipt/schema.ts` (+ testes).
+
+Ainda não existentes, previstos no plano: nada de rota nova além da página pública (a decidir, Fase 3 bloco C).
 
 ## Progresso
 
@@ -102,7 +103,7 @@ Plano completo: `/Users/danielborges/.claude/plans/unified-jumping-hennessy.md`.
 1. ✅ Bloco 1 — convite sem clique extra (`getOrCreateActiveInvite`) + taxa de serviço editável (`updateServiceTax`).
 2. ✅ Bloco A — participante sem conta: `bill_participants.profile_id` nullable + `display_name`, `item_shares.participant_id`, tela `participants/page.tsx` (adicionar convidado/remover), fluxo de reivindicação em `join/[inviteToken]` + `api/invites/accept`.
 3. ✅ Bloco B — navegação por abas (Itens/Participantes/Dividir/Resumo, `BillTabs`) substituindo a antiga tela "hub" com lista de botões (removida — `/bills/[billId]` só redireciona pra `/items`); "Dividir" é aba própria (`split/page.tsx` + `SplitWorkspace`, seletor de item, aceita `?item=` pra deep link a partir da lista de itens); botão "Compartilhar" (`InviteQrPanel`) migrou pra aparecer no topo de qualquer aba, não mais numa tela própria.
-4. ⬜ **Bloco C — próximo passo**: passada de design/UX antes de seguir pra Fase 2. Começou como ajuste de paleta dark mode, mas expandiu depois de um levantamento geral de inconsistências de UI/fluxo — direção visual final ainda em definição com o usuário, que quer algo mais característico do domínio "dividir conta de bar/restaurante" em vez de um dark mode genérico (zinc + azul).
+4. ✅ **Bloco C** (encerrado, ver fim deste item): passada de design/UX antes de seguir pra Fase 2. Começou como ajuste de paleta dark mode, mas expandiu depois de um levantamento geral de inconsistências de UI/fluxo — direção visual final ainda em definição com o usuário, que quer algo mais característico do domínio "dividir conta de bar/restaurante" em vez de um dark mode genérico (zinc + azul).
    - Motivação original da paleta (ainda válida, só não é mais o único objetivo do bloco): hoje `app/globals.css` usa cinza quase puro (baixo croma) em quase tudo, só com azul isolado em `--primary`/`--ring` do dark mode — sem profundidade real entre superfícies.
    - **Parte 1/2 ✅ — ajustes de UX/fluxo** (levantados em revisão de código, 2026-11-13; ver `TCC.md` pra detalhe): confirmação de ações destrutivas, hierarquia visual de botões, badges, cor de avisos, toasts de erro/sucesso e copy divergente, todos resolvidos sem tocar na paleta.
    - **Parte 2/2 ⬜ — direção visual**: em andamento com o plugin/skill Impeccable. `impeccable init` rodado (`PRODUCT.md` na raiz) e `shape` fechou a direção "guest check" (papel + tinta azul-marinho/vermelho + duas vozes tipográficas) num surface brief (`.impeccable/surfaces/`). **Piloto estendido pras 4 abas da conta** (Itens/Participantes/Dividir/Resumo), incluindo a barra superior (logo+Sair) — por isso as rotas de conta migraram de `app/(dashboard)/bills/[billId]` pra um grupo de rota próprio, `app/(bill)/bills/[billId]`, com chrome e auth-gate independentes de `app/(dashboard)/layout.tsx` (ver "Estrutura do app" e "Decisões técnicas notáveis"). Fora da conta (dashboard/histórico, login) segue no tema antigo. Typecheck, lint, testes (`npm test`) e `impeccable detect` limpos a cada rodada.
@@ -127,11 +128,51 @@ Plano completo: `/Users/danielborges/.claude/plans/unified-jumping-hennessy.md`.
    - Detalhe completo do plano original de dark mode: `/Users/danielborges/.claude/plans/unified-jumping-hennessy.md`.
    - ✅ **Bloco C encerrado.** `/impeccable document` rodado em 2026-11-17: `DESIGN.md` (raiz do repo) + sidecar `.impeccable/design.json` carbonizam a direção construída — North Star "Da Comanda ao Cupom". Nessa conversa o usuário também declarou uma direção de produto nova, ainda não implementada: o histórico de contas (dashboard) deve eventualmente adotar a linguagem de cupom fiscal pra visualizar contas antigas, em vez do tema genérico atual — considerar na Fase 3/4 quando o dashboard entrar em pauta.
 
-### Fase 2 — IA de leitura de cupom (**próxima fase**)
-Bucket privado `receipts`, upload, `api/ai/extract-receipt` (`generateObject` + Zod via AI Gateway), tela de revisão obrigatória antes de gravar em `items`.
+### Fase 2 — IA de leitura de cupom ✅ completa
+Plano: `/Users/danielborges/.claude/plans/snuggly-sleeping-ember.md`. Foto comprimida no client → `api/ai/extract-receipt` → revisão humana obrigatória (overlay na tela de Itens) → manter/substituir itens existentes → grava em `items`. Sem bucket de Storage: a foto nunca é persistida. Extração validada com foto real direto contra o modelo.
+- ✅ Fluxo completo validado pelo usuário pela UI, com conta real e uma segunda pessoa acessando (2026-11-18).
 
-### Fase 3 — Grupos, % / valor fixo, compartilhamento público (não iniciada)
-`groups`/`group_members` UI, adicionar participantes em bulk a partir de grupo, estender split pra `percent`/`fixed`, página pública `share/[shareToken]`, botão compartilhar.
+### Fase 3 — Ajustes de uso real (em andamento)
+Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande fase de ajustes (robustez + lista de ajustes do usuário + telas fora da conta). Cortados do escopo no mesmo dia: modos de divisão `percent`/`fixed` e grupos recorrentes (schema já limpo nas migrations `item_shares_parts_only` e `drop_groups`). Ordem dos blocos: A → B1 → B2 → B3 → B4 → C. Cada item é detalhado com o usuário quando chegar a vez dele, não agora. Sem checkpoint formal de saída — o uso real com outra pessoa já foi validado; cada passo é validado no navegador como de costume.
+
+**A. Robustez**
+1. ⬜ **Proteção da rota de IA + limitar uso de tokens** (`api/ai/extract-receipt`): limite de tamanho/tipo da foto no servidor, `maxOutputTokens`, teto de chamadas (por usuário e/ou por conta — mecanismo a decidir).
+2. ⬜ **Nomes de item vindos da IA mais curtos e em "Capitalize"** (hoje vêm longos e quase sempre em CAIXA ALTA). Avaliar custo: instrução no prompt pra nome curto tende a *reduzir* tokens de saída; capitalização pode ser feita no código (custo zero de token) como reforço/fallback. Decidir junto com o item 1.
+3. ⬜ **Realtime em `bills` e `bill_participants`**: entrada de participante via convite, remoção, avatar, taxa de serviço e fechamento hoje só aparecem pros outros depois de recarregar.
+
+**B1. Ajustes rápidos de layout/tipografia** (podem ir vários por commit)
+- ⬜ Tela de revisão do cupom respeitar a largura da tela.
+- ⬜ Tamanho de fonte / capitalização na tela de Itens.
+- ⬜ Voz manuscrita nos campos do diálogo de criar/editar item.
+- ⬜ Dono só com o primeiro nome.
+- ⬜ Largura da coluna do badge de status ("aberta").
+- ⬜ Botão de copiar link de convite só com ícone.
+- ⬜ Botão de voltar pro dashboard a partir da conta.
+
+**B2. Funcionalidade**
+- ⬜ Diálogo de dividir: botões **"dividir para todos"** (1 parte pra cada) e **"limpar partes"**.
+- ⬜ Assento da mesa (avatar) vira modal com o **parcial de gastos da pessoa** + ação de excluir participante (reaproveita `lib/split`).
+- ⬜ **Importar participantes de uma conta anterior**: só de contas que o próprio usuário criou; todos vêm marcados e ele desmarca quem não vai; todo mundo entra como convidado (`profile_id` nulo, `display_name` + `avatar_key`) — quem tem conta Google reivindica pelo link de convite, igual ao fluxo atual. Local: a decidir (recomendação: na mesa/Participantes, junto da vaga vazia "+").
+
+**B3. Resumo — estética nova** (importante pro usuário; direção a definir com ele, provavelmente com Impeccable + comparação em artifact como no Bloco C).
+
+**B4. Animações** — biblioteca **Motion** (decidido). Respeitar `prefers-reduced-motion`.
+- ⬜ Slide ao escolher avatar.
+- ⬜ Quantidade aumentando (stepper).
+- ⬜ Substituição de itens (leitura de cupom, "substituir tudo").
+- ⬜ Botão "fecha para mim" com texto girando entre apelidos de garçom ("chefe", "patrão", "amigo"…) — piada. Confirmar que é esse botão (não o "Fechar conta" do Resumo).
+
+**C. Fora da conta**
+- ⬜ Dashboard (histórico) na direção visual nova — histórico na linguagem de cupom fiscal (direção já declarada pelo usuário).
+- ⬜ Login na direção visual nova (direção a definir).
+- ⬜ Animação de transição conta → dashboard (depois do redesign do dashboard, de propósito).
+- ❓ Página pública de compartilhamento (`share/[shareToken]`, resumo de conta fechada sem login) — entra ou não: a decidir.
+
+### Registrado pra depois (sem fase, não planejar ainda)
+- **Deploy em produção**: redirect URLs do Google OAuth/Supabase, env vars de produção, domínio.
+- **Avaliação do TCC**: método de avaliação com usuários (ex.: teste de usabilidade, questionário SUS) — não só validação técnica.
+- **LGPD**: exclusão de conta, política de dados, tratamento do nome de convidados sem conta.
+- Sem cronograma/prazos definidos por fase — escolha consciente do usuário.
 
 ### Fase 4 — Fora do MVP, só se der tempo (não iniciada)
 Exportar PDF/imagem, notificações, polimento mobile/acessibilidade, Playwright.
