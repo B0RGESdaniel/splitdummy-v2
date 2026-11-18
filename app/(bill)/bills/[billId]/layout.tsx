@@ -1,9 +1,12 @@
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Archivo_Narrow, Bitter, Kalam } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { Button } from "@/components/ui/button";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { ThemeScope } from "@/components/theme-scope";
@@ -89,9 +92,16 @@ export default async function BillLayout({
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2 px-4 py-3.5">
-            <h1 className="truncate font-display text-2xl font-bold tracking-tight text-foreground">
-              {bill.name}
-            </h1>
+            <div className="flex min-w-0 items-center gap-1">
+              <Button asChild variant="ghost" size="icon-lg" className="-ml-2 shrink-0">
+                <Link href="/" aria-label="Voltar para suas contas">
+                  <ArrowLeft />
+                </Link>
+              </Button>
+              <h1 className="truncate font-display text-2xl font-bold tracking-tight text-foreground">
+                {bill.name}
+              </h1>
+            </div>
             <div className="flex items-center gap-1">
               {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
               <SignOutButton />
