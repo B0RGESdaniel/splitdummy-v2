@@ -124,7 +124,7 @@ export function ExtractedItemsReviewTable({
           <tbody>
             {items.map((item, index) => (
               <tr key={index}>
-                <td className="border-b border-border px-1 py-2">
+                <td className="px-1 py-2">
                   <Input
                     aria-label="Descrição"
                     className="font-handwritten text-base text-[color:var(--ink-handwritten)]"
@@ -134,7 +134,7 @@ export function ExtractedItemsReviewTable({
                     }
                   />
                 </td>
-                <td className="border-b border-border px-1 py-2">
+                <td className="px-1 py-2">
                   <Input
                     aria-label="Quantidade"
                     type="number"
@@ -147,7 +147,7 @@ export function ExtractedItemsReviewTable({
                     }
                   />
                 </td>
-                <td className="border-b border-border px-1 py-2">
+                <td className="px-1 py-2">
                   <Input
                     aria-label="Preço unitário"
                     type="number"
@@ -160,7 +160,7 @@ export function ExtractedItemsReviewTable({
                     }
                   />
                 </td>
-                <td className="border-b border-border px-1 py-2 text-center">
+                <td className="px-1 py-2 text-center">
                   <Button
                     type="button"
                     variant="ghost"

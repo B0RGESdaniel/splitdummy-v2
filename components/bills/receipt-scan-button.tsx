@@ -142,41 +142,43 @@ export function ReceiptScanButton({
 
       {state.step !== "closed" && (
         <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background p-4">
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-mono text-sm uppercase tracking-wide text-foreground">
-              Escanear cupom
-            </h2>
-            <Button
-              type="button"
-              variant="ghost"
-              size="icon-sm"
-              aria-label="Fechar"
-              onClick={closeOverlay}
-            >
-              <X />
-            </Button>
-          </div>
-
-          {state.step === "extracting" && (
-            <p className="text-sm text-muted-foreground">Lendo o cupom...</p>
-          )}
-
-          {state.step === "error" && (
-            <div className="flex flex-col gap-3">
-              <p className="text-sm text-destructive">{state.message}</p>
-              <Button onClick={closeOverlay}>Tentar de novo</Button>
+          <div className="mx-auto flex w-full max-w-md flex-col">
+            <div className="mb-3 flex items-center justify-between">
+              <h2 className="font-mono text-sm uppercase tracking-wide text-foreground">
+                Escanear cupom
+              </h2>
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon-sm"
+                aria-label="Fechar"
+                onClick={closeOverlay}
+              >
+                <X />
+              </Button>
             </div>
-          )}
-
-          {state.step === "review" && (
-            <ExtractedItemsReviewTable
-              billId={billId}
-              receiptId={state.receiptId}
-              initialItems={state.items}
-              existingItemsCount={liveExistingItemsCount}
-              onDone={closeOverlay}
-            />
-          )}
+  
+            {state.step === "extracting" && (
+              <p className="text-sm text-muted-foreground">Lendo o cupom...</p>
+            )}
+  
+            {state.step === "error" && (
+              <div className="flex flex-col gap-3">
+                <p className="text-sm text-destructive">{state.message}</p>
+                <Button onClick={closeOverlay}>Tentar de novo</Button>
+              </div>
+            )}
+  
+            {state.step === "review" && (
+              <ExtractedItemsReviewTable
+                billId={billId}
+                receiptId={state.receiptId}
+                initialItems={state.items}
+                existingItemsCount={liveExistingItemsCount}
+                onDone={closeOverlay}
+              />
+            )}
+          </div>
         </div>
       )}
     </>
