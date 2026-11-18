@@ -50,40 +50,56 @@ function seatKey(seat: Seat | undefined, fallback: string) {
 
 function PendingAvatarSlot() {
   return (
-    <div className="flex h-10 w-10 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-40">
+    <div className="flex h-12 w-12 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-40">
       +
     </div>
   );
 }
 
-function AvatarSlot({ participant }: { participant: Participant }) {
-  if (participant.avatarKey) {
-    return (
-      <AvatarIcon
-        avatarKey={participant.avatarKey}
-        className="h-10 w-10 text-foreground"
-      />
-    );
-  }
-
-  return <PendingAvatarSlot />;
+function roleLabel(participant: Participant) {
+  if (participant.isBillOwner) return "Organizador";
+  return participant.isGuest ? "Na mesa" : "Colaborando";
 }
 
-// O nome é o próprio selo: caixa cheia pro dono, caixa tracejada pro
-// convidado, sem caixa pra quem tem conta — no lugar dos badges embaixo.
-function SeatName({ participant }: { participant: Participant }) {
-  const role = participant.isBillOwner
-    ? "bg-primary px-1.5 text-primary-foreground"
+// Papel da pessoa como carimbo sobre a base do avatar: azul cheio pro
+// organizador, papel sombreado pra quem entrou com login ("colaborando"),
+// papel claro com borda no tom secundário pra quem só tem o nome ("na mesa").
+// Fundo sempre opaco, pra não se misturar com o desenho do avatar.
+function RoleStamp({ participant }: { participant: Participant }) {
+  const tone = participant.isBillOwner
+    ? "bg-primary text-primary-foreground shadow-[0_0_0_1.5px_var(--background)]"
     : participant.isGuest
-      ? "border-[1.5px] border-dashed border-foreground px-1"
-      : "text-foreground";
+      ? "bg-background text-muted-foreground shadow-[inset_0_0_0_1px_currentColor,0_0_0_1.5px_var(--background)]"
+      : "bg-[color-mix(in_srgb,var(--primary)_12%,var(--background))] text-foreground shadow-[0_0_0_1.5px_var(--background)]";
 
   return (
     <span
-      className={`max-w-full truncate font-semibold uppercase ${
-        participant.isBillOwner ? "text-sm" : "text-xs"
-      } ${role}`}
+      className={`absolute -bottom-1.5 left-1/2 -translate-x-1/2 -rotate-6 whitespace-nowrap px-1 py-0.5 text-[10px] font-bold uppercase leading-none tracking-[0.06em] ${tone}`}
     >
+      {roleLabel(participant)}
+    </span>
+  );
+}
+
+function AvatarSlot({ participant }: { participant: Participant }) {
+  return (
+    <span className="relative mb-2 block">
+      {participant.avatarKey ? (
+        <AvatarIcon
+          avatarKey={participant.avatarKey}
+          className="h-12 w-12 text-foreground"
+        />
+      ) : (
+        <PendingAvatarSlot />
+      )}
+      <RoleStamp participant={participant} />
+    </span>
+  );
+}
+
+function SeatName({ participant }: { participant: Participant }) {
+  return (
+    <span className="max-w-full truncate text-xs font-semibold uppercase text-foreground">
       {participant.name}
     </span>
   );
@@ -120,13 +136,9 @@ function SeatButton({
       trigger={
         <button
           type="button"
-          aria-label={`Ver parcial de ${participant.name}${
-            participant.isBillOwner
-              ? " (dono)"
-              : participant.isGuest
-                ? " (convidado)"
-                : ""
-          }`}
+          aria-label={`Ver parcial de ${participant.name} (${roleLabel(
+            participant,
+          ).toLowerCase()})`}
           className={className}
         >
           {children}
@@ -138,14 +150,14 @@ function SeatButton({
 
 function EmptySeatSlot({ billId }: { billId: string }) {
   return (
-    <div className="flex w-16 flex-col items-center gap-1">
+    <div className="flex w-20 flex-col items-center gap-1">
       <AddGuestDialog
         action={addGuestParticipant.bind(null, billId)}
         trigger={
           <button
             type="button"
-            aria-label="Adicionar convidado"
-            className="flex h-10 w-10 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-70"
+            aria-label="Adicionar participante"
+            className="flex h-12 w-12 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-70"
           >
             +
           </button>
@@ -166,7 +178,7 @@ function ParticipantSeat({
   participant: Participant;
 }) {
   return (
-    <div className="flex w-16 flex-col items-center gap-1">
+    <div className="flex w-20 flex-col items-center gap-1">
       <SeatButton
         context={context}
         participant={participant}

@@ -165,7 +165,7 @@ Chapado por padrão — não existe sombra ambiente de UI em cards, botões ou d
 Raio zero em praticamente tudo dentro de `.paper-check` — botões, badges, cards, diálogos, popovers e inputs, forçado via `border-radius: 0 !important` escopado por `[data-slot]`. O token ambiente `--radius` ainda existe (`0.2rem`, herdado do shadcn) mas é sistematicamente sobrescrito; na prática, raio zero é a regra, não a excepção. Borda é o dispositivo de forma dominante: 1.5px sólida na tinta royal pra grades e botões `outline`; tracejada pra estados provisórios.
 
 ### Named Rules
-**The Tracejado-é-Provisório Rule.** Borda tracejada sinaliza "ainda não é definitivo" — vaga vazia na mesa de Participantes, badge "convidado", alerta de item ainda não dividido. Preenchimento sólido sinaliza autoridade/definitivo — badge "dono", selo "aberta"/"fechada", botão de ação principal.
+**The Tracejado-é-Provisório Rule.** Borda tracejada sinaliza "ainda não é definitivo" — vaga vazia na mesa de Participantes, alerta de item ainda não dividido. Preenchimento sólido sinaliza autoridade/definitivo — carimbo "organizador", selo "aberta"/"fechada", botão de ação principal.
 
 ## Components
 
@@ -178,8 +178,10 @@ Raio zero em praticamente tudo dentro de `.paper-check` — botões, badges, car
 
 ### Badges
 - **Style:** raio zero sempre.
-- **Dono:** preenchimento sólido Azul Royal — mesmo vocabulário do selo "aberta"/"fechada", sinalizando autoridade.
-- **Convidado:** borda tracejada, fundo Papel Cru — reaproveita o vocabulário "tracejado é provisório".
+- **Papéis na mesa:** carimbo sobre a base do avatar (entre o avatar e o nome), levemente girado (-6°), sempre com fundo opaco e anel de papel em volta pra não se misturar com o desenho. O nome fica sozinho embaixo.
+  - **Organizador:** azul royal cheio — mesmo vocabulário do selo "aberta"/"fechada", sinalizando autoridade.
+  - **Colaborando** (entrou com login e edita pelo próprio celular): papel sombreado (12% de tinta royal) com texto royal.
+  - **Na mesa** (só o nome, adicionado pelo organizador, sem login): papel claro, texto e borda fina de 1px no tom secundário — o caso mais comum, então o mais leve.
 
 ### Cards / Containers
 - **Corner Style:** raio zero.
