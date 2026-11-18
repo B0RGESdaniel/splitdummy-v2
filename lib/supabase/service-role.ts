@@ -7,8 +7,10 @@ import type { Database } from "./database.types";
  * documented cases that can't go through the regular client: resolving an
  * invite token and accepting it (bill_participants inserts are owner-only
  * by RLS, but the joining user isn't a participant — or the owner — yet),
- * serving the public closed-bill share page, and the AI receipt extraction
- * route (which reads private Storage objects).
+ * and serving the public closed-bill share page. The AI receipt extraction
+ * route does NOT need this — the photo is never persisted to Storage, so
+ * it authenticates and inserts its `receipts` audit row via the regular
+ * RLS-respecting client.
  */
 export function createServiceRoleClient() {
   return createSupabaseClient<Database>(
