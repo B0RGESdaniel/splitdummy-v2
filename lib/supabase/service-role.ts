@@ -8,9 +8,9 @@ import type { Database } from "./database.types";
  * invite token and accepting it (bill_participants inserts are owner-only
  * by RLS, but the joining user isn't a participant — or the owner — yet),
  * and serving the public closed-bill share page. The AI receipt extraction
- * route does NOT need this — the photo is never persisted to Storage, so
- * it authenticates and inserts its `receipts` audit row via the regular
- * RLS-respecting client.
+ * route uses it only to *count* a user's past `receipts` for the rate
+ * limit (RLS would hide rows from bills they've since left); the audit row
+ * itself is still inserted via the regular RLS-respecting client.
  */
 export function createServiceRoleClient() {
   return createSupabaseClient<Database>(
