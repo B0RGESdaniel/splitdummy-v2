@@ -4,12 +4,14 @@ import { connection } from "next/server";
 
 import {
   addGuestParticipant,
+  importParticipants,
   removeParticipant,
   setOwnAvatar,
 } from "@/app/(bill)/bills/[billId]/participants/actions";
 import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
 import { AvatarIcon, type AvatarKey } from "@/components/bills/avatar-icon";
 import { BackToItemsLink } from "@/components/bills/back-to-items-link";
+import { ImportParticipantsDialog } from "@/components/bills/import-participants-dialog";
 import { SeatDialog } from "@/components/bills/seat-dialog";
 import {
   buildParticipantBreakdowns,
@@ -312,7 +314,16 @@ export default async function ParticipantsPage({
       <BackToItemsLink billId={billId} />
 
       {isOwner && isOpen && (
-        <div className="flex justify-end pb-2">
+        <div className="flex justify-end gap-2 pb-2">
+          <ImportParticipantsDialog
+            billId={billId}
+            ownerId={bill.owner_id}
+            currentProfileIds={(participantRows ?? []).flatMap((row) =>
+              row.profile_id ? [row.profile_id] : [],
+            )}
+            currentNames={participants.map((participant) => participant.name)}
+            action={importParticipants.bind(null, billId)}
+          />
           <AddGuestDialog action={addGuestParticipant.bind(null, billId)} />
         </div>
       )}

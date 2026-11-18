@@ -247,7 +247,8 @@
 .paper-check [data-slot="card"],
 .paper-check [data-slot="card-header"],
 .paper-check [data-slot="card-footer"],
-.paper-check [data-slot="popover-content"] {
+.paper-check [data-slot="popover-content"],
+.paper-check [data-slot="checkbox"] {
   border-radius: 0 !important;
 }
 
