@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Share2 } from "lucide-react";
+import { Check, Copy, Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useFormStatus } from "react-dom";
 
@@ -73,7 +73,9 @@ export function InviteQrPanel({
                 <Button
                   type="button"
                   variant="outline"
-                  className="h-10"
+                  size="icon-lg"
+                  className="size-10"
+                  aria-label={copied ? "Link copiado" : "Copiar link"}
                   onClick={() => {
                     if (!link) return;
                     navigator.clipboard.writeText(link);
@@ -81,7 +83,7 @@ export function InviteQrPanel({
                     setTimeout(() => setCopied(false), 1500);
                   }}
                 >
-                  {copied ? "Copiado!" : "Copiar"}
+                  {copied ? <Check /> : <Copy />}
                 </Button>
               </div>
               <form action={regenerateInvite.bind(null, billId, invite.id)} className="w-full">
