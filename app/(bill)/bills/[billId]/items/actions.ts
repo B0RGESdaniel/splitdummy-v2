@@ -128,6 +128,52 @@ export async function decrementItemPart(
   await setPartsDelta(billId, itemId, participantId, -1);
 }
 
+export async function splitItemEqually(billId: string, itemId: string) {
+  const supabase = await createClient();
+
+  const { data: participants, error: participantsError } = await supabase
+    .from("bill_participants")
+    .select("id")
+    .eq("bill_id", billId);
+
+  if (participantsError) {
+    throw new Error(participantsError.message);
+  }
+
+  const { error } = await supabase.from("item_shares").upsert(
+    (participants ?? []).map((participant) => ({
+      item_id: itemId,
+      bill_id: billId,
+      participant_id: participant.id,
+      parts: 1,
+    })),
+    { onConflict: "item_id,participant_id" },
+  );
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}/items`);
+}
+
+// Zera em vez de apagar: DELETE em item_shares não chega pelo Realtime pros
+// outros participantes (ver useRealtimeTable), UPDATE chega.
+export async function clearItemParts(billId: string, itemId: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase
+    .from("item_shares")
+    .update({ parts: 0 })
+    .eq("item_id", itemId);
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}/items`);
+}
+
 async function setQuantityDelta(billId: string, itemId: string, delta: 1 | -1) {
   const supabase = await createClient();
 

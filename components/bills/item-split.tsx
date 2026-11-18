@@ -3,11 +3,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import {
+  clearItemParts,
   decrementItemPart,
   incrementItemPart,
+  splitItemEqually,
 } from "@/app/(bill)/bills/[billId]/items/actions";
-import { Alert, AlertDescription } from "@/components/ui/alert";
 import { PartsStepper } from "@/components/bills/parts-stepper";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
@@ -60,7 +62,7 @@ export function ItemSplit({
   const queryKey = ["item-shares", itemId];
   const queryClient = useQueryClient();
 
-  const { data: shares = [], isPending } = useQuery({
+  const { data: shares = [] } = useQuery({
     queryKey,
     queryFn: async () => {
       const supabase = createClient();
@@ -113,6 +115,30 @@ export function ItemSplit({
   const increment = useStepMutation(1);
   const decrement = useStepMutation(-1);
 
+  function useBulkMutation(action: typeof splitItemEqually, parts: number) {
+    return useMutation({
+      mutationFn: () => action(billId, itemId),
+      onMutate: async () => {
+        participants.forEach((p) => markOwn(p.participant_id));
+        await queryClient.cancelQueries({ queryKey });
+        const previous = queryClient.getQueryData<Share[]>(queryKey);
+        queryClient.setQueryData<Share[]>(
+          queryKey,
+          participants.map((p) => ({ participant_id: p.participant_id, parts })),
+        );
+        return { previous };
+      },
+      onError: (_err, _vars, context) => {
+        if (context?.previous) {
+          queryClient.setQueryData(queryKey, context.previous);
+        }
+      },
+    });
+  }
+
+  const splitEqually = useBulkMutation(splitItemEqually, 1);
+  const clearParts = useBulkMutation(clearItemParts, 0);
+
   const partsByParticipant = new Map(
     shares.map((share) => [share.participant_id, share.parts ?? 0]),
   );
@@ -135,12 +161,28 @@ export function ItemSplit({
 
   return (
     <>
-      {!isPending && totalParts === 0 && (
-        <Alert variant="warning">
-          <AlertDescription>
-            Este item ainda não foi dividido entre os participantes.
-          </AlertDescription>
-        </Alert>
+      {isOpen && (
+        <div className="flex gap-2">
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            className="flex-1"
+            onClick={() => splitEqually.mutate()}
+          >
+            Dividir para todos
+          </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
+            className="flex-1"
+            disabled={totalParts === 0}
+            onClick={() => clearParts.mutate()}
+          >
+            Limpar partes
+          </Button>
+        </div>
       )}
 
       <div className="flex flex-col gap-2">

@@ -257,6 +257,15 @@
 }
 
 /*
+ * The title reset above outranks a bare utility class (0,2,0 vs 0,1,0), so
+ * a title that opts into another voice explicitly (e.g. the split dialog's
+ * item name in Kalam) needs a matching-specificity rule declared after it.
+ */
+.paper-check [data-slot="dialog-title"].font-handwritten {
+  font-family: var(--font-handwritten);
+}
+
+/*
  * "unsplit items" is a notice, not a destructive/closed signal — red stays
  * reserved for those. Express it through the existing ink/dashed vocabulary
  * instead of the stock amber warning color (off-palette, flagged by
