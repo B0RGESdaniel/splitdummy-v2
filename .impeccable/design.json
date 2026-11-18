@@ -168,15 +168,15 @@
       "refersTo": "status-badge-aberta",
       "description": "Caixa sólida relevada na grade do cabeçalho; tinta royal, nunca vermelha enquanto aberta.",
       "html": "<span class=\"ds-status-aberta\">ABERTA</span>",
-      "css": ".ds-status-aberta { display: inline-block; background: oklch(0.42 0.19 262); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.03em; padding: 0.25rem 0.5rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); }"
+      "css": ".ds-status-aberta { display: inline-block; background: oklch(0.42 0.19 262); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.03em; padding: 0.375rem 0.75rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); transform: rotate(-2deg); }"
     },
     {
       "name": "Selo de Status — Fechada",
       "kind": "custom",
       "refersTo": "status-badge-fechada",
-      "description": "Mesma caixa relevada, mas em vermelho + leve rotação — efeito carimbo, único uso do vermelho fora de ações destrutivas.",
+      "description": "Mesma caixa relevada e mesma rotação de carimbo do selo aberta, só que em vermelho, único uso do vermelho fora de ações destrutivas.",
       "html": "<span class=\"ds-status-fechada\">FECHADA</span>",
-      "css": ".ds-status-fechada { display: inline-block; background: oklch(0.53 0.19 25); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.03em; padding: 0.25rem 0.5rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); transform: rotate(-2deg); }"
+      "css": ".ds-status-fechada { display: inline-block; background: oklch(0.53 0.19 25); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 1rem; letter-spacing: 0.03em; padding: 0.375rem 0.75rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); transform: rotate(-2deg); }"
     },
     {
       "name": "Campo de Texto",

@@ -47,13 +47,13 @@ export default async function ItemsPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <div className="grid grid-cols-[1fr_1fr_auto] border-[1.5px] border-foreground text-xs">
+      <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
         <div className="border-r-[1.5px] border-foreground px-3 py-2">
           <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
             Dono
           </div>
           <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-            {bill.profiles?.display_name ?? "—"}
+            {bill.profiles?.display_name?.split(" ")[0] ?? "—"}
           </div>
         </div>
         <Link
@@ -68,7 +68,7 @@ export default async function ItemsPage({
             {participants?.length ?? 0}
           </div>
         </Link>
-        <div className="flex items-center px-3 py-2">
+        <div className="flex items-center justify-center px-3 py-2">
           <BillStatusBadge isOpen={isOpen} />
         </div>
       </div>

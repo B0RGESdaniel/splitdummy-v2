@@ -73,12 +73,12 @@ components:
     backgroundColor: "{colors.royal-ink}"
     textColor: "{colors.papel-cru}"
     rounded: "{rounded.none}"
-    padding: "0.25rem 0.5rem"
+    padding: "0.375rem 0.75rem"
   status-badge-fechada:
     backgroundColor: "{colors.vermelho-carimbo}"
     textColor: "{colors.papel-cru}"
     rounded: "{rounded.none}"
-    padding: "0.25rem 0.5rem"
+    padding: "0.375rem 0.75rem"
   input-underline:
     backgroundColor: "transparent"
     textColor: "{colors.royal-ink}"
@@ -155,7 +155,7 @@ Chapado por padrão — não existe sombra ambiente de UI em cards, botões ou d
 
 ### Shadow Vocabulary
 - **viga-da-mesa** (`box-shadow: 0 10px 18px -8px color-mix(in oklch, var(--foreground), transparent 55%), inset 0 1px 0 color-mix(in oklch, var(--background), transparent 15%), inset 0 -1px 0 color-mix(in oklch, var(--foreground), transparent 80%)`): a coluna central que conecta as fileiras de assentos na mesa de Participantes.
-- **selo-relevado** (`box-shadow: inset 0 0 0 1.5px var(--background)`): anel interno do `BillStatusBadge`, lendo como caixa impressa.
+- **selo-relevado** (`box-shadow: inset 0 0 0 1.5px var(--background)`): anel interno do `BillStatusBadge`, lendo como caixa impressa. Leve rotação (`-2deg`) nos dois estados, aberta e fechada — efeito carimbo; a cor (azul/vermelho) é o que distingue o estado.
 
 ### Named Rules
 **The Chapado-com-Propósito Rule.** Toda vez que o sistema usa algo parecido com profundidade, é pra simular um objeto físico real (viga, carimbo, selo) — nunca um efeito de elevação de UI genérico.
