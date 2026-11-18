@@ -15,14 +15,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
-import {
-  applyServiceTax,
-  calculateBillTotals,
-  getUnsplitItemIds,
-  itemTotalCents,
-  splitPartsCents,
-  type ItemForSplit,
-} from "@/lib/split/calculate";
+import { buildParticipantBreakdowns } from "@/lib/split/breakdown";
+import { getUnsplitItemIds } from "@/lib/split/calculate";
 import type { PartsShareInput } from "@/lib/split/validate";
 
 type Item = {
@@ -102,54 +96,29 @@ export function BillSummary({
     sharesByItem.set(share.item_id, list);
   }
 
-  const itemsForSplit: ItemForSplit[] = items.map((item) => ({
+  const itemsForSplit = items.map((item) => ({
     id: item.id,
+    description: item.description,
     quantity: item.quantity,
     unitPrice: item.unit_price,
     shares: sharesByItem.get(item.id) ?? [],
   }));
 
-  const subtotals = calculateBillTotals(itemsForSplit);
-  const totalsWithTax = applyServiceTax(subtotals, serviceTaxPercent);
+  const breakdowns = buildParticipantBreakdowns(
+    itemsForSplit,
+    participants.map((p) => p.participant_id),
+    serviceTaxPercent,
+  );
 
   const unsplitItemIds = new Set(getUnsplitItemIds(itemsForSplit));
   const unsplitDescriptions = items
     .filter((item) => unsplitItemIds.has(item.id))
     .map((item) => item.description);
 
-  const grandTotalCents = [...totalsWithTax.values()].reduce(
-    (sum, v) => sum + v,
+  const grandTotalCents = [...breakdowns.values()].reduce(
+    (sum, breakdown) => sum + breakdown.totalCents,
     0,
   );
-
-  const itemSplitsById = new Map<string, Map<string, number>>();
-  for (const item of itemsForSplit) {
-    const totalParts = item.shares.reduce((sum, share) => sum + share.parts, 0);
-    if (totalParts === 0) continue;
-    itemSplitsById.set(item.id, splitPartsCents(itemTotalCents(item), item.shares));
-  }
-
-  function getParticipantItems(participantId: string) {
-    return items.flatMap((item) => {
-      const itemShares = sharesByItem.get(item.id) ?? [];
-      const totalParts = itemShares.reduce((sum, share) => sum + share.parts, 0);
-      const myParts =
-        itemShares.find((share) => share.profileId === participantId)?.parts ?? 0;
-
-      if (myParts === 0 || totalParts === 0) return [];
-
-      return [
-        {
-          id: item.id,
-          description: item.description,
-          quantity: item.quantity,
-          myParts,
-          totalParts,
-          amount: itemSplitsById.get(item.id)?.get(participantId) ?? 0,
-        },
-      ];
-    });
-  }
 
   return (
     <>
@@ -170,9 +139,11 @@ export function BillSummary({
         <CardContent>
           <Accordion type="single" collapsible>
             {participants.map((participant) => {
-              const subtotal = subtotals.get(participant.participant_id) ?? 0;
-              const total = totalsWithTax.get(participant.participant_id) ?? 0;
-              const participantItems = getParticipantItems(participant.participant_id);
+              const {
+                items: participantItems,
+                subtotalCents: subtotal,
+                totalCents: total,
+              } = breakdowns.get(participant.participant_id)!;
 
               return (
                 <AccordionItem
@@ -205,7 +176,7 @@ export function BillSummary({
                               {item.description}
                             </span>
                             <span className="font-digits text-foreground">
-                              {formatCurrency(item.amount)}
+                              {formatCurrency(item.amountCents)}
                             </span>
                           </div>
                         ))}

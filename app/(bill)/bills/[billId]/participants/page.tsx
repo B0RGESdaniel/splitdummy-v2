@@ -10,9 +10,13 @@ import {
 import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
 import { AvatarIcon, type AvatarKey } from "@/components/bills/avatar-icon";
 import { BackToItemsLink } from "@/components/bills/back-to-items-link";
-import { RemoveParticipantButton } from "@/components/bills/remove-participant-button";
-import { SelfAvatarDialog } from "@/components/bills/self-avatar-dialog";
+import { SeatDialog } from "@/components/bills/seat-dialog";
 import { Badge } from "@/components/ui/badge";
+import {
+  buildParticipantBreakdowns,
+  type ParticipantBreakdown,
+} from "@/lib/split/breakdown";
+import type { PartsShareInput } from "@/lib/split/validate";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -25,7 +29,10 @@ type Participant = {
   isBillOwner: boolean;
   isSelf: boolean;
   canRemove: boolean;
+  breakdown: ParticipantBreakdown;
 };
+
+type SeatContext = { billId: string; serviceTaxPercent: number };
 
 type Seat =
   | { kind: "participant"; participant: Participant }
@@ -52,11 +59,9 @@ function PendingAvatarSlot({ size }: { size: "sm" | "lg" }) {
 }
 
 function AvatarSlot({
-  billId,
   participant,
   size,
 }: {
-  billId: string;
   participant: Participant;
   size: "sm" | "lg";
 }) {
@@ -73,22 +78,44 @@ function AvatarSlot({
     );
   }
 
-  if (!participant.isSelf) {
-    return <PendingAvatarSlot size={size} />;
-  }
+  return <PendingAvatarSlot size={size} />;
+}
 
-  const dimension = size === "lg" ? "h-12 w-12 text-xl" : "h-10 w-10 text-lg";
-
+// O assento inteiro (avatar + nome) abre o parcial da pessoa; trocar o
+// próprio avatar e remover participante moram dentro do modal.
+function SeatButton({
+  context,
+  participant,
+  className,
+  children,
+}: {
+  context: SeatContext;
+  participant: Participant;
+  className: string;
+  children: React.ReactNode;
+}) {
   return (
-    <SelfAvatarDialog
-      action={setOwnAvatar.bind(null, billId)}
+    <SeatDialog
+      name={participant.name}
+      avatarKey={participant.avatarKey}
+      isSelf={participant.isSelf}
+      breakdown={participant.breakdown}
+      serviceTaxPercent={context.serviceTaxPercent}
+      setAvatarAction={
+        participant.isSelf ? setOwnAvatar.bind(null, context.billId) : undefined
+      }
+      removeAction={
+        participant.canRemove
+          ? removeParticipant.bind(null, context.billId, participant.id)
+          : undefined
+      }
       trigger={
         <button
           type="button"
-          aria-label="Escolher meu avatar"
-          className={`flex items-center justify-center border-2 border-dashed border-foreground font-bold text-foreground opacity-70 ${dimension}`}
+          aria-label={`Ver parcial de ${participant.name}`}
+          className={className}
         >
-          +
+          {children}
         </button>
       }
     />
@@ -118,27 +145,24 @@ function EmptySeatSlot({ billId }: { billId: string }) {
 }
 
 function ParticipantSeat({
-  billId,
+  context,
   participant,
 }: {
-  billId: string;
+  context: SeatContext;
   participant: Participant;
 }) {
   return (
     <div className="flex w-16 flex-col items-center gap-1">
-      <div className="relative">
-        <AvatarSlot billId={billId} participant={participant} size="sm" />
-        {participant.canRemove && (
-          <div className="absolute -top-1 -right-1">
-            <RemoveParticipantButton
-              action={removeParticipant.bind(null, billId, participant.id)}
-            />
-          </div>
-        )}
-      </div>
-      <span className="truncate text-xs font-semibold text-foreground">
-        {participant.name}
-      </span>
+      <SeatButton
+        context={context}
+        participant={participant}
+        className="flex w-full flex-col items-center gap-1"
+      >
+        <AvatarSlot participant={participant} size="sm" />
+        <span className="w-full truncate text-xs font-semibold uppercase text-foreground">
+          {participant.name}
+        </span>
+      </SeatButton>
       {participant.isGuest && (
         <Badge variant="outline" className="border-dashed">
           convidado
@@ -149,11 +173,11 @@ function ParticipantSeat({
 }
 
 function Slot({
-  billId,
+  context,
   seat,
   align,
 }: {
-  billId: string;
+  context: SeatContext;
   seat: Seat | undefined;
   align: "start" | "end";
 }) {
@@ -167,9 +191,9 @@ function Slot({
   return (
     <div className={alignClass}>
       {seat.kind === "empty" ? (
-        <EmptySeatSlot billId={billId} />
+        <EmptySeatSlot billId={context.billId} />
       ) : (
-        <ParticipantSeat billId={billId} participant={seat.participant} />
+        <ParticipantSeat context={context} participant={seat.participant} />
       )}
     </div>
   );
@@ -189,7 +213,7 @@ export default async function ParticipantsPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, status, owner_id")
+    .select("id, status, owner_id, service_tax_percent")
     .eq("id", billId)
     .single();
 
@@ -197,13 +221,49 @@ export default async function ParticipantsPage({
     notFound();
   }
 
-  const { data: participantRows } = await supabase
-    .from("bill_participants")
-    .select(
-      "id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)",
-    )
-    .eq("bill_id", billId)
-    .order("joined_at", { ascending: true });
+  const [{ data: participantRows }, { data: items }, { data: shares }] =
+    await Promise.all([
+      supabase
+        .from("bill_participants")
+        .select(
+          "id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)",
+        )
+        .eq("bill_id", billId)
+        .order("joined_at", { ascending: true }),
+      supabase
+        .from("items")
+        .select("id, description, unit_price, quantity")
+        .eq("bill_id", billId)
+        .order("created_at", { ascending: true }),
+      supabase
+        .from("item_shares")
+        .select("item_id, participant_id, parts")
+        .eq("bill_id", billId),
+    ]);
+
+  const sharesByItem = new Map<string, PartsShareInput[]>();
+  for (const share of shares ?? []) {
+    const list = sharesByItem.get(share.item_id) ?? [];
+    list.push({ profileId: share.participant_id, parts: share.parts });
+    sharesByItem.set(share.item_id, list);
+  }
+
+  const breakdowns = buildParticipantBreakdowns(
+    (items ?? []).map((item) => ({
+      id: item.id,
+      description: item.description,
+      quantity: item.quantity,
+      unitPrice: item.unit_price,
+      shares: sharesByItem.get(item.id) ?? [],
+    })),
+    (participantRows ?? []).map((row) => row.id),
+    bill.service_tax_percent,
+  );
+
+  const context: SeatContext = {
+    billId,
+    serviceTaxPercent: bill.service_tax_percent,
+  };
 
   const isOwner = userId === bill.owner_id;
   const isOpen = bill.status === "open";
@@ -222,6 +282,7 @@ export default async function ParticipantsPage({
       isBillOwner,
       isSelf,
       canRemove: isOpen && !isBillOwner && (isOwner || isSelf),
+      breakdown: breakdowns.get(row.id)!,
     };
   });
 
@@ -254,10 +315,16 @@ export default async function ParticipantsPage({
       <div className="grid grid-cols-[minmax(3.5rem,1fr)_8rem_minmax(3.5rem,1fr)] items-center justify-center gap-x-4 gap-y-6 py-2">
         {owner && (
           <div className="col-span-3 -mb-3 flex flex-col items-center justify-self-center gap-1">
-            <AvatarSlot billId={billId} participant={owner} size="lg" />
-            <span className="text-sm font-semibold text-foreground">
-              {owner.name}
-            </span>
+            <SeatButton
+              context={context}
+              participant={owner}
+              className="flex flex-col items-center gap-1"
+            >
+              <AvatarSlot participant={owner} size="lg" />
+              <span className="text-sm font-semibold uppercase text-foreground">
+                {owner.name}
+              </span>
+            </SeatButton>
             <Badge>dono</Badge>
           </div>
         )}
@@ -266,7 +333,7 @@ export default async function ParticipantsPage({
           <Fragment key={index}>
             <Slot
               key={seatKey(row[0], `blank-${index}-a`)}
-              billId={billId}
+              context={context}
               seat={row[0]}
               align="end"
             />
@@ -283,7 +350,7 @@ export default async function ParticipantsPage({
             )}
             <Slot
               key={seatKey(row[1], `blank-${index}-b`)}
-              billId={billId}
+              context={context}
               seat={row[1]}
               align="start"
             />
