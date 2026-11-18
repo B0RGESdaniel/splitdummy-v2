@@ -370,7 +370,7 @@ export type Database = {
           created_at: string
           id: string
           status: string
-          storage_path: string
+          storage_path: string | null
           uploaded_by: string
         }
         Insert: {
@@ -380,7 +380,7 @@ export type Database = {
           created_at?: string
           id?: string
           status?: string
-          storage_path: string
+          storage_path?: string | null
           uploaded_by: string
         }
         Update: {
@@ -390,7 +390,7 @@ export type Database = {
           created_at?: string
           id?: string
           status?: string
-          storage_path?: string
+          storage_path?: string | null
           uploaded_by?: string
         }
         Relationships: [
