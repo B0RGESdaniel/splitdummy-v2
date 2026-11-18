@@ -1,7 +1,6 @@
 "use client";
 
 import { Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { toast } from "sonner";
 
@@ -9,7 +8,7 @@ import {
   confirmReceiptItems,
   discardReceipt,
   type ReceiptItemInput,
-} from "@/app/(bill)/bills/[billId]/items/receipt/actions";
+} from "@/app/(bill)/bills/[billId]/items/receipt-actions";
 import { usePortalContainer } from "@/components/theme-scope";
 import { Button } from "@/components/ui/button";
 import {
@@ -28,13 +27,14 @@ export function ExtractedItemsReviewTable({
   receiptId,
   initialItems,
   existingItemsCount,
+  onDone,
 }: {
   billId: string;
   receiptId: string;
   initialItems: ExtractedReceiptItem[];
   existingItemsCount: number;
+  onDone: () => void;
 }) {
-  const router = useRouter();
   const portalContainer = usePortalContainer();
   const [items, setItems] = useState<ReceiptItemInput[]>(
     initialItems.map((item) => ({ ...item })),
@@ -56,7 +56,7 @@ export function ExtractedItemsReviewTable({
     setIsSaving(true);
     try {
       await confirmReceiptItems(billId, receiptId, items, mode);
-      router.push(`/bills/${billId}/items`);
+      onDone();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Não foi possível salvar os itens.",
@@ -69,7 +69,7 @@ export function ExtractedItemsReviewTable({
     setIsSaving(true);
     try {
       await discardReceipt(billId, receiptId);
-      router.push(`/bills/${billId}/items`);
+      onDone();
     } catch (error) {
       toast.error(
         error instanceof Error ? error.message : "Não foi possível descartar.",
@@ -127,6 +127,7 @@ export function ExtractedItemsReviewTable({
                 <td className="border-b border-border px-1 py-2">
                   <Input
                     aria-label="Descrição"
+                    className="font-handwritten text-base text-[color:var(--ink-handwritten)]"
                     value={item.description}
                     onChange={(event) =>
                       updateItem(index, { description: event.target.value })

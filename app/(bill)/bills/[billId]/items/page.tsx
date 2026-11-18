@@ -6,6 +6,7 @@ import { connection } from "next/server";
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
+import { ReceiptScanButton } from "@/components/bills/receipt-scan-button";
 import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
@@ -81,6 +82,9 @@ export default async function ItemsPage({
           display_name: p.display_name ?? p.profiles?.display_name,
         }))}
       />
+      {isOpen && (
+        <ReceiptScanButton billId={billId} existingItemsCount={items?.length ?? 0} />
+      )}
       {isOpen && <CreateItemButton billId={billId} />}
 
       <Button asChild className="mt-4 w-full justify-center gap-2">
