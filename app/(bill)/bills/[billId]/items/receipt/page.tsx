@@ -30,13 +30,18 @@ export default async function ReceiptPage({
     redirect(`/bills/${billId}/items`);
   }
 
+  const { count } = await supabase
+    .from("items")
+    .select("id", { count: "exact", head: true })
+    .eq("bill_id", billId);
+
   return (
     <div className="flex flex-1 flex-col gap-4">
       <BackToItemsLink billId={billId} />
       <h1 className="font-mono text-sm uppercase tracking-wide text-foreground">
         Escanear cupom
       </h1>
-      <ReceiptScanner billId={billId} />
+      <ReceiptScanner billId={billId} existingItemsCount={count ?? 0} />
     </div>
   );
 }

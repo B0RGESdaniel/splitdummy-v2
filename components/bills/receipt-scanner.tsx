@@ -2,6 +2,7 @@
 
 import { useRef, useState } from "react";
 
+import { ExtractedItemsReviewTable } from "@/components/bills/extracted-items-review-table";
 import { Button } from "@/components/ui/button";
 import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
 
@@ -42,7 +43,13 @@ async function compressToJpeg(file: File): Promise<Blob> {
   });
 }
 
-export function ReceiptScanner({ billId }: { billId: string }) {
+export function ReceiptScanner({
+  billId,
+  existingItemsCount,
+}: {
+  billId: string;
+  existingItemsCount: number;
+}) {
   const [state, setState] = useState<ScannerState>({ step: "idle" });
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -100,18 +107,12 @@ export function ReceiptScanner({ billId }: { billId: string }) {
 
   if (state.step === "review") {
     return (
-      <div className="flex flex-col gap-3">
-        <p className="text-sm text-muted-foreground">
-          {state.items.length} item(ns) encontrado(s) — tela de revisão ainda
-          não existe, isto é só o resultado bruto da extração:
-        </p>
-        <pre className="overflow-auto border-[1.5px] border-foreground p-3 text-xs">
-          {JSON.stringify(state.items, null, 2)}
-        </pre>
-        <Button variant="outline" onClick={reset}>
-          Escanear outra foto
-        </Button>
-      </div>
+      <ExtractedItemsReviewTable
+        billId={billId}
+        receiptId={state.receiptId}
+        initialItems={state.items}
+        existingItemsCount={existingItemsCount}
+      />
     );
   }
 
