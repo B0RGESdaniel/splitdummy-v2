@@ -11,7 +11,6 @@ import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
 import { AvatarIcon, type AvatarKey } from "@/components/bills/avatar-icon";
 import { BackToItemsLink } from "@/components/bills/back-to-items-link";
 import { SeatDialog } from "@/components/bills/seat-dialog";
-import { Badge } from "@/components/ui/badge";
 import {
   buildParticipantBreakdowns,
   type ParticipantBreakdown,
@@ -47,38 +46,45 @@ function seatKey(seat: Seat | undefined, fallback: string) {
   return seat.kind === "empty" ? "empty-seat" : seat.participant.id;
 }
 
-function PendingAvatarSlot({ size }: { size: "sm" | "lg" }) {
-  const dimension = size === "lg" ? "h-12 w-12 text-xl" : "h-10 w-10 text-lg";
+function PendingAvatarSlot() {
   return (
-    <div
-      className={`flex items-center justify-center border-2 border-dashed border-foreground font-bold text-foreground opacity-40 ${dimension}`}
-    >
+    <div className="flex h-10 w-10 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-40">
       +
     </div>
   );
 }
 
-function AvatarSlot({
-  participant,
-  size,
-}: {
-  participant: Participant;
-  size: "sm" | "lg";
-}) {
+function AvatarSlot({ participant }: { participant: Participant }) {
   if (participant.avatarKey) {
     return (
       <AvatarIcon
         avatarKey={participant.avatarKey}
-        className={
-          size === "lg"
-            ? "h-12 w-12 text-foreground"
-            : "h-10 w-10 text-foreground"
-        }
+        className="h-10 w-10 text-foreground"
       />
     );
   }
 
-  return <PendingAvatarSlot size={size} />;
+  return <PendingAvatarSlot />;
+}
+
+// O nome é o próprio selo: caixa cheia pro dono, caixa tracejada pro
+// convidado, sem caixa pra quem tem conta — no lugar dos badges embaixo.
+function SeatName({ participant }: { participant: Participant }) {
+  const role = participant.isBillOwner
+    ? "bg-primary px-1.5 text-primary-foreground"
+    : participant.isGuest
+      ? "border-[1.5px] border-dashed border-foreground px-1"
+      : "text-foreground";
+
+  return (
+    <span
+      className={`max-w-full truncate font-semibold uppercase ${
+        participant.isBillOwner ? "text-sm" : "text-xs"
+      } ${role}`}
+    >
+      {participant.name}
+    </span>
+  );
 }
 
 // O assento inteiro (avatar + nome) abre o parcial da pessoa; trocar o
@@ -112,7 +118,13 @@ function SeatButton({
       trigger={
         <button
           type="button"
-          aria-label={`Ver parcial de ${participant.name}`}
+          aria-label={`Ver parcial de ${participant.name}${
+            participant.isBillOwner
+              ? " (dono)"
+              : participant.isGuest
+                ? " (convidado)"
+                : ""
+          }`}
           className={className}
         >
           {children}
@@ -158,16 +170,9 @@ function ParticipantSeat({
         participant={participant}
         className="flex w-full flex-col items-center gap-1"
       >
-        <AvatarSlot participant={participant} size="sm" />
-        <span className="w-full truncate text-xs font-semibold uppercase text-foreground">
-          {participant.name}
-        </span>
+        <AvatarSlot participant={participant} />
+        <SeatName participant={participant} />
       </SeatButton>
-      {participant.isGuest && (
-        <Badge variant="outline" className="border-dashed">
-          convidado
-        </Badge>
-      )}
     </div>
   );
 }
@@ -320,12 +325,9 @@ export default async function ParticipantsPage({
               participant={owner}
               className="flex flex-col items-center gap-1"
             >
-              <AvatarSlot participant={owner} size="lg" />
-              <span className="text-sm font-semibold uppercase text-foreground">
-                {owner.name}
-              </span>
+              <AvatarSlot participant={owner} />
+              <SeatName participant={owner} />
             </SeatButton>
-            <Badge>dono</Badge>
           </div>
         )}
 
