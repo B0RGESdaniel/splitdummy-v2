@@ -1,6 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 import { AVATAR_KEYS, type AvatarKey } from "@/components/bills/avatar-icon";
 import { createClient } from "@/lib/supabase/server";
@@ -62,6 +63,16 @@ export async function setOwnAvatar(billId: string, formData: FormData) {
 
 export async function removeParticipant(billId: string, participantId: string) {
   const supabase = await createClient();
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
+
+  // Lido antes do delete: depois dele, a RLS já não deixa quem saiu ver a linha.
+  const { data: participant } = await supabase
+    .from("bill_participants")
+    .select("profile_id")
+    .eq("id", participantId)
+    .maybeSingle();
+
   const { error } = await supabase
     .from("bill_participants")
     .delete()
@@ -69,6 +80,12 @@ export async function removeParticipant(billId: string, participantId: string) {
 
   if (error) {
     throw new Error(error.message);
+  }
+
+  // Autorremoção: a conta deixa de ser visível pra quem saiu, então
+  // revalidar a página dela cairia num 404.
+  if (userId && participant?.profile_id === userId) {
+    redirect("/");
   }
 
   revalidatePath(`/bills/${billId}/participants`);

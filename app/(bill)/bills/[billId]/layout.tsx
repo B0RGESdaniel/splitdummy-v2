@@ -4,6 +4,7 @@ import { Archivo_Narrow, Bitter, Kalam } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
@@ -60,12 +61,31 @@ export default async function BillLayout({
 
   const isOwner = userId === bill.owner_id;
 
-  const invite = isOwner ? await getOrCreateActiveInvite(billId) : null;
+  const [invite, { data: participantRows }] = await Promise.all([
+    isOwner ? getOrCreateActiveInvite(billId) : null,
+    supabase.from("bill_participants").select("id, profile_id").eq("bill_id", billId),
+  ]);
+
+  const participants = participantRows ?? [];
+  const ownParticipantId =
+    participants.find((row) => row.profile_id === userId)?.id ?? null;
+  const participantIds = participants.map((row) => row.id).sort();
+  // Convidados sem conta (profile_id nulo) não têm avatar em `profiles`.
+  const profileIds = participants
+    .map((row) => row.profile_id)
+    .filter((id): id is string => id !== null)
+    .sort();
 
   return (
     <ThemeScope
       className={`${bitter.variable} ${kalam.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
+      <BillRealtimeRefresh
+        billId={billId}
+        ownParticipantId={ownParticipantId}
+        participantIds={participantIds}
+        profileIds={profileIds}
+      />
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2 px-4 py-3.5">
