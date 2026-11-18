@@ -31,7 +31,7 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 ### Defaults técnicos assumidos
 - Arredondamento: método do maior resto (largest remainder) — implementado em `lib/split/calculate.ts`.
 - Link de convite: um ativo por conta; "regenerar" = revoga o atual + cria novo.
-- Página pública de compartilhamento: só resumo final + itens, de contas fechadas.
+- Compartilhar resultado: imagem do cupom de conta fechada, gerada no servidor (ver Fase 3, bloco C) — sem página pública.
 
 ## Modelo de dados (já todo criado nas migrations)
 
@@ -79,7 +79,7 @@ components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-ite
 
 Leitura de cupom (Fase 2): `app/api/ai/extract-receipt/route.ts` (extração via AI Gateway, grava auditoria em `receipts` sem foto) · `components/bills/{receipt-scan-button,extracted-items-review-table}.tsx` (overlay na própria tela de Itens, sem rota própria) · `app/(bill)/bills/[billId]/items/receipt-actions.ts` (confirmar/descartar) · `lib/receipt/schema.ts` (+ testes).
 
-Ainda não existentes, previstos no plano: nada de rota nova além da página pública (a decidir, Fase 3 bloco C).
+Ainda não existentes, previstos no plano: Route Handler da imagem do cupom compartilhável (Fase 3, bloco C).
 
 ## Progresso
 
@@ -98,7 +98,7 @@ Next.js + Tailwind + shadcn, Supabase provisionado via Vercel Marketplace, schem
 9. ✅ Updates otimistas nas mutações de itens/partes, reconciliando com o eco do Realtime (stepper de partes + CRUD de itens, todos via `useMutation` + `onMutate`/`onError`).
 10. ✅ **Checkpoint de saída**: duas contas Google diferentes, dois navegadores, convidadas pra mesma conta, editando itens/partes e vendo a mudança uma da outra sem recarregar. Validado pelo usuário em 2026-10-20, sem bugs.
 
-### Pós-Fase 1 — Ajustes de uso real (em andamento, antes da Fase 2)
+### Pós-Fase 1 — Ajustes de uso real ✅ completa
 Plano completo: `/Users/danielborges/.claude/plans/unified-jumping-hennessy.md`.
 1. ✅ Bloco 1 — convite sem clique extra (`getOrCreateActiveInvite`) + taxa de serviço editável (`updateServiceTax`).
 2. ✅ Bloco A — participante sem conta: `bill_participants.profile_id` nullable + `display_name`, `item_shares.participant_id`, tela `participants/page.tsx` (adicionar convidado/remover), fluxo de reivindicação em `join/[inviteToken]` + `api/invites/accept`.
@@ -152,7 +152,7 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 **B2. Funcionalidade**
 - ⬜ Diálogo de dividir: botões **"dividir para todos"** (1 parte pra cada) e **"limpar partes"**.
 - ⬜ Assento da mesa (avatar) vira modal com o **parcial de gastos da pessoa** + ação de excluir participante (reaproveita `lib/split`).
-- ⬜ **Importar participantes de uma conta anterior**: só de contas que o próprio usuário criou; todos vêm marcados e ele desmarca quem não vai; todo mundo entra como convidado (`profile_id` nulo, `display_name` + `avatar_key`) — quem tem conta Google reivindica pelo link de convite, igual ao fluxo atual. Local: a decidir (recomendação: na mesa/Participantes, junto da vaga vazia "+").
+- ⬜ **Importar participantes de uma conta anterior**: só de contas que o próprio usuário criou; todos vêm marcados e ele desmarca quem não vai; todo mundo entra como convidado (`profile_id` nulo, `display_name` + `avatar_key`) — quem tem conta Google reivindica pelo link de convite, igual ao fluxo atual. Local: na mesa (Participantes), junto da vaga vazia "+".
 
 **B3. Resumo — estética nova** (importante pro usuário; direção a definir com ele, provavelmente com Impeccable + comparação em artifact como no Bloco C).
 
@@ -160,13 +160,13 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 - ⬜ Slide ao escolher avatar.
 - ⬜ Quantidade aumentando (stepper).
 - ⬜ Substituição de itens (leitura de cupom, "substituir tudo").
-- ⬜ Botão "fecha para mim" com texto girando entre apelidos de garçom ("chefe", "patrão", "amigo"…) — piada. Confirmar que é esse botão (não o "Fechar conta" do Resumo).
+- ⬜ Botão "fecha para mim" (fim da lista de Itens) com um vocativo girando *antes* do texto, entre apelidos de garçom — "Chefe, fecha para mim", "Patrão, fecha para mim"… — piada.
 
 **C. Fora da conta**
 - ⬜ Dashboard (histórico) na direção visual nova — histórico na linguagem de cupom fiscal (direção já declarada pelo usuário).
 - ⬜ Login na direção visual nova (direção a definir).
 - ⬜ Animação de transição conta → dashboard (depois do redesign do dashboard, de propósito).
-- ❓ Página pública de compartilhamento (`share/[shareToken]`, resumo de conta fechada sem login) — entra ou não: a decidir.
+- ⬜ **Cupom compartilhável em imagem** (substitui a página pública `share/[shareToken]`, descartada em 2026-11-18 — link exigiria deploy e abriria rota sem login; conta fechada é imutável, então imagem estática não perde nada). Gerada **no servidor** com `ImageResponse` (`next/og`) num Route Handler autenticado da conta, layout próprio e simples (só texto em linhas, **sem** textura de papel — usuário confirmou que não precisa), não captura de DOM: resultado idêntico em qualquer celular, sem as instabilidades de fonte do Safari. Altura calculada pelo nº de pessoas/itens (imagem comprida não é problema). Fontes precisam estar no repo em TTF/OTF/WOFF (WOFF2 não é aceito). Compartilhar via `navigator.share({ files })` no celular (folha nativa → WhatsApp), download como fallback; imagem pré-carregada ao abrir o Resumo de conta fechada, porque o Safari exige o share logo após o toque. `share_token` (gerado no fechamento) fica sem uso — remover via migration nesse passo. Referência visual do usuário: Receiptify (github.com/michellexliu/receiptify) — gostou da fonte "Classic" (Merchant Copy, S. John Ross), mas ela **não tem os acentos do pt-BR** (falta ç, ã, õ, á, ó…) e a licença não é explícita, então escolher uma alternativa de estilo impressora térmica com acentos e licença aberta (comparação em artifact).
 
 ### Registrado pra depois (sem fase, não planejar ainda)
 - **Deploy em produção**: redirect URLs do Google OAuth/Supabase, env vars de produção, domínio.
@@ -175,7 +175,7 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 - Sem cronograma/prazos definidos por fase — escolha consciente do usuário.
 
 ### Fase 4 — Fora do MVP, só se der tempo (não iniciada)
-Exportar PDF/imagem, notificações, polimento mobile/acessibilidade, Playwright.
+Exportar PDF, notificações, polimento mobile/acessibilidade, Playwright.
 
 ## Testes
 - Vitest instalado, foco em `lib/split/{calculate,validate}.ts` (24 testes): modo `parts` isolado, combinações entre itens, arredondamento (maior resto), taxa de serviço, itens não divididos, casos de borda de validação.
