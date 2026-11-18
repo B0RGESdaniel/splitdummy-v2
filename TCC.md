@@ -197,3 +197,4 @@ Plano completo: `snuggly-sleeping-ember.md` (`~/.claude/plans/`). Duas decisões
 ### Fase 3 — Ajustes de uso real
 
 - **Proteção e custo da leitura de cupom ✅** — a rota de IA passou a validar a foto no servidor (formato e tamanho), a limitar o tamanho da resposta do modelo e a impor um teto de uso: 5 leituras por conta e 20 por usuário a cada 24h. Leituras que falham também contam, porque gastam token do mesmo jeito. Ao bater no limite, a mensagem orienta a cadastrar os itens à mão.
+- **Nomes de item legíveis na leitura de cupom ✅** — os itens extraídos deixam de vir como saem impressos (longos, abreviados, em CAIXA ALTA) e passam a vir como nome curto de cardápio, em Capitalize. Duas camadas: o prompt pede esse formato (o que, de quebra, encurta a resposta e reduz tokens de saída), e uma normalização no código serve de reforço, sem custo de token, caso o modelo não obedeça. O registro de auditoria continua guardando a resposta crua do modelo.

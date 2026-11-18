@@ -4,6 +4,7 @@ import { generateText, Output } from "ai";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { extractedReceiptSchema } from "@/lib/receipt/schema";
+import { normalizeExtractedItems } from "@/lib/receipt/normalize";
 
 const EXTRACTION_MODEL = "google/gemini-2.5-flash-lite";
 
@@ -21,9 +22,10 @@ const MAX_EXTRACTIONS_PER_USER_PER_DAY = 20;
 
 const EXTRACTION_PROMPT = `Você está lendo a foto de um cupom fiscal de bar ou restaurante brasileiro.
 
-Extraia cada item consumido como uma linha, com: descrição (como aparece no cupom), quantidade, e preço unitário em reais (R$).
+Extraia cada item consumido como uma linha, com: descrição, quantidade, e preço unitário em reais (R$).
 
 Regras:
+- A descrição é o nome curto do item como apareceria num cardápio, em Capitalize (só a primeira letra de cada palavra maiúscula, preposições em minúsculo), sem códigos internos, abreviações truncadas ou CAIXA ALTA. Ex.: "CERV HEINEKEN LN 330ML" vira "Heineken Long Neck 330ml".
 - Ignore linhas de subtotal, total, taxa de serviço, troco, forma de pagamento, CNPJ e outros dados fiscais — só itens consumidos.
 - Se um item for vendido por peso (kg) em vez de unidade, use quantity: 1 e unitPrice como o valor total daquele item.
 - Se a mesma descrição aparecer em mais de uma linha do cupom, mantenha como linhas separadas — não some.
@@ -178,7 +180,12 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ receiptId: receipt.id, items: output.items });
+    // `ai_raw_result` guarda a saída crua do modelo (auditoria); só a
+    // resposta pro cliente passa pela normalização.
+    return NextResponse.json({
+      receiptId: receipt.id,
+      items: normalizeExtractedItems(output.items),
+    });
   } catch (error) {
     console.error("extract-receipt: falha na extração", error);
     await supabase

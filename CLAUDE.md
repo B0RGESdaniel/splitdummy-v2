@@ -137,7 +137,7 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 
 **A. Robustez**
 1. ✅ **Proteção da rota de IA + limitar uso de tokens** (`api/ai/extract-receipt`): foto validada no servidor (jpeg/png/webp, ≤ 2 MB), `maxOutputTokens: 2000`, teto de 5 leituras por conta + 20 por usuário em 24h, contado na própria `receipts` (linha gravada *antes* da IA, status novo `failed` pras falhas, que também contam; contagem via service-role). Corrida entre requisições simultâneas aceita como limitação.
-2. ⬜ **Nomes de item vindos da IA mais curtos e em "Capitalize"** (hoje vêm longos e quase sempre em CAIXA ALTA). Decidido com o item 1 (commit separado): prompt + `.describe` do schema pedem nome curto de cardápio em Capitalize; normalização no código como fallback (CAIXA ALTA → Capitalize pt-BR, preposições minúsculas); truncar no código, não com `.max()` no Zod (um nome longo derrubaria a leitura inteira).
+2. ✅ **Nomes de item vindos da IA mais curtos e em "Capitalize"**: prompt + `.describe` do schema pedem nome curto de cardápio em Capitalize; `lib/receipt/normalize.ts` (+ testes) é o fallback no código (CAIXA ALTA → Capitalize pt-BR, preposições minúsculas, corte em 40 caracteres na fronteira de palavra — no código, não com `.max()` no Zod, que derrubaria a leitura inteira). Normaliza só a resposta pro cliente; `ai_raw_result` guarda a saída crua.
 3. ⬜ **Realtime em `bills` e `bill_participants`**: entrada de participante via convite, remoção, avatar, taxa de serviço e fechamento hoje só aparecem pros outros depois de recarregar.
 
 **B1. Ajustes rápidos de layout/tipografia** (podem ir vários por commit)
@@ -178,5 +178,5 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 Exportar PDF, notificações, polimento mobile/acessibilidade, Playwright.
 
 ## Testes
-- Vitest instalado, foco em `lib/split/{calculate,validate}.ts` (24 testes): modo `parts` isolado, combinações entre itens, arredondamento (maior resto), taxa de serviço, itens não divididos, casos de borda de validação.
+- Vitest instalado, foco em `lib/split/{calculate,validate}.ts` (24 testes) e `lib/receipt/{schema,normalize}.ts`: modo `parts` isolado, combinações entre itens, arredondamento (maior resto), taxa de serviço, itens não divididos, casos de borda de validação.
 - RLS: validar direto contra o Postgres remoto via `psql` com JWT simulado (ver gotcha acima) antes de testar no navegador.

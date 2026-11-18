@@ -4,7 +4,7 @@ export const extractedReceiptItemSchema = z.object({
   description: z
     .string()
     .min(1)
-    .describe("Descrição do item exatamente como aparece no cupom"),
+    .describe("Nome curto do item, como num cardápio, em Capitalize"),
   quantity: z.number().positive().describe("Quantidade do item"),
   unitPrice: z.number().nonnegative().describe("Preço unitário em reais (R$)"),
 });
