@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-11-17T00:00:00Z",
+  "title": "Design System: Splitdummy",
+  "extensions": {
+    "colorMeta": {
+      "royal-ink": {
+        "role": "primary",
+        "displayName": "Azul Royal",
+        "canonical": "oklch(0.42 0.19 262)",
+        "tonalRamp": [
+          "oklch(0.15 0.05 262)",
+          "oklch(0.25 0.12 262)",
+          "oklch(0.35 0.17 262)",
+          "oklch(0.42 0.19 262)",
+          "oklch(0.55 0.17 262)",
+          "oklch(0.68 0.12 262)",
+          "oklch(0.80 0.07 262)",
+          "oklch(0.92 0.03 262)"
+        ]
+      },
+      "royal-ink-foreground": {
+        "role": "primary-foreground",
+        "displayName": "Creme sobre Royal",
+        "canonical": "oklch(0.96 0.014 78)",
+        "tonalRamp": [
+          "oklch(0.30 0.02 78)",
+          "oklch(0.42 0.02 78)",
+          "oklch(0.55 0.02 78)",
+          "oklch(0.68 0.018 78)",
+          "oklch(0.80 0.016 78)",
+          "oklch(0.88 0.015 78)",
+          "oklch(0.92 0.014 78)",
+          "oklch(0.96 0.014 78)"
+        ]
+      },
+      "tinta-manuscrita": {
+        "role": "accent",
+        "displayName": "Tinta Manuscrita",
+        "canonical": "oklch(0.22 0.05 262)",
+        "tonalRamp": [
+          "oklch(0.10 0.02 262)",
+          "oklch(0.16 0.03 262)",
+          "oklch(0.22 0.05 262)",
+          "oklch(0.32 0.05 262)",
+          "oklch(0.45 0.04 262)",
+          "oklch(0.60 0.03 262)",
+          "oklch(0.75 0.02 262)",
+          "oklch(0.90 0.01 262)"
+        ]
+      },
+      "vermelho-carimbo": {
+        "role": "destructive",
+        "displayName": "Vermelho Carimbo",
+        "canonical": "oklch(0.53 0.19 25)",
+        "tonalRamp": [
+          "oklch(0.18 0.06 25)",
+          "oklch(0.28 0.12 25)",
+          "oklch(0.38 0.16 25)",
+          "oklch(0.53 0.19 25)",
+          "oklch(0.65 0.15 25)",
+          "oklch(0.75 0.10 25)",
+          "oklch(0.85 0.06 25)",
+          "oklch(0.93 0.03 25)"
+        ]
+      },
+      "papel-cru": {
+        "role": "background",
+        "displayName": "Papel Cru",
+        "canonical": "oklch(0.97 0.01 80)",
+        "tonalRamp": [
+          "oklch(0.20 0.01 80)",
+          "oklch(0.32 0.01 80)",
+          "oklch(0.45 0.01 80)",
+          "oklch(0.58 0.01 80)",
+          "oklch(0.70 0.01 80)",
+          "oklch(0.82 0.01 80)",
+          "oklch(0.90 0.01 80)",
+          "oklch(0.97 0.01 80)"
+        ]
+      },
+      "papel-sombreado": {
+        "role": "secondary",
+        "displayName": "Papel Sombreado",
+        "canonical": "oklch(0.935 0.009 80)",
+        "tonalRamp": [
+          "oklch(0.18 0.01 80)",
+          "oklch(0.30 0.01 80)",
+          "oklch(0.42 0.01 80)",
+          "oklch(0.55 0.01 80)",
+          "oklch(0.67 0.01 80)",
+          "oklch(0.80 0.01 80)",
+          "oklch(0.88 0.009 80)",
+          "oklch(0.935 0.009 80)"
+        ]
+      },
+      "borda-royal": {
+        "role": "border",
+        "displayName": "Borda Royal (28%)",
+        "canonical": "oklch(0.42 0.19 262 / 28%)",
+        "note": "Derivada de royal-ink a 28% de opacidade; não tem rampa tonal própria, reaproveita o hue/chroma de royal-ink."
+      }
+    },
+    "typographyMeta": {
+      "display": { "displayName": "Display (Bitter)", "purpose": "Nome da conta no cabeçalho, único uso." },
+      "comanda": { "displayName": "Corpo da Comanda (Archivo Narrow)", "purpose": "Voz estrutural de Itens, Participantes e cabeçalho — sempre uppercase." },
+      "comanda-label": { "displayName": "Rótulo da Comanda", "purpose": "Rótulos fixos (Dono, Participantes, cabeçalhos de coluna) — menor e mais espaçado que o corpo." },
+      "manuscrita": { "displayName": "Voz Manuscrita (Kalam)", "purpose": "Só o que o usuário digitou: descrição do item, valores preenchidos no cabeçalho. Nunca números." },
+      "cupom": { "displayName": "Corpo do Cupom (Courier Prime)", "purpose": "Voz datilografada do Resumo — nomes, rótulos, tudo exceto dígitos." },
+      "cupom-digitos": { "displayName": "Dígitos do Cupom (DotGothic16)", "purpose": "Só dígitos, \"R$\" e frações dentro do Resumo — nunca palavras inteiras." }
+    },
+    "shadows": [
+      {
+        "name": "viga-da-mesa",
+        "value": "0 10px 18px -8px color-mix(in oklch, var(--foreground), transparent 55%), inset 0 1px 0 color-mix(in oklch, var(--background), transparent 15%), inset 0 -1px 0 color-mix(in oklch, var(--foreground), transparent 80%)",
+        "purpose": "Coluna central decorativa que conecta as fileiras de assentos na mesa de Participantes, simulando um pé de mesa de madeira."
+      },
+      {
+        "name": "selo-relevado",
+        "value": "inset 0 0 0 1.5px var(--background)",
+        "purpose": "Anel interno do BillStatusBadge, lendo como uma caixa impressa relevada em vez de um efeito de UI genérico."
+      }
+    ],
+    "motion": [
+      {
+        "name": "realtime-flash",
+        "value": "realtime-flash 900ms ease-out",
+        "purpose": "Pulso breve de cor de fundo numa linha/cartão quando outro participante edita algo que esta tela já mostra — ignorado para o eco da própria mutation otimista do usuário, e desativado sob prefers-reduced-motion."
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botão Primário",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Ação principal — preenchimento sólido Azul Royal, raio zero, uppercase.",
+      "html": "<button class=\"ds-btn-primary\">FECHA PARA MIM</button>",
+      "css": ".ds-btn-primary { background: oklch(0.42 0.19 262); color: oklch(0.96 0.014 78); font-family: 'Archivo Narrow', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 0.875rem; padding: 0 0.625rem; height: 2rem; border: none; border-radius: 0; box-shadow: inset 0 0 0 1px color-mix(in oklch, oklch(0.97 0.01 80), transparent 50%); transition: background 0.15s; } .ds-btn-primary:hover { background: color-mix(in oklch, oklch(0.42 0.19 262), black 20%); } .ds-btn-primary:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.42 0.19 262), transparent 50%); }"
+    },
+    {
+      "name": "Botão Outline",
+      "kind": "button",
+      "refersTo": "button-outline",
+      "description": "Ação secundária — fundo papel, borda sólida 1.5px na tinta royal.",
+      "html": "<button class=\"ds-btn-outline\">CANCELAR</button>",
+      "css": ".ds-btn-outline { background: oklch(0.97 0.01 80); color: oklch(0.42 0.19 262); font-family: 'Archivo Narrow', sans-serif; font-weight: 600; text-transform: uppercase; font-size: 0.875rem; padding: 0 0.625rem; height: 2rem; border: 1.5px solid oklch(0.42 0.19 262); border-radius: 0; transition: background 0.15s; } .ds-btn-outline:hover { background: oklch(0.935 0.009 80); } .ds-btn-outline:focus-visible { outline: none; box-shadow: 0 0 0 3px color-mix(in oklch, oklch(0.42 0.19 262), transparent 50%); }"
+    },
+    {
+      "name": "Badge Dono",
+      "kind": "chip",
+      "refersTo": "badge-dono",
+      "description": "Preenchimento sólido — sinaliza autoridade (só o dono convida/remove).",
+      "html": "<span class=\"ds-badge-dono\">DONO</span>",
+      "css": ".ds-badge-dono { background: oklch(0.42 0.19 262); color: oklch(0.96 0.014 78); font-family: 'Archivo Narrow', sans-serif; font-weight: 500; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.05em; padding: 0.125rem 0.5rem; border-radius: 0; display: inline-flex; align-items: center; }"
+    },
+    {
+      "name": "Badge Convidado",
+      "kind": "chip",
+      "refersTo": "badge-convidado",
+      "description": "Borda tracejada — sinaliza estado provisório (participante sem conta própria).",
+      "html": "<span class=\"ds-badge-convidado\">CONVIDADO</span>",
+      "css": ".ds-badge-convidado { background: oklch(0.97 0.01 80); color: oklch(0.42 0.19 262); font-family: 'Archivo Narrow', sans-serif; font-weight: 500; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.05em; padding: 0.125rem 0.5rem; border: 1.5px dashed oklch(0.42 0.19 262); border-radius: 0; display: inline-flex; align-items: center; }"
+    },
+    {
+      "name": "Selo de Status — Aberta",
+      "kind": "custom",
+      "refersTo": "status-badge-aberta",
+      "description": "Caixa sólida relevada na grade do cabeçalho; tinta royal, nunca vermelha enquanto aberta.",
+      "html": "<span class=\"ds-status-aberta\">ABERTA</span>",
+      "css": ".ds-status-aberta { display: inline-block; background: oklch(0.42 0.19 262); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.03em; padding: 0.25rem 0.5rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); }"
+    },
+    {
+      "name": "Selo de Status — Fechada",
+      "kind": "custom",
+      "refersTo": "status-badge-fechada",
+      "description": "Mesma caixa relevada, mas em vermelho + leve rotação — efeito carimbo, único uso do vermelho fora de ações destrutivas.",
+      "html": "<span class=\"ds-status-fechada\">FECHADA</span>",
+      "css": ".ds-status-fechada { display: inline-block; background: oklch(0.53 0.19 25); color: oklch(0.97 0.01 80); font-family: 'Archivo Narrow', sans-serif; font-weight: 700; text-transform: uppercase; font-size: 0.6875rem; letter-spacing: 0.03em; padding: 0.25rem 0.5rem; border-radius: 0; box-shadow: inset 0 0 0 1.5px oklch(0.97 0.01 80); transform: rotate(-2deg); }"
+    },
+    {
+      "name": "Campo de Texto",
+      "kind": "input",
+      "refersTo": "input-underline",
+      "description": "Sem caixa — só linha inferior, modelo \"escrever em cima da linha\".",
+      "html": "<input class=\"ds-input\" type=\"text\" placeholder=\"Ex: Cerveja long neck\" />",
+      "css": ".ds-input { background: transparent; border: none; border-bottom: 1.5px solid color-mix(in oklch, oklch(0.42 0.19 262), transparent 45%); border-radius: 0; padding: 0; font-family: 'Archivo Narrow', sans-serif; font-size: 0.875rem; color: oklch(0.42 0.19 262); } .ds-input:focus-visible { outline: none; border-bottom-width: 2px; border-bottom-color: oklch(0.42 0.19 262); } .ds-input[aria-invalid='true'] { border-bottom-color: oklch(0.53 0.19 25); }"
+    },
+    {
+      "name": "Alerta — Aviso (tracejado)",
+      "kind": "custom",
+      "refersTo": null,
+      "description": "Aviso de item não dividido/não finalizado — tinta + borda tracejada, nunca âmbar/laranja (fora do sistema de cor).",
+      "html": "<div class=\"ds-alert-warning\">Este item ainda não foi dividido entre os participantes.</div>",
+      "css": ".ds-alert-warning { background: oklch(0.97 0.01 80); color: oklch(0.42 0.19 262); border: 1.5px dashed oklch(0.42 0.19 262); border-radius: 0; padding: 0.75rem 1rem; font-family: 'Archivo Narrow', sans-serif; font-size: 0.8rem; opacity: 0.95; }"
+    }
+  ],
+  "narrative": {
+    "northStar": "Da Comanda ao Cupom",
+    "overview": "O uso de verdade acontece na comanda: papel cru, tinta azul royal, preenchimento manuscrito, aberta a maior parte do tempo que o grupo está sentado à mesa dividindo a conta. Mas todo o sistema é desenhado em função de um destino — o momento em que a conta fecha e a comanda se transforma literalmente num cupom fiscal, com sua própria voz tipográfica (Courier Prime + DotGothic16 nos números), como se tivesse saído de uma impressora térmica de restaurante de verdade. Essa transição de registro — de rascunho manuscrito pra documento impresso definitivo — é a cerimônia central do produto, não um simples flip de status. Direção declarada pelo usuário (2026-11-17, ainda não implementada): o histórico de contas (dashboard) deve eventualmente herdar essa mesma linguagem de cupom fiscal pra visualizar contas antigas, em vez do tema genérico que usa hoje.",
+    "keyCharacteristics": [
+      "Duas vozes tipográficas paralelas (comanda vs. cupom), nunca combinadas na mesma superfície.",
+      "Papel + tinta, não vidro: textura de grão real, bordas retas, zero sombra decorativa.",
+      "Vermelho é raro e sempre um sinal — fechamento ou risco — nunca uma segunda cor de marca.",
+      "Números são sempre confiáveis: vivem na voz impressa, nunca na manuscrita.",
+      "Estrutura pré-impressa contrasta com o conteúdo preenchido à mão."
+    ],
+    "rules": [
+      { "name": "Vermelho É Sinal", "body": "Vermelho Carimbo aparece só no selo \"fechada\" e em ações destrutivas/alertas de risco. Nunca decoração, nunca segunda cor de marca.", "section": "colors" },
+      { "name": "Uma Tinta", "body": "Fora do vermelho de sinal e da tinta manuscrita reservada, toda a estrutura visual lê a mesma cor — azul royal. Não existe segunda cor de acento concorrendo por atenção.", "section": "colors" },
+      { "name": "Números São Impressos", "body": "Nenhum valor numérico usa a voz manuscrita em lugar nenhum do app — números sempre na voz impressa, pra manter a confiança no valor a qualquer momento.", "section": "typography" },
+      { "name": "DotGothic16 Só Dígito", "body": "DotGothic16 em maiúsculas renderiza com altura desigual (confirmado pelo usuário) — restrita a dígitos, \"R$\" e frações, nunca a uma palavra inteira.", "section": "typography" },
+      { "name": "Chapado-com-Propósito", "body": "Toda vez que o sistema usa algo parecido com profundidade, é pra simular um objeto físico real — nunca um efeito de elevação de UI genérico.", "section": "elevation" },
+      { "name": "Tracejado-é-Provisório", "body": "Borda tracejada sinaliza \"ainda não é definitivo\"; preenchimento sólido sinaliza autoridade/definitivo.", "section": "shapes" }
+    ],
+    "dos": [
+      "Do manter vermelho reservado só pro selo \"fechada\" e pra ações destrutivas/alertas de risco.",
+      "Do manter todo número na voz impressa — nunca manuscrita.",
+      "Do usar borda tracejada só pra estados provisórios e preenchimento sólido só pra estados definitivos.",
+      "Do dar textura de grão a toda superfície do tipo card/dialog/popover/header dentro de .paper-check.",
+      "Do manter Courier Prime + DotGothic16 isolados ao Resumo."
+    ],
+    "donts": [
+      "Don't usar raio de borda maior que zero em botão, badge, card, diálogo ou popover dentro de .paper-check.",
+      "Don't usar sombra ambiente de UI em cards ou botões.",
+      "Don't aplicar DotGothic16 a uma palavra inteira.",
+      "Don't aplicar a voz manuscrita a números ou rótulos estruturais fixos.",
+      "Don't reintroduzir o visual de dashboard SaaS genérico dentro do escopo .paper-check."
+    ]
+  }
+}
