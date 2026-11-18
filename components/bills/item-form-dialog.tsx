@@ -73,6 +73,7 @@ export function ItemFormDialog({
             <Input
               id="description"
               name="description"
+              className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
               placeholder="Ex: Cerveja long neck"
               defaultValue={initialValues?.description}
               required
@@ -85,6 +86,7 @@ export function ItemFormDialog({
               <Input
                 id="unit_price"
                 name="unit_price"
+                className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
                 type="number"
                 step="0.01"
                 min="0"
@@ -97,6 +99,7 @@ export function ItemFormDialog({
               <Input
                 id="quantity"
                 name="quantity"
+                className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
                 type="number"
                 step="1"
                 min="1"

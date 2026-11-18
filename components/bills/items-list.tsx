@@ -189,7 +189,7 @@ export function ItemsList({
         {items.map((item) => {
           const description = (
             <div className="flex min-w-0 flex-col justify-center text-left">
-              <span className="truncate font-handwritten text-xl leading-tight text-[color:var(--ink-handwritten)]">
+              <span className="truncate font-handwritten text-lg leading-tight text-[color:var(--ink-handwritten)]">
                 {item.description}
               </span>
               <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
