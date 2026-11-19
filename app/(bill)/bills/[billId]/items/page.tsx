@@ -1,13 +1,13 @@
-import { ChevronRight, ConciergeBell } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
+import { CloseForMeButton } from "@/components/bills/close-for-me-button";
 import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
 import { ReceiptScanButton } from "@/components/bills/receipt-scan-button";
-import { Button } from "@/components/ui/button";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -91,12 +91,7 @@ export default async function ItemsPage({
       )}
       {isOpen && <CreateItemButton billId={billId} />}
 
-      <Button asChild className="mt-4 w-full justify-center gap-2">
-        <Link href={`/bills/${billId}/summary`}>
-          <ConciergeBell />
-          fecha para mim
-        </Link>
-      </Button>
+      <CloseForMeButton billId={billId} />
     </div>
   );
 }
