@@ -4,6 +4,7 @@ import { ItemSplit } from "@/components/bills/item-split";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -39,6 +40,10 @@ export function ItemSplitDialog({
           <DialogTitle className="font-handwritten text-2xl text-[color:var(--ink-handwritten)]">
             {item.description}
           </DialogTitle>
+          <DialogDescription className="text-xs">
+            Cada parte é uma fatia igual do item: quem tem 2 partes paga o dobro
+            de quem tem 1.
+          </DialogDescription>
         </DialogHeader>
         <ItemSplit
           billId={billId}
