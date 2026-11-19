@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useQueryClient, type QueryKey } from "@tanstack/react-query";
+import { useQueryClient, type QueryClient, type QueryKey } from "@tanstack/react-query";
 
 import { createClient } from "@/lib/supabase/client";
 
@@ -18,6 +18,11 @@ type Row = Record<string, unknown>;
  * Chegam exclusões de qualquer conta; só invalida se o `id` estiver no cache
  * desta consulta. Tabelas cujo cache não guarda `id` (ex.: `item_shares`)
  * dependem da exclusão em cascata do pai (item/participante) pra atualizar.
+ *
+ * Enquanto houver mutation própria em andamento com `mutationKey` igual a
+ * `queryKey`, o eco não invalida: a releitura traria o banco antes dos
+ * cliques seguintes e o número otimista "voltaria" por um instante. Quem
+ * relê é a última mutation da sequência (ver `invalidateAfterLastMutation`).
  */
 export function useRealtimeTable({
   table,
@@ -40,13 +45,20 @@ export function useRealtimeTable({
   useEffect(() => {
     const supabase = createClient();
 
+    // Nome do canal inclui a queryKey: `supabase.channel()` devolve o canal
+    // existente quando o nome se repete, então duas consultas na mesma tabela
+    // (ex.: partes da conta na lista + partes do item no diálogo de dividir)
+    // dividiriam um canal só — e fechar o diálogo derrubaria o da lista.
     const channel = supabase
-      .channel(`${table}:bill_id=${billId}`)
+      .channel(`${table}:bill_id=${billId}:${queryKeyJson}`)
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table, filter: `bill_id=eq.${billId}` },
         (payload) => {
-          queryClient.invalidateQueries({ queryKey: JSON.parse(queryKeyJson) });
+          const key: QueryKey = JSON.parse(queryKeyJson);
+          if (queryClient.isMutating({ mutationKey: key }) === 0) {
+            queryClient.invalidateQueries({ queryKey: key });
+          }
           onChangeRef.current?.((payload.new ?? payload.old) as Row, payload.eventType);
         },
       )
@@ -68,7 +80,9 @@ export function useRealtimeTable({
             );
 
           if (isCached) {
-            queryClient.invalidateQueries({ queryKey: key });
+            if (queryClient.isMutating({ mutationKey: key }) === 0) {
+              queryClient.invalidateQueries({ queryKey: key });
+            }
             onChangeRef.current?.(payload.old as Row, "DELETE");
           }
         },
@@ -79,4 +93,15 @@ export function useRealtimeTable({
       supabase.removeChannel(channel);
     };
   }, [table, billId, queryClient, queryKeyJson]);
+}
+
+/**
+ * `onSettled` das mutations otimistas: relê `queryKey` só quando a última
+ * mutation da sequência termina (ela ainda conta como em andamento aqui).
+ * Par do `useRealtimeTable`, que ignora o eco enquanto houver alguma.
+ */
+export function invalidateAfterLastMutation(queryClient: QueryClient, queryKey: QueryKey) {
+  if (queryClient.isMutating({ mutationKey: queryKey }) === 1) {
+    return queryClient.invalidateQueries({ queryKey });
+  }
 }
