@@ -23,6 +23,22 @@ export async function addGuestParticipant(billId: string, formData: FormData) {
   }
 
   const supabase = await createClient();
+
+  // Mesma regra do importar: nome igual (sem diferenciar maiúsculas) a alguém
+  // que já está na mesa, com ou sem conta, não entra de novo.
+  const { data: currentRows } = await supabase
+    .from("bill_participants")
+    .select("display_name, profiles(display_name)")
+    .eq("bill_id", billId);
+
+  const isDuplicate = (currentRows ?? []).some(
+    (row) => normalizeName(participantName(row)) === normalizeName(displayName),
+  );
+
+  if (isDuplicate) {
+    throw new Error(`${displayName} já está na mesa.`);
+  }
+
   const { error } = await supabase
     .from("bill_participants")
     .insert({ bill_id: billId, display_name: displayName, avatar_key: avatarKey });
