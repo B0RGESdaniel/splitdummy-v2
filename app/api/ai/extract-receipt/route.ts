@@ -77,7 +77,7 @@ export async function POST(request: NextRequest) {
 
   if (!bill || bill.status !== "open" || !participant) {
     return NextResponse.json(
-      { error: "Conta não encontrada, fechada, ou você não participa dela." },
+      { error: "Conta não encontrada, já paga, ou você não participa dela." },
       { status: 403 },
     );
   }

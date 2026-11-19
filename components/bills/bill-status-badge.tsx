@@ -8,7 +8,7 @@ export function BillStatusBadge({ isOpen }: { isOpen: boolean }) {
         isOpen ? "bg-foreground" : "bg-destructive",
       )}
     >
-      {isOpen ? "aberta" : "fechada"}
+      {isOpen ? "aberta" : "paga"}
     </span>
   );
 }

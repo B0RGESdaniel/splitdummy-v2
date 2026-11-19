@@ -40,6 +40,7 @@ export function BillSummary({
   receiptDate,
   serviceTaxPercent,
   isOwner,
+  ownerName,
   isOpen,
   justClosed,
   participants,
@@ -53,6 +54,7 @@ export function BillSummary({
   receiptDate: string;
   serviceTaxPercent: number;
   isOwner: boolean;
+  ownerName: string;
   isOpen: boolean;
   justClosed: boolean;
   participants: BillParticipant[];
@@ -158,13 +160,12 @@ export function BillSummary({
 
               {!isOpen && (
                 <div
-                  aria-hidden
                   className={cn(
                     "receipt-stamp pointer-events-none absolute top-[26px] right-2 border-[3px] border-destructive px-2.5 py-0.5 text-xl font-bold tracking-[0.08em] text-destructive uppercase",
                     stampHit && "receipt-stamp-hit",
                   )}
                 >
-                  Fechada
+                  Pago
                 </div>
               )}
 
@@ -182,7 +183,7 @@ export function BillSummary({
 
               <div className="mt-2.5 flex justify-between gap-2 border-y border-dashed py-1 text-xs">
                 <span>NOME</span>
-                <span>A PAGAR</span>
+                <span>VALOR</span>
               </div>
 
               <div className="mt-1.5 flex flex-col">
@@ -307,9 +308,14 @@ export function BillSummary({
         </div>
       </div>
 
-      {isOwner && isOpen && (
-        <CloseBillButton action={closeBill.bind(null, billId)} />
-      )}
+      {isOpen &&
+        (isOwner ? (
+          <CloseBillButton action={closeBill.bind(null, billId)} />
+        ) : (
+          <p className="text-center text-sm text-muted-foreground">
+            Só {ownerName} pode marcar a conta como paga.
+          </p>
+        ))}
     </>
   );
 }

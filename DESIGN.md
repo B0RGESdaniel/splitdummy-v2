@@ -118,7 +118,7 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 - **Tinta Manuscrita** (`oklch(0.22 0.05 262)`): cor exclusiva da voz manuscrita (Kalam) — descrição do item, valores preenchidos no cabeçalho (nome do dono, contagem de participantes). Deliberadamente mais escura e menos saturada que o azul royal, pra nunca competir com a tinta estrutural pela atenção.
 
 ### Named Rules
-**The Vermelho É Sinal Rule.** Vermelho Carimbo (`oklch(0.53 0.19 25)`) aparece só em dois lugares: o selo "fechada" e ações destrutivas/alertas de risco. Nunca decoração, nunca uma segunda cor de marca ao lado do azul royal.
+**The Vermelho É Sinal Rule.** Vermelho Carimbo (`oklch(0.53 0.19 25)`) aparece só em dois lugares: o carimbo "PAGO" (conta paga) e ações destrutivas/alertas de risco. Nunca decoração, nunca uma segunda cor de marca ao lado do azul royal.
 
 **The Uma Tinta Rule.** Fora do vermelho de sinal e da tinta manuscrita reservada, toda a estrutura visual — texto, borda, preenchimento — lê a mesma cor (azul royal). Não existe uma segunda cor de acento concorrendo por atenção.
 
@@ -155,7 +155,7 @@ Chapado por padrão — não existe sombra ambiente de UI em cards, botões ou d
 
 ### Shadow Vocabulary
 - **viga-da-mesa** (`box-shadow: 0 10px 18px -8px color-mix(in oklch, var(--foreground), transparent 55%), inset 0 1px 0 color-mix(in oklch, var(--background), transparent 15%), inset 0 -1px 0 color-mix(in oklch, var(--foreground), transparent 80%)`): a coluna central que conecta as fileiras de assentos na mesa de Participantes.
-- **selo-relevado** (`box-shadow: inset 0 0 0 1.5px var(--background)`): anel interno do `BillStatusBadge`, lendo como caixa impressa. Leve rotação (`-2deg`) nos dois estados, aberta e fechada — efeito carimbo; a cor (azul/vermelho) é o que distingue o estado.
+- **selo-relevado** (`box-shadow: inset 0 0 0 1.5px var(--background)`): anel interno do `BillStatusBadge`, lendo como caixa impressa. Leve rotação (`-2deg`) nos dois estados, aberta e paga — efeito carimbo; a cor (azul/vermelho) é o que distingue o estado.
 
 ### Named Rules
 **The Chapado-com-Propósito Rule.** Toda vez que o sistema usa algo parecido com profundidade, é pra simular um objeto físico real (viga, carimbo, selo) — nunca um efeito de elevação de UI genérico.
@@ -165,7 +165,7 @@ Chapado por padrão — não existe sombra ambiente de UI em cards, botões ou d
 Raio zero em praticamente tudo dentro de `.paper-check` — botões, badges, cards, diálogos, popovers e inputs, forçado via `border-radius: 0 !important` escopado por `[data-slot]`. O token ambiente `--radius` ainda existe (`0.2rem`, herdado do shadcn) mas é sistematicamente sobrescrito; na prática, raio zero é a regra, não a excepção. Borda é o dispositivo de forma dominante: 1.5px sólida na tinta royal pra grades e botões `outline`; tracejada pra estados provisórios.
 
 ### Named Rules
-**The Tracejado-é-Provisório Rule.** Borda tracejada sinaliza "ainda não é definitivo" — vaga vazia na mesa de Participantes, alerta de item ainda não dividido. Preenchimento sólido sinaliza autoridade/definitivo — carimbo "organizador", selo "aberta"/"fechada", botão de ação principal.
+**The Tracejado-é-Provisório Rule.** Borda tracejada sinaliza "ainda não é definitivo" — vaga vazia na mesa de Participantes, alerta de item ainda não dividido. Preenchimento sólido sinaliza autoridade/definitivo — carimbo "organizador", selo "aberta"/"paga", botão de ação principal.
 
 ## Components
 
@@ -179,7 +179,7 @@ Raio zero em praticamente tudo dentro de `.paper-check` — botões, badges, car
 ### Badges
 - **Style:** raio zero sempre.
 - **Papéis na mesa:** carimbo sobre a base do avatar (entre o avatar e o nome), levemente girado (-6°), sempre com fundo opaco e anel de papel em volta pra não se misturar com o desenho. O nome fica sozinho embaixo.
-  - **Organizador:** azul royal cheio — mesmo vocabulário do selo "aberta"/"fechada", sinalizando autoridade.
+  - **Organizador:** azul royal cheio — mesmo vocabulário do selo "aberta"/"paga", sinalizando autoridade.
   - **Colaborando** (entrou com login e edita pelo próprio celular): papel sombreado (12% de tinta royal) com texto royal.
   - **Na mesa** (só o nome, adicionado pelo organizador, sem login): papel claro, texto e borda fina de 1px no tom secundário — o caso mais comum, então o mais leve.
 
@@ -206,7 +206,7 @@ Tela de Resumo: um `Accordion` agrupado por pessoa, nome + subtotal na mesma lin
 ## Do's and Don'ts
 
 ### Do:
-- **Do** manter vermelho reservado só pro selo "fechada" e pra ações destrutivas/alertas de risco.
+- **Do** manter vermelho reservado só pro carimbo "PAGO" e pra ações destrutivas/alertas de risco.
 - **Do** manter todo número (preço, quantidade, fração, percentual) na voz impressa — nunca manuscrita.
 - **Do** usar borda tracejada só pra estados provisórios e preenchimento sólido só pra estados definitivos/de autoridade.
 - **Do** dar textura de grão (`--paper-grain`) a toda superfície do tipo card/dialog/popover/header dentro de `.paper-check`.

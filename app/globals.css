@@ -311,7 +311,7 @@
 }
 
 /*
- * The "fechada" stamp hits only at the moment the bill is closed (seen
+ * The "PAGO" stamp hits only at the moment the bill is closed (seen
  * live by everyone with the Resumo open, via realtime); afterwards it's
  * just there, no replay.
  */

@@ -54,7 +54,7 @@ export default async function BillSummaryPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, status, service_tax_percent, owner_id, created_at, closed_at")
+    .select("id, name, status, service_tax_percent, owner_id, created_at, closed_at, profiles(display_name)")
     .eq("id", billId)
     .single();
 
@@ -110,6 +110,7 @@ export default async function BillSummaryPage({
           receiptDate={formatReceiptDate(bill.closed_at ?? bill.created_at)}
           serviceTaxPercent={bill.service_tax_percent}
           isOwner={isOwner}
+          ownerName={bill.profiles?.display_name?.split(" ")[0] ?? "o organizador"}
           isOpen={isOpen}
           justClosed={!isOpen && fechou === "1"}
           participants={toBillParticipantsSelfFirst(participants ?? [], userId)}

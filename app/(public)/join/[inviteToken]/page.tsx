@@ -49,7 +49,7 @@ export default async function JoinPage({
     return (
       <JoinCard title={bill.name}>
         <p className="text-muted-foreground text-sm">
-          Essa conta já foi fechada e não aceita novos participantes.
+          Essa conta já foi paga e não aceita novos participantes.
         </p>
         <Button asChild variant="outline" className="w-full">
           <Link href={fallbackHref}>Voltar</Link>

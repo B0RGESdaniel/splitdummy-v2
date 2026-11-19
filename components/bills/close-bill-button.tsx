@@ -19,7 +19,7 @@ function ConfirmButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" variant="destructive" disabled={pending}>
-      {pending ? "Encerrando..." : "Encerrar conta"}
+      {pending ? "Marcando..." : "Marcar como paga"}
     </Button>
   );
 }
@@ -36,15 +36,15 @@ export function CloseBillButton({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" className="w-full">
-          Encerrar conta
+          Marcar como paga
         </Button>
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle>Encerrar esta conta?</DialogTitle>
+          <DialogTitle>Marcar esta conta como paga?</DialogTitle>
           <DialogDescription>
-            Essa ação é definitiva e não pode ser desfeita — a conta não poderá mais
-            ser editada depois de encerrada.
+            Essa ação é definitiva e não pode ser desfeita — depois de paga, a conta
+            não pode mais ser editada.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
