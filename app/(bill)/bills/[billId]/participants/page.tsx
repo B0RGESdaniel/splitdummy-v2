@@ -343,6 +343,13 @@ export default async function ParticipantsPage({
           <AddGuestDialog action={addGuestParticipant.bind(null, billId)} />
         </div>
       )}
+      {/* Quem não é dono não tem ação aqui: diz por quê e o que dá pra fazer. */}
+      {!isOwner && isOpen && (
+        <p className="pb-2 text-center text-[13px] leading-snug text-balance text-muted-foreground">
+          Só {owner?.name.split(" ")[0] ?? "o organizador"} coloca gente na mesa. Toque no seu
+          lugar pra ver quanto você deve.
+        </p>
+      )}
 
       <div className="grid grid-cols-[minmax(3.5rem,1fr)_8rem_minmax(3.5rem,1fr)] items-center justify-center gap-x-4 gap-y-6 py-2">
         {owner && (
