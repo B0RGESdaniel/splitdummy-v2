@@ -28,6 +28,19 @@ import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
 const ROW_STAGGER_S = 0.05;
 const ROW_ENTER = { opacity: 0, y: -6 };
 
+function formatCurrency(value: number) {
+  return value.toLocaleString("pt-BR", { style: "currency", currency: "BRL" });
+}
+
+/** Soma em centavos pra não acumular erro de float; campo inválido conta zero. */
+function sumItems(items: ReceiptItemInput[]) {
+  const cents = items.reduce((total, item) => {
+    const line = Math.round(item.quantity * item.unitPrice * 100);
+    return Number.isFinite(line) ? total + line : total;
+  }, 0);
+  return cents / 100;
+}
+
 export function ExtractedItemsReviewTable({
   billId,
   receiptId,
@@ -197,6 +210,26 @@ export function ExtractedItemsReviewTable({
               </motion.tr>
             ))}
           </tbody>
+          {/* Só a soma dos itens revisados, sem taxa: é pra conferir com o papel. */}
+          <tfoot>
+            <motion.tr
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: initialItems.length * ROW_STAGGER_S, duration: 0.2 }}
+            >
+              <th
+                scope="row"
+                colSpan={2}
+                className="border-t-[1.5px] border-border px-1 pt-2 text-left text-[11px] font-medium uppercase tracking-wide text-foreground"
+              >
+                Soma dos itens
+              </th>
+              <td className="border-t-[1.5px] border-border px-1 pt-2 text-right font-semibold tabular-nums">
+                {formatCurrency(sumItems(items))}
+              </td>
+              <td className="border-t-[1.5px] border-border" />
+            </motion.tr>
+          </tfoot>
         </table>
       )}
 
