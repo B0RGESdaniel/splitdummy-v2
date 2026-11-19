@@ -217,7 +217,16 @@ export function ReceiptScanButton({
             {state.step === "error" && (
               <div className="flex flex-col gap-3">
                 <p className="text-sm text-destructive">{state.message}</p>
-                <Button onClick={closeOverlay}>Tentar de novo</Button>
+                <Button
+                  onClick={() => {
+                    // Chamado dentro do próprio toque: o navegador só abre o
+                    // seletor de arquivo/câmera a partir de um gesto do usuário.
+                    closeOverlay();
+                    inputRef.current?.click();
+                  }}
+                >
+                  Tentar de novo
+                </Button>
               </div>
             )}
 
