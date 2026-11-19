@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 import { createClient } from "@/lib/supabase/client";
@@ -40,14 +40,17 @@ export function BillRealtimeRefresh({
   profileIds: string[];
 }) {
   const router = useRouter();
+  const pathname = usePathname();
+  const pathnameRef = useRef(pathname);
   const ownParticipantIdRef = useRef(ownParticipantId);
   const participantIdsRef = useRef(participantIds);
   const profileIdsRef = useRef(profileIds);
   useEffect(() => {
+    pathnameRef.current = pathname;
     ownParticipantIdRef.current = ownParticipantId;
     participantIdsRef.current = participantIds;
     profileIdsRef.current = profileIds;
-  }, [ownParticipantId, participantIds, profileIds]);
+  }, [pathname, ownParticipantId, participantIds, profileIds]);
 
   useEffect(() => {
     const supabase = createClient();
@@ -67,7 +70,25 @@ export function BillRealtimeRefresh({
       .on(
         "postgres_changes",
         { event: "*", schema: "public", table: "bills", filter: `id=eq.${billId}` },
-        scheduleRefresh,
+        (payload) => {
+          // Conta fechada é só o Resumo. Quem está em Itens/Mesa vai pra lá
+          // marcando a transição, pra ver o carimbo bater como quem fechou
+          // (um refresh comum cairia no redirect do servidor, carimbo parado).
+          const closedSummaryPath = `/bills/${billId}/summary`;
+          if (
+            payload.eventType === "UPDATE" &&
+            payload.new.status === "closed" &&
+            pathnameRef.current !== closedSummaryPath
+          ) {
+            clearTimeout(timeout);
+            router.replace(`${closedSummaryPath}?fechou=1`);
+            // Navegar não refaz o layout (ainda com o "Compartilhar");
+            // o refresh entra na fila depois da navegação.
+            router.refresh();
+            return;
+          }
+          scheduleRefresh();
+        },
       )
       .on(
         "postgres_changes",

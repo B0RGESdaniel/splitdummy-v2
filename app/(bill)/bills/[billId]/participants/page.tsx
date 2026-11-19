@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 
 import {
@@ -238,6 +238,10 @@ export default async function ParticipantsPage({
 
   if (!bill) {
     notFound();
+  }
+
+  if (bill.status === "closed") {
+    redirect(`/bills/${billId}/summary`);
   }
 
   const [{ data: participantRows }, { data: items }, { data: shares }] =

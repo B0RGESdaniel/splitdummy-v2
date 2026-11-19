@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { cn } from "cn";
 
@@ -39,6 +39,7 @@ export function BillSummary({
   serviceTaxPercent,
   isOwner,
   isOpen,
+  justClosed,
   participants,
   initialItems,
   initialShares,
@@ -51,6 +52,7 @@ export function BillSummary({
   serviceTaxPercent: number;
   isOwner: boolean;
   isOpen: boolean;
+  justClosed: boolean;
   participants: { participant_id: string; display_name: string | undefined }[];
   initialItems: Item[];
   initialShares: Share[];
@@ -131,15 +133,23 @@ export function BillSummary({
   // abre no cupom pronto.
   const [printing, setPrinting] = useState(isOpen);
 
-  // Carimbo bate só na transição aberta -> fechada vista nesta tela (quem
-  // fechou e, via realtime, quem estava com o Resumo aberto). Ajuste de
+  // Carimbo bate só na transição aberta -> fechada: vista nesta tela (quem
+  // fechou e, via realtime, quem estava com o Resumo aberto) ou trazida de
+  // Itens/Mesa pelo realtime (`justClosed`, via `?fechou=1`). Ajuste de
   // estado durante o render, sem effect.
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
-  const [stampHit, setStampHit] = useState(false);
+  const [stampHit, setStampHit] = useState(justClosed);
   if (prevIsOpen !== isOpen) {
     setPrevIsOpen(isOpen);
     if (prevIsOpen && !isOpen) setStampHit(true);
   }
+
+  // Tira o `?fechou=1` da URL pra um recarregar não bater o carimbo de novo.
+  useEffect(() => {
+    if (justClosed) {
+      window.history.replaceState(null, "", window.location.pathname);
+    }
+  }, [justClosed]);
 
   return (
     <>

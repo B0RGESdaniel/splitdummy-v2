@@ -54,7 +54,7 @@ export default async function BillLayout({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, owner_id")
+    .select("id, name, owner_id, status")
     .eq("id", billId)
     .single();
 
@@ -63,9 +63,12 @@ export default async function BillLayout({
   }
 
   const isOwner = userId === bill.owner_id;
+  // Conta fechada não aceita mais ninguém (o aceite do convite já recusa),
+  // então não há o que compartilhar.
+  const canInvite = isOwner && bill.status === "open";
 
   const [invite, { data: participantRows }] = await Promise.all([
-    isOwner ? getOrCreateActiveInvite(billId) : null,
+    canInvite ? getOrCreateActiveInvite(billId) : null,
     supabase.from("bill_participants").select("id, profile_id").eq("bill_id", billId),
   ]);
 
@@ -103,7 +106,7 @@ export default async function BillLayout({
               </h1>
             </div>
             <div className="flex items-center gap-1">
-              {isOwner && <InviteQrPanel billId={billId} invite={invite} />}
+              {canInvite && <InviteQrPanel billId={billId} invite={invite} />}
               <SignOutButton />
             </div>
           </div>

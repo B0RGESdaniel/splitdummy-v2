@@ -38,11 +38,14 @@ function formatReceiptDate(iso: string) {
 
 export default async function BillSummaryPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ billId: string }>;
+  searchParams: Promise<{ fechou?: string }>;
 }) {
   await connection();
   const { billId } = await params;
+  const { fechou } = await searchParams;
   const supabase = await createClient();
 
   const { data: claims } = await supabase.auth.getClaims();
@@ -92,7 +95,7 @@ export default async function BillSummaryPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <BackToItemsLink billId={billId} />
+      {isOpen && <BackToItemsLink billId={billId} />}
 
       <div
         className={`${courierPrime.variable} ${dotGothic16.variable} flex flex-1 flex-col gap-4`}
@@ -106,6 +109,7 @@ export default async function BillSummaryPage({
           serviceTaxPercent={bill.service_tax_percent}
           isOwner={isOwner}
           isOpen={isOpen}
+          justClosed={!isOpen && fechou === "1"}
           participants={(participants ?? []).map((p) => ({
             participant_id: p.id,
             display_name: p.display_name ?? p.profiles?.display_name,

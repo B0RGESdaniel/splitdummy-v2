@@ -1,5 +1,5 @@
 import { ChevronRight, ConciergeBell } from "lucide-react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
 
@@ -29,6 +29,10 @@ export default async function ItemsPage({
 
   if (!bill) {
     notFound();
+  }
+
+  if (bill.status === "closed") {
+    redirect(`/bills/${billId}/summary`);
   }
 
   const [{ data: items }, { data: participants }] = await Promise.all([

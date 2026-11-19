@@ -16,7 +16,7 @@ export default async function BillPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id")
+    .select("id, status")
     .eq("id", billId)
     .single();
 
@@ -24,5 +24,10 @@ export default async function BillPage({
     notFound();
   }
 
-  redirect(`/bills/${billId}/items`);
+  // Conta fechada é só o cupom: não há mais o que editar em Itens/Mesa.
+  redirect(
+    bill.status === "closed"
+      ? `/bills/${billId}/summary`
+      : `/bills/${billId}/items`,
+  );
 }
