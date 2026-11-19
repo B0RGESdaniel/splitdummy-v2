@@ -257,7 +257,7 @@
 }
 
 /*
- * Printing: the strip comes down out of a slot in jerky steps, like a
+ * Printing: the strip comes down out of the printer mouth in jerky steps, like a
  * thermal printer feeding line by line. Only played when an open bill's
  * Resumo mounts (a closed bill opens straight on the finished receipt).
  */
@@ -272,6 +272,42 @@
 
 .receipt-printing {
   animation: receipt-print 2.4s steps(18, end) both;
+}
+
+/*
+ * Printer mouth the strip comes out of. Permanent (it used to be a bar that
+ * vanished after printing, which read as a glitch): light-grey body like a
+ * real printer, near-black outline, dark slit at the bottom.
+ */
+.receipt-printer {
+  position: relative;
+  z-index: 2;
+  height: 16px;
+  background: oklch(0.88 0.004 260);
+  border: 1.5px solid oklch(0.2 0.01 260);
+  border-top-width: 3px;
+  border-radius: 0 0 6px 6px;
+}
+
+.receipt-printer::after {
+  content: "";
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 3px;
+  height: 3px;
+  background: oklch(0.3 0.01 260);
+}
+
+/* Soft shade on the paper right under the mouth, as if it were still inside. */
+.receipt-printer-shadow {
+  position: absolute;
+  z-index: 1;
+  inset-inline: 0;
+  top: 0;
+  height: 14px;
+  background: linear-gradient(to bottom, oklch(0.24 0.01 260 / 22%), transparent);
+  pointer-events: none;
 }
 
 /*
