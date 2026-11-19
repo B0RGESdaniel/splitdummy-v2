@@ -205,7 +205,7 @@ export function ItemSplit({
         </div>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="-mx-1 flex min-h-0 flex-col gap-2 overflow-y-auto px-1 py-px">
         {participants.map((participant) => {
           const parts = partsByParticipant.get(participant.participant_id) ?? 0;
           const amount = amountsByParticipant?.get(participant.participant_id) ?? 0;
@@ -214,6 +214,8 @@ export function ItemSplit({
             <Card
               key={participant.participant_id}
               className={cn(
+                // Card tem overflow-hidden, o que deixa ele encolher numa coluna flex em vez de a lista rolar
+                "shrink-0",
                 flashing.has(participant.participant_id) && "realtime-flash",
               )}
             >

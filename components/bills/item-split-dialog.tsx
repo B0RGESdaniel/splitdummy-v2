@@ -29,7 +29,11 @@ export function ItemSplitDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>{trigger}</DialogTrigger>
-      <DialogContent container={portalContainer}>
+      {/* flex-col + max-h: só a lista de participantes rola (ver ItemSplit), título e ações ficam visíveis */}
+      <DialogContent
+        container={portalContainer}
+        className="flex max-h-[min(calc(100dvh-2rem),32rem)] flex-col"
+      >
         <DialogHeader>
           <DialogTitle className="font-handwritten text-2xl text-[color:var(--ink-handwritten)]">
             {item.description}
