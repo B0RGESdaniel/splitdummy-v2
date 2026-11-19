@@ -15,6 +15,7 @@ import {
   type BillItemShare,
 } from "@/lib/bill/bill-item-shares";
 import { buildParticipantBreakdowns } from "@/lib/split/breakdown";
+import { getUnsplitItemIds, itemTotalCents } from "@/lib/split/calculate";
 import type { PartsShareInput } from "@/lib/split/validate";
 import type { BillParticipant } from "@/lib/bill/participants";
 
@@ -114,6 +115,15 @@ export function BillSummary({
     (sum, breakdown) => sum + breakdown.subtotalCents,
     0,
   );
+
+  // Itens sem dono ficam fora do total: com algum deles (ou sem item
+  // nenhum) a conta não pode ser marcada como paga — o servidor repete a
+  // checagem em `closeBill`.
+  const unsplitIds = new Set(getUnsplitItemIds(itemsForSplit));
+  const unsplitCents = itemsForSplit
+    .filter((item) => unsplitIds.has(item.id))
+    .reduce((sum, item) => sum + itemTotalCents(item), 0);
+  const canClose = items.length > 0 && unsplitIds.size === 0;
 
   // Imprime só quando o Resumo abre com a conta aberta; conta fechada já
   // abre no cupom pronto.
@@ -268,6 +278,27 @@ export function BillSummary({
                 })}
               </div>
 
+              {isOpen && !canClose && (
+                <div className="mt-2.5 border border-dashed border-foreground px-2.5 py-2 text-center text-xs">
+                  {items.length === 0 ? (
+                    <>
+                      <div className="font-bold">NENHUM ITEM NA CONTA</div>
+                      <div>Adicione os itens em Itens.</div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="font-bold">
+                        <span className="font-digits">{unsplitIds.size}</span>{" "}
+                        {unsplitIds.size === 1 ? "ITEM SEM DONO" : "ITENS SEM DONO"} ·{" "}
+                        <span className="font-digits">{formatCurrency(unsplitCents)}</span> FORA
+                        DO TOTAL
+                      </div>
+                      <div>Divida em Itens antes de marcar como paga.</div>
+                    </>
+                  )}
+                </div>
+              )}
+
               <hr className="my-2.5 border-dashed" />
 
               <div className="flex justify-between gap-2">
@@ -315,6 +346,7 @@ export function BillSummary({
             totalLabel={formatCurrency(grandTotalCents)}
             peopleCount={participants.length}
             serviceTaxPercent={serviceTaxPercent}
+            disabled={!canClose}
           />
         ) : (
           <p className="text-center text-sm text-muted-foreground">

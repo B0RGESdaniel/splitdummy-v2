@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
 import { createClient } from "@/lib/supabase/server";
+import { getUnsplitItemIds } from "@/lib/split/calculate";
 
 export async function createBill(formData: FormData) {
   const name = String(formData.get("name") ?? "").trim();
@@ -114,6 +115,37 @@ export async function updateServiceTax(billId: string, formData: FormData) {
 
 export async function closeBill(billId: string) {
   const supabase = await createClient();
+
+  // Mesma regra do botão no Resumo, revalidada aqui: entre abrir o Resumo e
+  // confirmar, alguém pode ter adicionado um item ainda sem dono.
+  const [{ data: items, error: itemsError }, { data: shares, error: sharesError }] =
+    await Promise.all([
+      supabase.from("items").select("id, quantity, unit_price").eq("bill_id", billId),
+      supabase.from("item_shares").select("item_id, participant_id, parts").eq("bill_id", billId),
+    ]);
+
+  if (itemsError || sharesError) {
+    throw new Error((itemsError ?? sharesError)!.message);
+  }
+
+  if (items.length === 0) {
+    throw new Error("A conta não tem nenhum item.");
+  }
+
+  const unsplit = getUnsplitItemIds(
+    items.map((item) => ({
+      id: item.id,
+      quantity: item.quantity,
+      unitPrice: item.unit_price,
+      shares: shares
+        .filter((share) => share.item_id === item.id)
+        .map((share) => ({ profileId: share.participant_id, parts: share.parts })),
+    })),
+  );
+
+  if (unsplit.length > 0) {
+    throw new Error("Ainda há itens sem dono.");
+  }
 
   const { error } = await supabase
     .from("bills")
