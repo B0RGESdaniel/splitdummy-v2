@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy, Share2 } from "lucide-react";
 import { QRCodeSVG } from "qrcode.react";
 import { useFormStatus } from "react-dom";
+import { toast } from "sonner";
 
 import { regenerateInvite } from "@/app/(dashboard)/bills/actions";
 import { Button } from "@/components/ui/button";
@@ -76,9 +77,16 @@ export function InviteQrPanel({
                   size="icon-lg"
                   className="size-10"
                   aria-label={copied ? "Link copiado" : "Copiar link"}
-                  onClick={() => {
+                  onClick={async () => {
                     if (!link) return;
-                    navigator.clipboard.writeText(link);
+                    try {
+                      await navigator.clipboard.writeText(link);
+                    } catch {
+                      // Sem permissão de área de transferência (ou contexto
+                      // não seguro): o link continua visível no campo ao lado.
+                      toast.error("Não deu pra copiar. Selecione o link e copie à mão.");
+                      return;
+                    }
                     setCopied(true);
                     setTimeout(() => setCopied(false), 1500);
                   }}

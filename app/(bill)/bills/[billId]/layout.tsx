@@ -2,13 +2,14 @@ import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Archivo_Narrow, Bitter, Kalam } from "next/font/google";
+import { Bitter, Kalam } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { Button } from "@/components/ui/button";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
+import { archivoNarrow } from "@/app/fonts";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
@@ -27,12 +28,6 @@ const kalam = Kalam({
   variable: "--font-handwritten",
   subsets: ["latin"],
   weight: ["400", "700"],
-});
-
-const archivoNarrow = Archivo_Narrow({
-  variable: "--font-check-base",
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
 });
 
 export default async function BillLayout({

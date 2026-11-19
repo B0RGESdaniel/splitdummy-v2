@@ -114,8 +114,12 @@ export function ItemFormDialog({
           <div className="border-t border-dashed border-border pt-4">
             <DeleteItemButton
               action={async () => {
-                await deleteAction();
-                setOpen(false);
+                try {
+                  await deleteAction();
+                  setOpen(false);
+                } catch {
+                  toast.error("Não deu pra excluir o item. Tente de novo.");
+                }
               }}
             />
           </div>

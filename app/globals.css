@@ -206,6 +206,47 @@
 }
 
 /*
+ * Toasts: "etiqueta da comanda" (opção A, escolhida em artifact). O Toaster
+ * fica no layout raiz, fora do escopo `.paper-check`, então repete aqui as
+ * cores da comanda (papel, tinta royal, vermelho de sinal) — sem a textura.
+ */
+.comanda-toaster {
+  --toast-paper: oklch(0.965 0.009 80);
+  --toast-ink: oklch(0.42 0.19 262);
+  --toast-signal: oklch(0.53 0.19 25);
+}
+
+.comanda-toast {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  width: var(--width);
+  box-sizing: border-box;
+  padding: 12px 14px;
+  border: 2px solid var(--toast-ink);
+  color: var(--toast-ink);
+  background-color: var(--toast-paper);
+  box-shadow: 3px 3px 0 color-mix(in oklch, var(--toast-ink) 22%, transparent);
+  font-family: var(--font-check-base), sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.3;
+  text-transform: uppercase;
+}
+
+.comanda-toast[data-type="error"] {
+  border-color: var(--toast-signal);
+  color: var(--toast-signal);
+  box-shadow: 3px 3px 0 color-mix(in oklch, var(--toast-signal) 25%, transparent);
+}
+
+.comanda-toast-icon {
+  flex: none;
+  margin-top: 1px;
+}
+
+/*
  * Resumo ("cupom fiscal") is its own typographic world inside .paper-check,
  * separate from the comanda's Archivo Narrow: Courier Prime as the base
  * voice everywhere, DotGothic16 reserved for digits/"R$"/fractions via the

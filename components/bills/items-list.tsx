@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Divide } from "lucide-react";
 import { motion } from "motion/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
   deleteItem,
@@ -194,6 +195,11 @@ export function ItemsList({
         if (context?.previous) {
           queryClient.setQueryData(queryKey, context.previous);
         }
+        // Mesmo id: vários toques que falham juntos (ex.: sem rede) viram um
+        // toast só, não uma pilha.
+        toast.error("Não deu pra alterar a quantidade. Tente de novo.", {
+          id: "item-quantity-error",
+        });
       },
       onSettled: () => invalidateAfterLastMutation(queryClient, queryKey),
     });

@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+import { archivoNarrow } from "@/app/fonts";
+
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
@@ -26,7 +28,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${poppins.variable} ${geistMono.variable} dark h-full antialiased`}
+      className={`${poppins.variable} ${geistMono.variable} ${archivoNarrow.variable} dark h-full antialiased`}
     >
       <body className="min-h-full flex flex-col">
         <QueryProvider>

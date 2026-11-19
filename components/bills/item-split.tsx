@@ -1,6 +1,7 @@
 "use client";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import {
   clearItemParts,
@@ -121,6 +122,8 @@ export function ItemSplit({
         if (context?.previous) {
           queryClient.setQueryData(queryKey, context.previous);
         }
+        // Mesmo id: vários toques que falham juntos viram um toast só.
+        toast.error("Não deu pra alterar as partes. Tente de novo.", { id: "item-parts-error" });
       },
       onSettled: () => {
         invalidateAfterLastMutation(queryClient, queryKey);
@@ -132,7 +135,11 @@ export function ItemSplit({
   const increment = useStepMutation(1);
   const decrement = useStepMutation(-1);
 
-  function useBulkMutation(action: typeof splitItemEqually, parts: number) {
+  function useBulkMutation(
+    action: typeof splitItemEqually,
+    parts: number,
+    errorMessage: string,
+  ) {
     return useMutation({
       mutationKey: queryKey,
       mutationFn: () => action(billId, itemId),
@@ -150,6 +157,7 @@ export function ItemSplit({
         if (context?.previous) {
           queryClient.setQueryData(queryKey, context.previous);
         }
+        toast.error(errorMessage, { id: "item-parts-error" });
       },
       onSettled: () => {
         invalidateAfterLastMutation(queryClient, queryKey);
@@ -158,8 +166,16 @@ export function ItemSplit({
     });
   }
 
-  const splitEqually = useBulkMutation(splitItemEqually, 1);
-  const clearParts = useBulkMutation(clearItemParts, 0);
+  const splitEqually = useBulkMutation(
+    splitItemEqually,
+    1,
+    "Não deu pra dividir para todos. Tente de novo.",
+  );
+  const clearParts = useBulkMutation(
+    clearItemParts,
+    0,
+    "Não deu pra limpar as partes. Tente de novo.",
+  );
 
   const partsByParticipant = new Map(
     shares.map((share) => [share.participant_id, share.parts ?? 0]),
