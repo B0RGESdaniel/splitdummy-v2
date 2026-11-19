@@ -17,7 +17,16 @@ import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
-import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
+import {
+  invalidateAfterLastMutation,
+  useRealtimeTable,
+} from "@/lib/realtime/use-realtime-table";
+import {
+  billItemSharesQueryKey,
+  splitItemIdsOf,
+  useBillItemShares,
+  type BillItemShare,
+} from "@/lib/bill/bill-item-shares";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 
 type Item = {
@@ -41,11 +50,13 @@ function formatCurrency(value: number) {
 export function ItemsList({
   billId,
   initialItems,
+  initialShares,
   isOpen,
   participants,
 }: {
   billId: string;
   initialItems: Item[];
+  initialShares: BillItemShare[];
   isOpen: boolean;
   participants: { participant_id: string; display_name: string | undefined }[];
 }) {
@@ -98,7 +109,13 @@ export function ItemsList({
     },
   });
 
+  // Partes da conta inteira, só pra marcar quais itens ainda não foram divididos.
+  const shares = useBillItemShares(billId, initialShares);
+  const splitItemIds = splitItemIdsOf(shares);
+  useRealtimeTable({ table: "item_shares", billId, queryKey: billItemSharesQueryKey(billId) });
+
   const updateMutation = useMutation({
+    mutationKey: queryKey,
     mutationFn: ({ itemId, formData }: { itemId: string; formData: FormData }) =>
       updateItem(billId, itemId, formData),
     onMutate: async ({ itemId, formData }) => {
@@ -126,9 +143,11 @@ export function ItemsList({
         queryClient.setQueryData(queryKey, context.previous);
       }
     },
+    onSettled: () => invalidateAfterLastMutation(queryClient, queryKey),
   });
 
   const deleteMutation = useMutation({
+    mutationKey: queryKey,
     mutationFn: (itemId: string) => deleteItem(billId, itemId),
     onMutate: async (itemId: string) => {
       markOwn(itemId);
@@ -146,12 +165,14 @@ export function ItemsList({
         queryClient.setQueryData(queryKey, context.previous);
       }
     },
+    onSettled: () => invalidateAfterLastMutation(queryClient, queryKey),
   });
 
   function useQuantityStepMutation(delta: 1 | -1) {
     const action = delta === 1 ? incrementItemQuantity : decrementItemQuantity;
 
     return useMutation({
+      mutationKey: queryKey,
       mutationFn: (itemId: string) => action(billId, itemId),
       onMutate: async (itemId: string) => {
         markOwn(itemId);
@@ -173,6 +194,7 @@ export function ItemsList({
           queryClient.setQueryData(queryKey, context.previous);
         }
       },
+      onSettled: () => invalidateAfterLastMutation(queryClient, queryKey),
     });
   }
 
@@ -279,7 +301,14 @@ export function ItemsList({
                         isOpen={isOpen}
                         participants={participants}
                         trigger={
-                          <Button variant="outline" size="icon-sm" aria-label="Dividir item">
+                          <Button
+                            variant="outline"
+                            size="icon-sm"
+                            aria-label={
+                              splitItemIds.has(item.id) ? "Dividir item" : "Dividir item (ainda não dividido)"
+                            }
+                            className={cn(!splitItemIds.has(item.id) && "border-dashed")}
+                          >
                             <Divide />
                           </Button>
                         }

@@ -13,7 +13,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
-import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
+import { billItemSharesQueryKey } from "@/lib/bill/bill-item-shares";
+import {
+  invalidateAfterLastMutation,
+  useRealtimeTable,
+} from "@/lib/realtime/use-realtime-table";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 import { splitPartsCents } from "@/lib/split/calculate";
 
@@ -90,10 +94,17 @@ export function ItemSplit({
     },
   });
 
+  // A lista de Itens marca os não divididos pelas partes da conta inteira;
+  // atualiza já, sem esperar o eco do Realtime.
+  function invalidateBillShares() {
+    return queryClient.invalidateQueries({ queryKey: billItemSharesQueryKey(billId) });
+  }
+
   function useStepMutation(delta: 1 | -1) {
     const action = delta === 1 ? incrementItemPart : decrementItemPart;
 
     return useMutation({
+      mutationKey: queryKey,
       mutationFn: (participantId: string) => action(billId, itemId, participantId),
       onMutate: async (participantId: string) => {
         markOwn(participantId);
@@ -109,6 +120,10 @@ export function ItemSplit({
           queryClient.setQueryData(queryKey, context.previous);
         }
       },
+      onSettled: () => {
+        invalidateAfterLastMutation(queryClient, queryKey);
+        return invalidateBillShares();
+      },
     });
   }
 
@@ -117,6 +132,7 @@ export function ItemSplit({
 
   function useBulkMutation(action: typeof splitItemEqually, parts: number) {
     return useMutation({
+      mutationKey: queryKey,
       mutationFn: () => action(billId, itemId),
       onMutate: async () => {
         participants.forEach((p) => markOwn(p.participant_id));
@@ -132,6 +148,10 @@ export function ItemSplit({
         if (context?.previous) {
           queryClient.setQueryData(queryKey, context.previous);
         }
+      },
+      onSettled: () => {
+        invalidateAfterLastMutation(queryClient, queryKey);
+        return invalidateBillShares();
       },
     });
   }

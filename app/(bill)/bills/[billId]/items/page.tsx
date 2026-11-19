@@ -35,7 +35,7 @@ export default async function ItemsPage({
     redirect(`/bills/${billId}/summary`);
   }
 
-  const [{ data: items }, { data: participants }] = await Promise.all([
+  const [{ data: items }, { data: participants }, { data: shares }] = await Promise.all([
     supabase
       .from("items")
       .select("id, description, unit_price, quantity")
@@ -44,6 +44,10 @@ export default async function ItemsPage({
     supabase
       .from("bill_participants")
       .select("id, display_name, profiles(display_name)")
+      .eq("bill_id", billId),
+    supabase
+      .from("item_shares")
+      .select("item_id, participant_id, parts")
       .eq("bill_id", billId),
   ]);
 
@@ -80,6 +84,7 @@ export default async function ItemsPage({
       <ItemsList
         billId={billId}
         initialItems={items ?? []}
+        initialShares={shares ?? []}
         isOpen={isOpen}
         participants={(participants ?? []).map((p) => ({
           participant_id: p.id,
