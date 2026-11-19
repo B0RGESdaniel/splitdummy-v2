@@ -197,7 +197,7 @@ export function ReceiptScanButton({
         >
           <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
             <div className="mb-3 flex items-center justify-between">
-              <h2 id={titleId} className="flex items-center gap-1.5 font-mono text-sm uppercase tracking-wide text-foreground">
+              <h2 id={titleId} className="flex items-center gap-1.5 text-sm uppercase tracking-wide text-foreground">
                 <ScanText className="size-4" aria-hidden />
                 Escanear cupom
               </h2>

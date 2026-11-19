@@ -62,7 +62,7 @@ export default async function ItemsPage({
     <div className="flex flex-1 flex-col gap-3">
       <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
         <div className="border-r-[1.5px] border-foreground px-3 py-2">
-          <div className="font-mono text-[11px] uppercase tracking-wide text-foreground">
+          <div className="text-[11px] uppercase tracking-wide text-foreground">
             Dono
           </div>
           <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
@@ -73,7 +73,7 @@ export default async function ItemsPage({
           href={`/bills/${billId}/participants`}
           className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
         >
-          <div className="flex items-center gap-1 font-mono text-[11px] uppercase tracking-wide text-foreground">
+          <div className="flex items-center gap-1 text-[11px] uppercase tracking-wide text-foreground">
             Participantes
             <ChevronRight className="size-3" />
           </div>

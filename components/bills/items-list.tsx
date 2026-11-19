@@ -215,7 +215,7 @@ export function ItemsList({
       ) : (
         <table className="w-full table-fixed border-collapse border-[1.5px] border-foreground text-sm">
           <thead>
-            <tr className="text-left font-mono text-[11px] uppercase tracking-wide text-foreground">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-foreground">
               <th scope="col" className="border-[1.5px] border-foreground px-3 py-2 font-medium">
                 Descrição
               </th>
@@ -240,7 +240,7 @@ export function ItemsList({
                   <span className="truncate font-handwritten text-lg leading-tight text-[color:var(--ink-handwritten)]">
                     {item.description}
                   </span>
-                  <span className="font-mono text-[10px] tabular-nums text-muted-foreground">
+                  <span className="text-[11px] tabular-nums text-muted-foreground">
                     {formatCurrency(item.unit_price)}/un → {formatCurrency(item.unit_price * item.quantity)}
                   </span>
                 </div>

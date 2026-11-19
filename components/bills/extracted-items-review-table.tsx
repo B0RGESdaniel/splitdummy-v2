@@ -106,7 +106,7 @@ export function ExtractedItemsReviewTable({
       ) : (
         <table className="w-full table-fixed border-collapse text-sm">
           <thead>
-            <tr className="text-left font-mono text-[11px] uppercase tracking-wide text-muted-foreground">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-muted-foreground">
               <th scope="col" className="border-b-[1.5px] border-border px-1 pb-1.5 font-medium">
                 Descrição
               </th>
