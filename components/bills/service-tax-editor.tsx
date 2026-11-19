@@ -41,9 +41,10 @@ export function ServiceTaxEditor({
       <DialogTrigger asChild>
         <button
           type="button"
-          className="text-muted-foreground hover:text-foreground flex items-center gap-1 text-xs"
+          aria-label="Alterar taxa de serviço"
+          className="flex items-center gap-1 underline decoration-dotted underline-offset-3"
         >
-          Taxa de serviço: <span className="font-digits">{serviceTaxPercent}%</span>
+          TAXA SERVIÇO <span className="font-digits">{serviceTaxPercent}%</span>
           <Pencil className="size-3" />
         </button>
       </DialogTrigger>

@@ -10,7 +10,9 @@ import type { Database } from "./database.types";
  * and serving the public closed-bill share page. The AI receipt extraction
  * route uses it only to *count* a user's past `receipts` for the rate
  * limit (RLS would hide rows from bills they've since left); the audit row
- * itself is still inserted via the regular RLS-respecting client.
+ * itself is still inserted via the regular RLS-respecting client. The
+ * Resumo uses it only to *count* the owner's bills for the "Conta #003"
+ * number (a participant can't see the owner's other bills).
  */
 export function createServiceRoleClient() {
   return createSupabaseClient<Database>(

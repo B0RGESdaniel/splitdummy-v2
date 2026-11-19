@@ -1,0 +1,35 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/resumo-cupom-variacoes.html"
+        ],
+        "createdAt": "2026-11-18T20:37:00.054Z",
+        "reason": "papel-cru oklch(0.97 0.01 80) is the established .paper-check background in DESIGN.md/globals.css; mock reuses the project palette"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/resumo-cupom-v2.html"
+        ],
+        "createdAt": "2026-11-18T20:57:06.251Z",
+        "reason": "papel-cru oklch(0.97 0.01 80) is the established .paper-check background in DESIGN.md/globals.css; mock reuses the project palette"
+      },
+      {
+        "rule": "cream-palette",
+        "value": "*",
+        "files": [
+          ".impeccable/mocks/resumo-cupom-v3.html"
+        ],
+        "createdAt": "2026-11-18T20:58:33.068Z",
+        "reason": "papel-cru is the established .paper-check background in DESIGN.md; mock reuses project palette"
+      }
+    ]
+  }
+}

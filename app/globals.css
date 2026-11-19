@@ -212,12 +212,104 @@
  * .font-digits utility below — never applied to whole words/labels.
  */
 .cupom-fiscal {
+  /*
+   * Thermal paper, not the comanda's raw paper: colder white, near-black
+   * ink with a faded secondary tone. Overriding the shared tokens keeps
+   * text-muted-foreground/border-border working inside the strip.
+   */
+  --receipt-paper: oklch(0.985 0.003 250);
+  --foreground: oklch(0.24 0.01 260);
+  --muted-foreground: oklch(0.52 0.01 260);
+  --border: oklch(0.52 0.01 260);
+
+  position: relative;
+  background: var(--receipt-paper);
+  color: var(--foreground);
   font-family: var(--font-receipt-base);
   text-transform: none;
 }
 
 .cupom-fiscal .font-digits {
   font-family: var(--font-receipt-digits);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Serrated tear edges, top and bottom */
+.cupom-fiscal::before,
+.cupom-fiscal::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 8px;
+  background:
+    linear-gradient(135deg, var(--receipt-paper) 50%, transparent 50%) 0 0 / 12px 8px repeat-x,
+    linear-gradient(225deg, var(--receipt-paper) 50%, transparent 50%) 0 0 / 12px 8px repeat-x;
+}
+
+.cupom-fiscal::before {
+  top: -8px;
+  transform: scaleY(-1);
+}
+
+.cupom-fiscal::after {
+  bottom: -8px;
+}
+
+/*
+ * Printing: the strip comes down out of a slot in jerky steps, like a
+ * thermal printer feeding line by line. Only played when an open bill's
+ * Resumo mounts (a closed bill opens straight on the finished receipt).
+ */
+@keyframes receipt-print {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.receipt-printing {
+  animation: receipt-print 2.4s steps(18, end) both;
+}
+
+/*
+ * The "fechada" stamp hits only at the moment the bill is closed (seen
+ * live by everyone with the Resumo open, via realtime); afterwards it's
+ * just there, no replay.
+ */
+.receipt-stamp {
+  font-family: var(--font-check-base);
+  mix-blend-mode: multiply;
+  transform: rotate(-12deg);
+  opacity: 0.85;
+}
+
+@keyframes receipt-stamp {
+  0% {
+    transform: rotate(-12deg) scale(2.4);
+    opacity: 0;
+  }
+  60% {
+    transform: rotate(-12deg) scale(0.92);
+    opacity: 0.9;
+  }
+  100% {
+    transform: rotate(-12deg) scale(1);
+    opacity: 0.85;
+  }
+}
+
+.receipt-stamp-hit {
+  animation: receipt-stamp 0.45s cubic-bezier(0.2, 0.8, 0.3, 1.2) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt-printing,
+  .receipt-stamp-hit {
+    animation: none;
+  }
 }
 
 .paper-check [data-slot="button"] {
