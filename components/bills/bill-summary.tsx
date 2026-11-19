@@ -361,7 +361,7 @@ export function BillSummary({
           />
         ) : (
           <p className="text-center text-sm text-muted-foreground">
-            Só {ownerName} pode marcar a conta como paga.
+            Quando todos conferirem, {ownerName} marca a conta como paga.
           </p>
         ))}
     </>
