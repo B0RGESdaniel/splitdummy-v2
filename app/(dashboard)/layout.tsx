@@ -1,7 +1,9 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { archivoNarrow, bitter, courierPrime, dotGothic16, kalam } from "@/app/fonts";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
 // Every route under here is an auth-gated redirect check — it must block
@@ -24,15 +26,20 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  // O balcão: papéis da comanda (Archivo/Kalam/Bitter) e do cupom (Courier/
+  // DotGothic16) lado a lado, cada um na própria voz.
   return (
-    <div className="flex flex-1 flex-col items-center">
+    <ThemeScope
+      className={`${archivoNarrow.variable} ${bitter.variable} ${kalam.variable} ${courierPrime.variable} ${dotGothic16.variable} paper-check balcao flex flex-1 flex-col items-center`}
+    >
       <div className="flex w-full max-w-md flex-1 flex-col">
-        <header className="sticky top-0 z-10 flex items-center justify-between border-b bg-background/95 px-4 py-3 backdrop-blur-sm">
-          <span className="font-semibold">Splitdummy</span>
-          <SignOutButton />
+        <header className="flex items-center justify-between gap-2 px-5 pt-4 pb-1">
+          {/* Nome da casa: o que vem impresso em toda comanda do bloco. */}
+          <span className="font-display text-xl font-bold tracking-tight">Splitdummy</span>
+          <SignOutButton className="text-[color:var(--balcao-soft)] hover:bg-[color:var(--balcao-ink)]/10 hover:text-[color:var(--balcao-ink)]" />
         </header>
-        <main className="flex flex-1 flex-col gap-4 p-4">{children}</main>
+        <main className="flex flex-1 flex-col gap-7 px-5 pt-3 pb-10">{children}</main>
       </div>
-    </div>
+    </ThemeScope>
   );
 }

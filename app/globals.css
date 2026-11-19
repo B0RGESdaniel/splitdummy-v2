@@ -564,6 +564,56 @@
   }
 }
 
+/*
+ * Balcão (dashboard): a superfície escura onde ficam os papéis da pessoa —
+ * comandas abertas e cupons pagos. É `.paper-check` por baixo (diálogos e
+ * os próprios papéis herdam os tokens da comanda), mas o fundo troca de
+ * papel pra tinta royal bem fechada, sem grão: o balcão não é papel.
+ */
+.paper-check.balcao {
+  --balcao: oklch(0.21 0.07 262);
+  --balcao-ink: oklch(0.95 0.012 80);
+  --balcao-soft: oklch(0.8 0.04 262);
+  --balcao-line: oklch(0.95 0.012 80 / 38%);
+
+  color-scheme: dark;
+  background-color: var(--balcao);
+  background-image: none;
+  color: var(--balcao-ink);
+}
+
+.balcao header {
+  background-image: none;
+}
+
+.balcao ::selection {
+  background: var(--balcao-soft);
+  color: var(--balcao);
+}
+
+.balcao [data-slot="dialog-content"] {
+  color-scheme: light;
+}
+
+/*
+ * Papel em cima do balcão: a única sombra ambiente do app, e só aqui —
+ * metáfora física (folha apoiada numa superfície), como a viga e o selo.
+ * Comanda usa box-shadow; o cupom usa drop-shadow porque a serrilha é
+ * recorte (pseudo-elementos) e box-shadow ignoraria os dentes.
+ */
+.balcao-comanda {
+  background-color: var(--background);
+  background-image: var(--paper-grain);
+  background-repeat: repeat;
+  box-shadow:
+    0 1px 0 oklch(0 0 0 / 30%),
+    0 10px 16px -8px oklch(0 0 0 / 65%);
+}
+
+.balcao-cupom {
+  filter: drop-shadow(0 8px 8px oklch(0 0 0 / 50%));
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;

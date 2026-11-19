@@ -1,12 +1,11 @@
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
-import { Bitter, Kalam } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillBackButton } from "@/components/bills/bill-back-button";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
-import { archivoNarrow } from "@/app/fonts";
+import { archivoNarrow, bitter, kalam } from "@/app/fonts";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
@@ -14,18 +13,6 @@ import { createClient } from "@/lib/supabase/server";
 // (different top-level group, so it gets its own paper-world chrome instead
 // of the dashboard's), so it repeats the auth-gate redirect check here.
 export const instant = false;
-
-const bitter = Bitter({
-  variable: "--font-display",
-  subsets: ["latin"],
-  weight: ["400", "600", "700"],
-});
-
-const kalam = Kalam({
-  variable: "--font-handwritten",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
 
 export default async function BillLayout({
   children,

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { connection } from "next/server";
-import { Courier_Prime, DotGothic16 } from "next/font/google";
 
+import { courierPrime, dotGothic16 } from "@/app/fonts";
 import { BillSummary } from "@/components/bills/bill-summary";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
@@ -9,18 +9,6 @@ import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 export const instant = false;
-
-const courierPrime = Courier_Prime({
-  variable: "--font-receipt-base",
-  subsets: ["latin"],
-  weight: ["400", "700"],
-});
-
-const dotGothic16 = DotGothic16({
-  variable: "--font-receipt-digits",
-  subsets: ["latin"],
-  weight: ["400"],
-});
 
 // Fuso explícito: o servidor roda em UTC, e o cupom precisa da hora local.
 const receiptDateFormat = new Intl.DateTimeFormat("pt-BR", {

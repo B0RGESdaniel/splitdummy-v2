@@ -17,7 +17,7 @@ import {
 import { createClient } from "@/lib/supabase/client";
 import { usePortalContainer } from "@/components/theme-scope";
 
-export function SignOutButton() {
+export function SignOutButton({ className }: { className?: string }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const portalContainer = usePortalContainer();
@@ -32,7 +32,12 @@ export function SignOutButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-lg" aria-label="Desconectar">
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          aria-label="Desconectar"
+          className={className}
+        >
           <LogOut />
         </Button>
       </DialogTrigger>
