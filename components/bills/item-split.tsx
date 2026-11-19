@@ -8,6 +8,7 @@ import {
   incrementItemPart,
   splitItemEqually,
 } from "@/app/(bill)/bills/[billId]/items/actions";
+import { AvatarIcon } from "@/components/bills/avatar-icon";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -20,6 +21,7 @@ import {
 } from "@/lib/realtime/use-realtime-table";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 import { splitPartsCents } from "@/lib/split/calculate";
+import type { BillParticipant } from "@/lib/bill/participants";
 
 type Share = { participant_id: string; parts: number | null };
 
@@ -60,7 +62,7 @@ export function ItemSplit({
   itemId: string;
   totalCents: number;
   isOpen: boolean;
-  participants: { participant_id: string; display_name: string | undefined }[];
+  participants: BillParticipant[];
   initialShares?: Share[];
 }) {
   const queryKey = ["item-shares", itemId];
@@ -216,14 +218,24 @@ export function ItemSplit({
               className={cn(
                 // Card tem overflow-hidden, o que deixa ele encolher numa coluna flex em vez de a lista rolar
                 "shrink-0",
+                participant.is_self && "ring-[1.5px] ring-foreground",
                 flashing.has(participant.participant_id) && "realtime-flash",
               )}
             >
               <CardContent className="flex items-center justify-between gap-4">
-                <span className="font-medium">
-                  {participant.display_name}
+                <span className="flex min-w-0 items-center gap-2">
+                  {participant.avatar_key && (
+                    <AvatarIcon
+                      avatarKey={participant.avatar_key}
+                      className="size-7 shrink-0 text-foreground"
+                    />
+                  )}
+                  {/* Própria linha vira "Você": mais curto que o nome e já vem primeiro, com avatar */}
+                  <span className="truncate font-medium">
+                    {participant.is_self ? "Você" : participant.display_name}
+                  </span>
                 </span>
-                <div className="flex items-center gap-4">
+                <div className="flex shrink-0 items-center gap-4">
                   <PartsStepper
                     parts={parts}
                     disabled={!isOpen}

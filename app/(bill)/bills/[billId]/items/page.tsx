@@ -8,6 +8,7 @@ import { CloseForMeButton } from "@/components/bills/close-for-me-button";
 import { CreateItemButton } from "@/components/bills/create-item-button";
 import { ItemsList } from "@/components/bills/items-list";
 import { ReceiptScanButton } from "@/components/bills/receipt-scan-button";
+import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -20,6 +21,9 @@ export default async function ItemsPage({
   await connection();
   const { billId } = await params;
   const supabase = await createClient();
+
+  const { data: claims } = await supabase.auth.getClaims();
+  const userId = claims?.claims.sub;
 
   const { data: bill } = await supabase
     .from("bills")
@@ -43,8 +47,9 @@ export default async function ItemsPage({
       .order("created_at", { ascending: true }),
     supabase
       .from("bill_participants")
-      .select("id, display_name, profiles(display_name)")
-      .eq("bill_id", billId),
+      .select("id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)")
+      .eq("bill_id", billId)
+      .order("joined_at", { ascending: true }),
     supabase
       .from("item_shares")
       .select("item_id, participant_id, parts")
@@ -86,10 +91,7 @@ export default async function ItemsPage({
         initialItems={items ?? []}
         initialShares={shares ?? []}
         isOpen={isOpen}
-        participants={(participants ?? []).map((p) => ({
-          participant_id: p.id,
-          display_name: p.display_name ?? p.profiles?.display_name,
-        }))}
+        participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
       />
       {isOpen && <CreateItemButton billId={billId} />}
       {isOpen && (

@@ -16,6 +16,7 @@ import {
 } from "@/lib/bill/bill-item-shares";
 import { buildParticipantBreakdowns } from "@/lib/split/breakdown";
 import type { PartsShareInput } from "@/lib/split/validate";
+import type { BillParticipant } from "@/lib/bill/participants";
 
 type Item = {
   id: string;
@@ -54,7 +55,7 @@ export function BillSummary({
   isOwner: boolean;
   isOpen: boolean;
   justClosed: boolean;
-  participants: { participant_id: string; display_name: string | undefined }[];
+  participants: BillParticipant[];
   initialItems: Item[];
   initialShares: BillItemShare[];
 }) {
@@ -194,7 +195,12 @@ export function BillSummary({
                   const header = (
                     <>
                       <span className="flex items-baseline justify-between gap-2">
-                        <span className="font-bold uppercase">{participant.display_name}</span>
+                        <span className="font-bold uppercase">
+                          {participant.display_name}
+                          {participant.is_self && (
+                            <span className="font-normal"> (VOCÊ)</span>
+                          )}
+                        </span>
                         <span className="font-digits font-bold">{formatCurrency(total)}</span>
                       </span>
                       <span className="text-muted-foreground flex items-baseline justify-between gap-2 text-[11px]">

@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { usePortalContainer } from "@/components/theme-scope";
 import { itemTotalCents } from "@/lib/split/calculate";
+import type { BillParticipant } from "@/lib/bill/participants";
 
 export function ItemSplitDialog({
   billId,
@@ -21,7 +22,7 @@ export function ItemSplitDialog({
   billId: string;
   item: { id: string; description: string; unit_price: number; quantity: number };
   isOpen: boolean;
-  participants: { participant_id: string; display_name: string | undefined }[];
+  participants: BillParticipant[];
   trigger: React.ReactNode;
 }) {
   const portalContainer = usePortalContainer();

@@ -28,6 +28,7 @@ import {
   type BillItemShare,
 } from "@/lib/bill/bill-item-shares";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
+import type { BillParticipant } from "@/lib/bill/participants";
 
 type Item = {
   id: string;
@@ -58,7 +59,7 @@ export function ItemsList({
   initialItems: Item[];
   initialShares: BillItemShare[];
   isOpen: boolean;
-  participants: { participant_id: string; display_name: string | undefined }[];
+  participants: BillParticipant[];
 }) {
   const queryKey = ["items", billId];
   const queryClient = useQueryClient();

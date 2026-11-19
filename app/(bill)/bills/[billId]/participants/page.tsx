@@ -99,8 +99,11 @@ function AvatarSlot({ participant }: { participant: Participant }) {
 
 function SeatName({ participant }: { participant: Participant }) {
   return (
-    <span className="max-w-full truncate text-xs font-semibold uppercase text-foreground">
-      {participant.name}
+    <span className="flex max-w-full flex-col items-center text-xs font-semibold uppercase text-foreground">
+      <span className="max-w-full truncate">{participant.name}</span>
+      {participant.isSelf && (
+        <span className="text-[11px] font-normal text-muted-foreground">você</span>
+      )}
     </span>
   );
 }
@@ -136,9 +139,9 @@ function SeatButton({
       trigger={
         <button
           type="button"
-          aria-label={`Ver parcial de ${participant.name} (${roleLabel(
-            participant,
-          ).toLowerCase()})`}
+          aria-label={`Ver parcial de ${participant.name}${
+            participant.isSelf ? ", você" : ""
+          } (${roleLabel(participant).toLowerCase()})`}
           className={className}
         >
           {children}

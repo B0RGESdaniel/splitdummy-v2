@@ -4,6 +4,7 @@ import { Courier_Prime, DotGothic16 } from "next/font/google";
 
 import { BackToItemsLink } from "@/components/bills/back-to-items-link";
 import { BillSummary } from "@/components/bills/bill-summary";
+import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
@@ -69,8 +70,9 @@ export default async function BillSummaryPage({
   ] = await Promise.all([
       supabase
         .from("bill_participants")
-        .select("id, display_name, profiles(display_name)")
-        .eq("bill_id", billId),
+        .select("id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)")
+        .eq("bill_id", billId)
+        .order("joined_at", { ascending: true }),
       supabase
         .from("items")
         .select("id, description, unit_price, quantity")
@@ -110,10 +112,7 @@ export default async function BillSummaryPage({
           isOwner={isOwner}
           isOpen={isOpen}
           justClosed={!isOpen && fechou === "1"}
-          participants={(participants ?? []).map((p) => ({
-            participant_id: p.id,
-            display_name: p.display_name ?? p.profiles?.display_name,
-          }))}
+          participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
           initialItems={items ?? []}
           initialShares={shares ?? []}
         />
