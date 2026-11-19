@@ -7,6 +7,7 @@ import {
   clearItemParts,
   decrementItemPart,
   incrementItemPart,
+  restoreItemParts,
   splitItemEqually,
 } from "@/app/(bill)/bills/[billId]/items/actions";
 import { AvatarIcon } from "@/components/bills/avatar-icon";
@@ -139,6 +140,7 @@ export function ItemSplit({
     action: typeof splitItemEqually,
     parts: number,
     errorMessage: string,
+    onSuccess?: (previous: Share[]) => void,
   ) {
     return useMutation({
       mutationKey: queryKey,
@@ -159,6 +161,9 @@ export function ItemSplit({
         }
         toast.error(errorMessage, { id: "item-parts-error" });
       },
+      onSuccess: (_data, _vars, context) => {
+        if (context?.previous) onSuccess?.(context.previous);
+      },
       onSettled: () => {
         invalidateAfterLastMutation(queryClient, queryKey);
         return invalidateBillShares();
@@ -175,7 +180,53 @@ export function ItemSplit({
     clearItemParts,
     0,
     "Não deu pra limpar as partes. Tente de novo.",
+    // Limpar não pede confirmação (decisão do usuário); o toque acidental se
+    // resolve com "Desfazer", que regrava as partes de antes.
+    (previous) => {
+      const toRestore = previous.flatMap((share) =>
+        (share.parts ?? 0) > 0
+          ? [{ participant_id: share.participant_id, parts: share.parts ?? 0 }]
+          : [],
+      );
+      if (toRestore.length === 0) return;
+      toast.success("Partes limpas.", {
+        id: "item-parts-cleared",
+        // Um pouco mais que o padrão: dá tempo de perceber o toque errado.
+        duration: 6000,
+        action: { label: "Desfazer", onClick: () => restoreParts.mutate(toRestore) },
+      });
+    },
   );
+
+  const restoreParts = useMutation({
+    mutationKey: queryKey,
+    mutationFn: (toRestore: { participant_id: string; parts: number }[]) =>
+      restoreItemParts(billId, itemId, toRestore),
+    onMutate: async (toRestore) => {
+      toRestore.forEach((share) => markOwn(share.participant_id));
+      await queryClient.cancelQueries({ queryKey });
+      const previous = queryClient.getQueryData<Share[]>(queryKey);
+      queryClient.setQueryData<Share[]>(queryKey, (current = []) =>
+        current.map((share) => ({
+          ...share,
+          parts:
+            toRestore.find((restored) => restored.participant_id === share.participant_id)
+              ?.parts ?? share.parts,
+        })),
+      );
+      return { previous };
+    },
+    onError: (_err, _vars, context) => {
+      if (context?.previous) {
+        queryClient.setQueryData(queryKey, context.previous);
+      }
+      toast.error("Não deu pra desfazer. Tente de novo.", { id: "item-parts-error" });
+    },
+    onSettled: () => {
+      invalidateAfterLastMutation(queryClient, queryKey);
+      return invalidateBillShares();
+    },
+  });
 
   const partsByParticipant = new Map(
     shares.map((share) => [share.participant_id, share.parts ?? 0]),
@@ -199,22 +250,20 @@ export function ItemSplit({
 
   return (
     <>
+      {/* No topo, zona difícil de alcançar sem querer com o polegar. "Dividir
+          para todos" é a ação principal; "Limpar partes" fica pequeno, só
+          texto vermelho (o vermelho sólido é reservado pra sinal), e o toque
+          errado se desfaz pelo toast. */}
       {isOpen && (
-        <div className="flex gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            className="flex-1"
-            onClick={() => splitEqually.mutate()}
-          >
+        <div className="flex items-center gap-3">
+          <Button type="button" className="flex-1" onClick={() => splitEqually.mutate()}>
             Dividir para todos
           </Button>
           <Button
             type="button"
-            variant="destructive"
+            variant="ghost"
             size="sm"
-            className="flex-1"
+            className="text-destructive hover:bg-destructive/10 hover:text-destructive"
             disabled={totalParts === 0}
             onClick={() => clearParts.mutate()}
           >

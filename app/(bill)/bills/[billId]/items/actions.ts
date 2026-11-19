@@ -174,6 +174,52 @@ export async function clearItemParts(billId: string, itemId: string) {
   revalidatePath(`/bills/${billId}/items`);
 }
 
+// "Desfazer" do limpar: regrava as partes de antes. Só pra quem ainda está
+// na conta — alguém pode ter sido removido entre limpar e desfazer.
+export async function restoreItemParts(
+  billId: string,
+  itemId: string,
+  shares: { participant_id: string; parts: number }[],
+) {
+  const supabase = await createClient();
+
+  const { data: participants, error: participantsError } = await supabase
+    .from("bill_participants")
+    .select("id")
+    .eq("bill_id", billId);
+
+  if (participantsError) {
+    throw new Error(participantsError.message);
+  }
+
+  const currentIds = new Set((participants ?? []).map((participant) => participant.id));
+  const rows = shares
+    .filter(
+      (share) =>
+        currentIds.has(share.participant_id) &&
+        Number.isInteger(share.parts) &&
+        share.parts >= 0,
+    )
+    .map((share) => ({
+      item_id: itemId,
+      bill_id: billId,
+      participant_id: share.participant_id,
+      parts: share.parts,
+    }));
+
+  if (rows.length === 0) return;
+
+  const { error } = await supabase
+    .from("item_shares")
+    .upsert(rows, { onConflict: "item_id,participant_id" });
+
+  if (error) {
+    throw new Error(error.message);
+  }
+
+  revalidatePath(`/bills/${billId}/items`);
+}
+
 async function setQuantityDelta(billId: string, itemId: string, delta: 1 | -1) {
   const supabase = await createClient();
 

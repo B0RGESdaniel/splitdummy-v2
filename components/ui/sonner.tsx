@@ -23,6 +23,8 @@ const Toaster = ({ ...props }: ToasterProps) => {
         classNames: {
           toast: "comanda-toast",
           icon: "comanda-toast-icon",
+          content: "comanda-toast-content",
+          actionButton: "comanda-toast-action",
         },
       }}
       {...props}

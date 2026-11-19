@@ -253,6 +253,29 @@
   box-shadow: 3px 3px 0 color-mix(in oklch, var(--toast-signal) 25%, transparent);
 }
 
+.comanda-toast-content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* "Desfazer" e afins: botão de contorno na tinta, dentro da etiqueta. */
+.comanda-toast-action {
+  flex: none;
+  align-self: center;
+  padding: 4px 10px;
+  border: 1.5px solid currentColor;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 13px;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.comanda-toast-action:hover {
+  background-color: color-mix(in oklch, currentColor 10%, transparent);
+}
+
 .comanda-toast-icon {
   flex: none;
   margin-top: 1px;
