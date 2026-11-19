@@ -87,7 +87,7 @@ export function CloseForMeButton({ billId }: { billId: string }) {
 
   return (
     <>
-      <Button asChild className="mt-5 h-10 w-full justify-center gap-2 px-3 text-[0.9375rem] whitespace-nowrap max-sm:text-[0.8125rem] [&_svg:not([class*='size-'])]:size-[18px]">
+      <Button asChild className="h-10 w-full justify-center gap-2 px-3 text-[0.9375rem] whitespace-nowrap max-sm:text-[0.8125rem] [&_svg:not([class*='size-'])]:size-[18px]">
         <Link href={summaryHref} onClick={handleClick}>
           {/* Os apelidos têm larguras bem diferentes ("Rei" vs. "Marquês do
               Atendimento"): o bloco recentraliza a cada troca, e ícone e

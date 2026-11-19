@@ -46,7 +46,15 @@ export function ItemsEntryActions({
   return (
     <>
       {isOpen && (isEmpty ? [scan, create] : [create, scan])}
-      {!isEmpty && <CloseForMeButton billId={billId} />}
+      {/* Sempre no rodapé: com lista curta, `mt-auto` empurra pro fim da
+          tela; com lista longa, `sticky` segura no fim enquanto rola — o
+          caminho pro Resumo não depende de rolar até o fim. Faixa de papel
+          pra não deixar itens aparecendo por trás. */}
+      {!isEmpty && (
+        <div className="sticky bottom-0 z-10 -mx-4 mt-auto -mb-4 border-t-[1.5px] border-foreground bg-background/95 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] backdrop-blur-sm">
+          <CloseForMeButton billId={billId} />
+        </div>
+      )}
     </>
   );
 }
