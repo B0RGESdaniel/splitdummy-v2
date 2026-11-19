@@ -1,5 +1,6 @@
 "use client";
 
+import { RollingNumber } from "@/components/bills/rolling-number";
 import { Button } from "@/components/ui/button";
 
 export function PartsStepper({
@@ -14,7 +15,7 @@ export function PartsStepper({
   disabled?: boolean;
 }) {
   if (disabled) {
-    return <span className="w-8 text-center text-lg font-bold">{parts}</span>;
+    return <RollingNumber value={parts} className="w-8 text-lg font-bold" />;
   }
 
   return (
@@ -28,7 +29,7 @@ export function PartsStepper({
       >
         −
       </Button>
-      <span className="w-6 text-center text-lg font-bold">{parts}</span>
+      <RollingNumber value={parts} className="w-6 text-lg font-bold" />
       <Button
         type="button"
         variant="outline"

@@ -165,7 +165,7 @@ Decidido em 2026-11-18: em vez de funcionalidades novas, a Fase 3 é uma grande 
 
 **B4. Animações** — biblioteca **Motion** (decidido). Respeitar `prefers-reduced-motion`.
 - ✅ Slide ao escolher avatar: moldura de seleção do `AvatarPicker` é um único `motion.span` com `layoutId` (escopado por `useId`) que escorrega entre os avatares. `MotionProvider` (`components/providers/motion-provider.tsx`, `reducedMotion="user"`) global no `app/layout.tsx` — cobre `prefers-reduced-motion` pras próximas animações também.
-- ⬜ Quantidade aumentando (stepper).
+- ✅ Quantidade aumentando (stepper): `RollingNumber` (`components/bills/rolling-number.tsx`, `AnimatePresence` `popLayout` + variante com direção) no `PartsStepper` — cobre Qtd em Itens e partes no diálogo de dividir. Com reduzir movimento vira só crossfade.
 - ⬜ Substituição de itens (leitura de cupom, "substituir tudo").
 - ⬜ Botão "fecha para mim" (fim da lista de Itens) com um vocativo girando *antes* do texto, entre apelidos de garçom — "Chefe, fecha para mim", "Patrão, fecha para mim"… — piada.
 
