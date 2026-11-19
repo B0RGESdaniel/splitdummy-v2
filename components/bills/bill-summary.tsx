@@ -135,20 +135,31 @@ export function BillSummary({
   // estado durante o render, sem effect.
   const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
   const [stampHit, setStampHit] = useState(justClosed);
+  // Mesmo momento, falado: leitor de tela não vê o carimbo bater.
+  const [announcePaid, setAnnouncePaid] = useState(false);
   if (prevIsOpen !== isOpen) {
     setPrevIsOpen(isOpen);
-    if (prevIsOpen && !isOpen) setStampHit(true);
+    if (prevIsOpen && !isOpen) {
+      setStampHit(true);
+      setAnnouncePaid(true);
+    }
   }
 
   // Tira o `?fechou=1` da URL pra um recarregar não bater o carimbo de novo.
+  // O anúncio espera a região já estar na página: texto presente desde a
+  // montagem não é lido.
   useEffect(() => {
-    if (justClosed) {
-      window.history.replaceState(null, "", window.location.pathname);
-    }
+    if (!justClosed) return;
+    window.history.replaceState(null, "", window.location.pathname);
+    const id = setTimeout(() => setAnnouncePaid(true), 100);
+    return () => clearTimeout(id);
   }, [justClosed]);
 
   return (
     <>
+      <p role="status" className="sr-only">
+        {announcePaid ? "Conta marcada como paga." : ""}
+      </p>
       {/* Boca da impressora fixa no topo (não some depois de imprimir), mais
           larga que o papel; o cupom sai de baixo dela. */}
       <div className="pt-2">
@@ -225,10 +236,10 @@ export function BillSummary({
                               <span className="font-digits">{formatCurrency(subtotal)}</span> + taxa
                             </span>
                             <span className="underline decoration-dotted group-open:hidden">
-                              ver itens ▾
+                              ver itens <span aria-hidden>▾</span>
                             </span>
                             <span className="hidden underline decoration-dotted group-open:inline">
-                              ver itens ▴
+                              ver itens <span aria-hidden>▴</span>
                             </span>
                           </>
                         )}

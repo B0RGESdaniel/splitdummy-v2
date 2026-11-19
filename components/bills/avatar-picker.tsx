@@ -1,6 +1,6 @@
 "use client";
 
-import { useId, useState } from "react";
+import { useId, useRef, useState, type KeyboardEvent } from "react";
 import { motion } from "motion/react";
 import { cn } from "cn";
 
@@ -16,16 +16,39 @@ export function AvatarPicker({
   const [selected, setSelected] = useState<AvatarKey>(defaultValue);
   // layoutId é global no documento: escopa por instância do seletor.
   const frameId = `avatar-picker-frame-${useId()}`;
+  const buttonsRef = useRef<(HTMLButtonElement | null)[]>([]);
+
+  // Grupo de opção única (padrão radiogroup): Tab entra só no selecionado,
+  // setas trocam a escolha e movem o foco junto.
+  function handleKeyDown(event: KeyboardEvent<HTMLButtonElement>, index: number) {
+    const step =
+      event.key === "ArrowRight" || event.key === "ArrowDown"
+        ? 1
+        : event.key === "ArrowLeft" || event.key === "ArrowUp"
+          ? -1
+          : 0;
+    if (step === 0) return;
+    event.preventDefault();
+    const next = (index + step + AVATAR_KEYS.length) % AVATAR_KEYS.length;
+    setSelected(AVATAR_KEYS[next]);
+    buttonsRef.current[next]?.focus();
+  }
 
   return (
-    <div className="flex gap-3">
+    <div role="radiogroup" aria-label="Avatar" className="flex gap-3">
       <input type="hidden" name={name} value={selected} />
       {AVATAR_KEYS.map((key, index) => (
         <button
           key={key}
+          ref={(node) => {
+            buttonsRef.current[index] = node;
+          }}
           type="button"
-          aria-label={`Escolher avatar ${index + 1}`}
-          aria-pressed={selected === key}
+          role="radio"
+          aria-label={`Avatar ${index + 1}`}
+          aria-checked={selected === key}
+          tabIndex={selected === key ? 0 : -1}
+          onKeyDown={(event) => handleKeyDown(event, index)}
           onClick={() => setSelected(key)}
           className="relative flex h-12 w-12 items-center justify-center p-1.5 text-foreground"
         >

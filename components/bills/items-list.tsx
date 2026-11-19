@@ -27,6 +27,7 @@ import {
   useBillItemShares,
   type BillItemShare,
 } from "@/lib/bill/bill-item-shares";
+import { useItemChangeAnnouncer } from "@/lib/realtime/use-item-change-announcer";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
 import { billItemsQueryKey, useBillItems, type BillItem } from "@/lib/bill/bill-items";
 import type { BillParticipant } from "@/lib/bill/participants";
@@ -79,6 +80,7 @@ export function ItemsList({
   }
 
   const { flashing, markOwn, handleRemoteChange } = useRemoteChangeFlash();
+  const { announcement, announce } = useItemChangeAnnouncer();
 
   useRealtimeTable({
     table: "items",
@@ -87,8 +89,28 @@ export function ItemsList({
     // Item novo já chega com a animação de entrada; o flash fica pra edições.
     // Sem isso, quem salva a leitura de cupom veria os próprios itens piscando
     // como se fossem de outra pessoa.
+    //
+    // Entrada e saída também são faladas pro leitor de tela, só quando vêm de
+    // outra pessoa. O cache ainda é o de antes do evento (a releitura é
+    // assíncrona): item próprio novo já está nele (id real, ou o otimista com
+    // a mesma descrição); item próprio excluído já saiu dele, e aí o
+    // `useRealtimeTable` nem chama o `onChange`.
     onChange: (row, event) => {
-      if (event !== "INSERT" && typeof row.id === "string") handleRemoteChange(row.id);
+      const cached = queryClient.getQueryData<Item[]>(queryKey) ?? [];
+      if (event === "INSERT") {
+        const isOwn = cached.some(
+          (item) =>
+            item.id === row.id ||
+            (item.id.startsWith("optimistic-") && item.description === row.description),
+        );
+        if (!isOwn && typeof row.description === "string") announce("added", row.description);
+        return;
+      }
+      if (event === "DELETE") {
+        const removed = cached.find((item) => item.id === row.id);
+        if (removed) announce("removed", removed.description);
+      }
+      if (typeof row.id === "string") handleRemoteChange(row.id);
     },
   });
 
@@ -193,6 +215,9 @@ export function ItemsList({
     // Só a entrada de itens novos anima; a saída é imediata (animar a saída
     // junto com a entrada dos novos no "substituir tudo" ficava truncado).
     <>
+      <p role="status" className="sr-only">
+        {announcement}
+      </p>
       {/* Conta vazia: quem desenha o estado vazio é o ItemsEntryActions. */}
       {items.length === 0 ? null : (
         <table className="w-full table-fixed border-collapse border-[1.5px] border-foreground text-sm">
@@ -248,7 +273,11 @@ export function ItemsList({
                         }
                         deleteAction={() => deleteMutation.mutateAsync(item.id)}
                         trigger={
-                          <button type="button" className="block w-full">
+                          <button
+                            type="button"
+                            className="block w-full"
+                            aria-label={`Editar ${item.description}, ${item.quantity} de ${formatCurrency(item.unit_price)}, total ${formatCurrency(item.unit_price * item.quantity)}`}
+                          >
                             {description}
                           </button>
                         }

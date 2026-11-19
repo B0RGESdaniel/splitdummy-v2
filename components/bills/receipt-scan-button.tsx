@@ -2,7 +2,7 @@
 
 import { Camera, ScanText, X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { SavedReceiptItem } from "@/app/(bill)/bills/[billId]/items/receipt-actions";
@@ -85,13 +85,52 @@ export function ReceiptScanButton({
   const queryClient = useQueryClient();
   const overlayOpen = state.step !== "closed";
 
+  const triggerRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
+
   // Overlay em tela cheia em vez de Dialog: leva o foco pra dentro ao abrir,
-  // pro leitor de tela começar por ele e não pela lista de itens atrás.
+  // pro leitor de tela começar por ele e não pela lista de itens atrás, e
+  // devolve pro botão de escanear ao fechar.
   useEffect(() => {
     if (overlayOpen) {
       overlayRef.current?.focus();
+    } else if (wasOpen.current) {
+      triggerRef.current?.focus();
     }
+    wasOpen.current = overlayOpen;
   }, [overlayOpen]);
+
+  // Tab e Esc só valem pro próprio overlay: o diálogo "manter/substituir" da
+  // revisão é portal (fora do overlay no DOM), mas o evento sobe pela árvore
+  // do React até aqui — sem essa checagem, Esc nele fecharia a leitura toda.
+  function handleOverlayKeyDown(event: KeyboardEvent<HTMLDivElement>) {
+    const overlay = overlayRef.current;
+    if (!overlay || !overlay.contains(event.target as Node)) return;
+
+    if (event.key === "Escape") {
+      closeOverlay();
+      return;
+    }
+    if (event.key !== "Tab") return;
+
+    // Prende o foco: do último volta pro primeiro e vice-versa.
+    const focusables = Array.from(
+      overlay.querySelectorAll<HTMLElement>(
+        'button:not([disabled]), input:not([disabled]), [href], [tabindex]:not([tabindex="-1"])',
+      ),
+    );
+    if (focusables.length === 0) return;
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && (active === first || active === overlay)) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
 
   function closeOverlay() {
     abortRef.current?.abort();
@@ -176,6 +215,7 @@ export function ReceiptScanButton({
             A leitura preenche os itens e você confere tudo antes de salvar.
           </p>
           <Button
+            ref={triggerRef}
             type="button"
             className="h-10 w-full gap-2 text-[0.9375rem] [&_svg:not([class*='size-'])]:size-[18px]"
             onClick={() => inputRef.current?.click()}
@@ -186,6 +226,7 @@ export function ReceiptScanButton({
         </div>
       ) : (
         <Button
+          ref={triggerRef}
           type="button"
           variant="ghost"
           className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
@@ -203,11 +244,7 @@ export function ReceiptScanButton({
           aria-modal="true"
           aria-labelledby={titleId}
           tabIndex={-1}
-          onKeyDown={(event) => {
-            if (event.key === "Escape") {
-              closeOverlay();
-            }
-          }}
+          onKeyDown={handleOverlayKeyDown}
           className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background p-4 outline-none"
         >
           <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
