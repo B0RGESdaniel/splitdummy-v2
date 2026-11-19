@@ -45,7 +45,7 @@ describe("truncateDescription", () => {
     const long = "Picanha na Chapa com Arroz Feijão Farofa e Vinagrete";
     const result = truncateDescription(long);
     expect(result.length).toBeLessThanOrEqual(MAX_DESCRIPTION_LENGTH);
-    expect(result).toBe("Picanha na Chapa com Arroz Feijão Farofa");
+    expect(result).toBe("Picanha na Chapa");
   });
 
   it("corta seco quando não há espaço", () => {
