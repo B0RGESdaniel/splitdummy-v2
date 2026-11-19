@@ -2,7 +2,7 @@
 
 import { Camera, ScanText, X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { SavedReceiptItem } from "@/app/(bill)/bills/[billId]/items/receipt-actions";
@@ -76,7 +76,18 @@ export function ReceiptScanButton({
   const [state, setState] = useState<ScanState>({ step: "closed" });
   const inputRef = useRef<HTMLInputElement>(null);
   const abortRef = useRef<AbortController | null>(null);
+  const overlayRef = useRef<HTMLDivElement>(null);
+  const titleId = useId();
   const queryClient = useQueryClient();
+  const overlayOpen = state.step !== "closed";
+
+  // Overlay em tela cheia em vez de Dialog: leva o foco pra dentro ao abrir,
+  // pro leitor de tela começar por ele e não pela lista de itens atrás.
+  useEffect(() => {
+    if (overlayOpen) {
+      overlayRef.current?.focus();
+    }
+  }, [overlayOpen]);
 
   function closeOverlay() {
     abortRef.current?.abort();
@@ -170,11 +181,23 @@ export function ReceiptScanButton({
         Escanear cupom
       </Button>
 
-      {state.step !== "closed" && (
-        <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background p-4">
+      {overlayOpen && (
+        <div
+          ref={overlayRef}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={titleId}
+          tabIndex={-1}
+          onKeyDown={(event) => {
+            if (event.key === "Escape") {
+              closeOverlay();
+            }
+          }}
+          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background p-4 outline-none"
+        >
           <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="flex items-center gap-1.5 font-mono text-sm uppercase tracking-wide text-foreground">
+              <h2 id={titleId} className="flex items-center gap-1.5 font-mono text-sm uppercase tracking-wide text-foreground">
                 <ScanText className="size-4" aria-hidden />
                 Escanear cupom
               </h2>

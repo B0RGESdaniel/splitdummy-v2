@@ -363,6 +363,26 @@
 }
 
 /*
+ * Touch target floor: icon/sm buttons render at 28–36px (dense comanda
+ * rows), below the 44px a thumb needs at the table. An invisible ::after
+ * grows the hit area to 44px on whichever axis is short, without touching
+ * the visual or the layout. min(0px, …) keeps wider axes untouched.
+ * The position rule sits in :where() (zero specificity) so a button that
+ * is itself `absolute` (dialog close X) keeps its own positioning.
+ */
+:where(.paper-check [data-slot="button"][data-size^="icon"]),
+:where(.paper-check [data-slot="button"][data-size="sm"]) {
+  position: relative;
+}
+
+.paper-check [data-slot="button"][data-size^="icon"]::after,
+.paper-check [data-slot="button"][data-size="sm"]::after {
+  content: "";
+  position: absolute;
+  inset: min(0px, calc((100% - 2.75rem) / 2));
+}
+
+/*
  * Dialog/Card weren't covered by the button/badge radius-zero sweep above
  * (their `rounded-xl` resolves `--radius-xl`, still nonzero inside
  * .paper-check), and DialogTitle/CardTitle's `font-heading` utility

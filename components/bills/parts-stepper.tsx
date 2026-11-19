@@ -5,11 +5,14 @@ import { Button } from "@/components/ui/button";
 
 export function PartsStepper({
   parts,
+  label,
   onIncrement,
   onDecrement,
   disabled,
 }: {
   parts: number;
+  // O que o número conta, pro leitor de tela: "quantidade de Chopp", "partes de Ana".
+  label: string;
   onIncrement: () => void;
   onDecrement: () => void;
   disabled?: boolean;
@@ -25,7 +28,7 @@ export function PartsStepper({
         variant="outline"
         size="icon-sm"
         onClick={onDecrement}
-        aria-label="Diminuir partes"
+        aria-label={`Diminuir ${label}`}
       >
         −
       </Button>
@@ -35,7 +38,7 @@ export function PartsStepper({
         variant="outline"
         size="icon-sm"
         onClick={onIncrement}
-        aria-label="Aumentar partes"
+        aria-label={`Aumentar ${label}`}
       >
         +
       </Button>

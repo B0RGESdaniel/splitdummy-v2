@@ -287,6 +287,7 @@ export function ItemsList({
                     <div className="flex justify-center">
                       <PartsStepper
                         parts={item.quantity}
+                        label={`quantidade de ${item.description}`}
                         disabled={!isOpen}
                         onIncrement={() => incrementQuantity.mutate(item.id)}
                         onDecrement={() => decrementQuantity.mutate(item.id)}
@@ -306,7 +307,9 @@ export function ItemsList({
                             variant="outline"
                             size="icon-sm"
                             aria-label={
-                              splitItemIds.has(item.id) ? "Dividir item" : "Dividir item (ainda não dividido)"
+                              splitItemIds.has(item.id)
+                                ? `Dividir ${item.description}`
+                                : `Dividir ${item.description} (ainda não dividido)`
                             }
                             className={cn(!splitItemIds.has(item.id) && "border-dashed")}
                           >

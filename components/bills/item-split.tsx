@@ -238,6 +238,11 @@ export function ItemSplit({
                 <div className="flex shrink-0 items-center gap-4">
                   <PartsStepper
                     parts={parts}
+                    label={
+                      participant.is_self
+                        ? "suas partes"
+                        : `partes de ${participant.display_name}`
+                    }
                     disabled={!isOpen}
                     onIncrement={() => increment.mutate(participant.participant_id)}
                     onDecrement={() => decrement.mutate(participant.participant_id)}

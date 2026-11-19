@@ -20,11 +20,11 @@ export function AvatarPicker({
   return (
     <div className="flex gap-3">
       <input type="hidden" name={name} value={selected} />
-      {AVATAR_KEYS.map((key) => (
+      {AVATAR_KEYS.map((key, index) => (
         <button
           key={key}
           type="button"
-          aria-label={`Escolher avatar ${key}`}
+          aria-label={`Escolher avatar ${index + 1}`}
           aria-pressed={selected === key}
           onClick={() => setSelected(key)}
           className="relative flex h-12 w-12 items-center justify-center p-1.5 text-foreground"
