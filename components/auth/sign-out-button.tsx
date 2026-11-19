@@ -32,13 +32,13 @@ export function SignOutButton() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="icon-lg" aria-label="Sair da conta">
+        <Button variant="ghost" size="icon-lg" aria-label="Desconectar">
           <LogOut />
         </Button>
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle>Sair da sua conta?</DialogTitle>
+          <DialogTitle>Desconectar do Splitdummy?</DialogTitle>
           <DialogDescription>
             Você vai precisar entrar de novo com o Google pra continuar usando o
             Splitdummy.
@@ -49,7 +49,7 @@ export function SignOutButton() {
             Cancelar
           </Button>
           <Button variant="destructive" onClick={handleSignOut}>
-            Sair
+            Desconectar
           </Button>
         </DialogFooter>
       </DialogContent>
