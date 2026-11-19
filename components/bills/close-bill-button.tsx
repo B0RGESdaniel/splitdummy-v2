@@ -19,7 +19,7 @@ function ConfirmButton() {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" variant="destructive" disabled={pending}>
-      {pending ? "Fechando..." : "Fechar conta"}
+      {pending ? "Encerrando..." : "Encerrar conta"}
     </Button>
   );
 }
@@ -36,15 +36,15 @@ export function CloseBillButton({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="destructive" className="w-full">
-          Fechar conta
+          Encerrar conta
         </Button>
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle>Fechar esta conta?</DialogTitle>
+          <DialogTitle>Encerrar esta conta?</DialogTitle>
           <DialogDescription>
             Essa ação é definitiva e não pode ser desfeita — a conta não poderá mais
-            ser editada depois de fechada.
+            ser editada depois de encerrada.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

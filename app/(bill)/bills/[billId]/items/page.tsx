@@ -86,10 +86,10 @@ export default async function ItemsPage({
           display_name: p.display_name ?? p.profiles?.display_name,
         }))}
       />
+      {isOpen && <CreateItemButton billId={billId} />}
       {isOpen && (
         <ReceiptScanButton billId={billId} existingItemsCount={items?.length ?? 0} />
       )}
-      {isOpen && <CreateItemButton billId={billId} />}
 
       <CloseForMeButton billId={billId} />
     </div>
