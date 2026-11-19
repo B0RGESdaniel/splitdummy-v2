@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Divide } from "lucide-react";
+import { Divide, Pencil } from "lucide-react";
 import { motion } from "motion/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -247,8 +247,10 @@ export function ItemsList({
                   <span className="truncate font-handwritten text-lg leading-tight text-[color:var(--ink-handwritten)]">
                     {item.description}
                   </span>
-                  <span className="text-[11px] tabular-nums text-muted-foreground">
+                  <span className="flex items-center gap-1.5 text-[11px] tabular-nums text-muted-foreground">
                     {formatCurrency(item.unit_price)}/un → {formatCurrency(item.unit_price * item.quantity)}
+                    {/* Pista de que a linha abre o editar; o nome acessível já diz "Editar". */}
+                    {isOpen && <Pencil className="size-3" aria-hidden />}
                   </span>
                 </div>
               );
