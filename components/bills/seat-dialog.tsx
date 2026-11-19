@@ -25,6 +25,33 @@ function formatCurrency(cents: number) {
   });
 }
 
+// O que some junto com a pessoa: as partes dela (cascade em item_shares) e,
+// nos itens em que ela era a única, a divisão inteira — o item volta a ficar
+// pendente e trava o "fecha para mim" até alguém dividir de novo.
+function removalDescription(name: string, isSelf: boolean, breakdown: ParticipantBreakdown) {
+  const access = isSelf
+    ? "Você perde acesso a esta conta."
+    : `${name} perde acesso a esta conta.`;
+
+  if (breakdown.items.length === 0) {
+    return `${access} Essa ação não pode ser desfeita.`;
+  }
+
+  const count = breakdown.items.length;
+  const owner = isSelf ? "Suas partes" : `As partes de ${name}`;
+  const parts = `${owner} em ${count} ${count === 1 ? "item" : "itens"} somem e o valor é redividido entre quem fica.`;
+
+  const orphaned = breakdown.items
+    .filter((item) => item.myParts === item.totalParts)
+    .map((item) => item.description);
+  const orphanedNote =
+    orphaned.length === 0
+      ? ""
+      : ` ${orphaned.length === 1 ? "Fica" : "Ficam"} sem ninguém e ${orphaned.length === 1 ? "precisa" : "precisam"} ser ${orphaned.length === 1 ? "dividido" : "divididos"} de novo: ${orphaned.join(", ")}.`;
+
+  return `${parts}${orphanedNote} ${access} Essa ação não pode ser desfeita.`;
+}
+
 function SaveAvatarButton() {
   const { pending } = useFormStatus();
   return (
@@ -143,12 +170,8 @@ export function SeatDialog({
                   {isSelf ? "Sair desta conta" : "Remover participante"}
                 </Button>
               }
-              title={isSelf ? "Sair desta conta?" : "Remover participante?"}
-              description={
-                isSelf
-                  ? "Essa ação não pode ser desfeita. Você perderá acesso a esta conta."
-                  : "Essa ação não pode ser desfeita. O participante perderá acesso a esta conta."
-              }
+              title={isSelf ? "Sair desta conta?" : `Remover ${name}?`}
+              description={removalDescription(name, isSelf, breakdown)}
               confirmLabel={isSelf ? "Sair" : "Remover"}
               pendingLabel={isSelf ? "Saindo..." : "Removendo..."}
             />
