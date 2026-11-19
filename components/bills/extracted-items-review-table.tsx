@@ -87,6 +87,12 @@ export function ExtractedItemsReviewTable({
     }
   }
 
+  // O servidor descarta em silêncio item com quantidade inválida; aqui o
+  // botão trava antes, pra "Salvar N itens" não salvar menos que N.
+  const hasInvalidQuantity = items.some(
+    (item) => !Number.isFinite(item.quantity) || item.quantity <= 0,
+  );
+
   function handleSaveClick() {
     if (existingItemsCount > 0) {
       setModeDialogOpen(true);
@@ -154,9 +160,10 @@ export function ExtractedItemsReviewTable({
                   <Input
                     aria-label="Quantidade"
                     type="number"
-                    min="0"
+                    min="1"
                     step="1"
                     className="text-right"
+                    aria-invalid={!(item.quantity > 0) || undefined}
                     value={item.quantity}
                     onChange={(event) =>
                       updateItem(index, { quantity: Number(event.target.value) })
@@ -199,9 +206,14 @@ export function ExtractedItemsReviewTable({
         transition={{ delay: initialItems.length * ROW_STAGGER_S, duration: 0.2 }}
         className="mt-2 flex flex-col gap-2"
       >
+        {hasInvalidQuantity && (
+          <p role="alert" className="text-sm text-destructive">
+            Quantidade precisa ser maior que zero.
+          </p>
+        )}
         <Button
           type="button"
-          disabled={isSaving || items.length === 0}
+          disabled={isSaving || items.length === 0 || hasInvalidQuantity}
           onClick={handleSaveClick}
         >
           {isSaving
