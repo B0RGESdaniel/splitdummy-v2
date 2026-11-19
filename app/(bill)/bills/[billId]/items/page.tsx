@@ -4,10 +4,8 @@ import Link from "next/link";
 import { connection } from "next/server";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
-import { CloseForMeButton } from "@/components/bills/close-for-me-button";
-import { CreateItemButton } from "@/components/bills/create-item-button";
+import { ItemsEntryActions } from "@/components/bills/items-entry-actions";
 import { ItemsList } from "@/components/bills/items-list";
-import { ReceiptScanButton } from "@/components/bills/receipt-scan-button";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { createClient } from "@/lib/supabase/server";
 
@@ -93,12 +91,7 @@ export default async function ItemsPage({
         isOpen={isOpen}
         participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
       />
-      {isOpen && <CreateItemButton billId={billId} />}
-      {isOpen && (
-        <ReceiptScanButton billId={billId} existingItemsCount={items?.length ?? 0} />
-      )}
-
-      <CloseForMeButton billId={billId} />
+      <ItemsEntryActions billId={billId} initialItems={items ?? []} isOpen={isOpen} />
     </div>
   );
 }

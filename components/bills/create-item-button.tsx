@@ -14,7 +14,13 @@ type Item = {
   quantity: number;
 };
 
-export function CreateItemButton({ billId }: { billId: string }) {
+export function CreateItemButton({
+  billId,
+  label = "Escrever próximo item",
+}: {
+  billId: string;
+  label?: string;
+}) {
   const queryClient = useQueryClient();
   const queryKey = ["items", billId];
 
@@ -54,7 +60,7 @@ export function CreateItemButton({ billId }: { billId: string }) {
           className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 font-handwritten text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
         >
           <Plus className="size-4" data-icon="inline-start" />
-          Escrever próximo item
+          {label}
         </Button>
       }
       title="Novo item"

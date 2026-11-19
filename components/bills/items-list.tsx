@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Divide } from "lucide-react";
 import { motion } from "motion/react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 
 import {
@@ -17,7 +17,6 @@ import { ItemSplitDialog } from "@/components/bills/item-split-dialog";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
-import { createClient } from "@/lib/supabase/client";
 import {
   invalidateAfterLastMutation,
   useRealtimeTable,
@@ -29,14 +28,10 @@ import {
   type BillItemShare,
 } from "@/lib/bill/bill-item-shares";
 import { useRemoteChangeFlash } from "@/lib/realtime/use-remote-change-flash";
+import { billItemsQueryKey, useBillItems, type BillItem } from "@/lib/bill/bill-items";
 import type { BillParticipant } from "@/lib/bill/participants";
 
-type Item = {
-  id: string;
-  description: string;
-  unit_price: number;
-  quantity: number;
-};
+type Item = BillItem;
 
 // Itens que chegam juntos (leitura de cupom, "substituir tudo") entram em
 // cascata, um logo depois do outro, em vez de todos de uma vez.
@@ -62,24 +57,10 @@ export function ItemsList({
   isOpen: boolean;
   participants: BillParticipant[];
 }) {
-  const queryKey = ["items", billId];
+  const queryKey = billItemsQueryKey(billId);
   const queryClient = useQueryClient();
 
-  const { data: items } = useQuery({
-    queryKey,
-    queryFn: async () => {
-      const supabase = createClient();
-      const { data, error } = await supabase
-        .from("items")
-        .select("id, description, unit_price, quantity")
-        .eq("bill_id", billId)
-        .order("created_at", { ascending: true });
-
-      if (error) throw error;
-      return data;
-    },
-    initialData: initialItems,
-  });
+  const items = useBillItems(billId, initialItems);
 
   // Atraso de entrada de cada linha nova, guardado em estado (e não
   // recalculado a cada render) porque o Motion só lê o atraso na montagem.
@@ -212,13 +193,8 @@ export function ItemsList({
     // Só a entrada de itens novos anima; a saída é imediata (animar a saída
     // junto com a entrada dos novos no "substituir tudo" ficava truncado).
     <>
-      {items.length === 0 ? (
-        <div className="border border-dashed border-border py-6 text-center">
-          <p className="text-sm text-muted-foreground">
-            Nada escrito aqui ainda — adicione o primeiro item.
-          </p>
-        </div>
-      ) : (
+      {/* Conta vazia: quem desenha o estado vazio é o ItemsEntryActions. */}
+      {items.length === 0 ? null : (
         <table className="w-full table-fixed border-collapse border-[1.5px] border-foreground text-sm">
           <thead>
             <tr className="text-left text-[11px] uppercase tracking-wide text-foreground">

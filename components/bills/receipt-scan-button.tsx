@@ -69,9 +69,13 @@ async function compressToJpeg(file: File): Promise<Blob> {
 export function ReceiptScanButton({
   billId,
   existingItemsCount,
+  prominent = false,
 }: {
   billId: string;
+  /** Contagem ao vivo (vem da query de itens), pra "manter/substituir" na revisão. */
   existingItemsCount: number;
+  /** Conta vazia: vira a moldura "comanda em branco", com a foto como ação principal. */
+  prominent?: boolean;
 }) {
   const [state, setState] = useState<ScanState>({ step: "closed" });
   const inputRef = useRef<HTMLInputElement>(null);
@@ -149,13 +153,6 @@ export function ReceiptScanButton({
     );
   }
 
-  // Lido do cache do TanStack Query em vez de receber como prop fixa: sem
-  // navegação entre telas, a página nunca re-renderiza pra atualizar essa
-  // contagem — escanear duas vezes na mesma visita usaria um número velho.
-  const liveExistingItemsCount =
-    queryClient.getQueryData<{ id: string }[]>(["items", billId])?.length ??
-    existingItemsCount;
-
   return (
     <>
       <input
@@ -171,15 +168,33 @@ export function ReceiptScanButton({
           }
         }}
       />
-      <Button
-        type="button"
-        variant="ghost"
-        className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
-        onClick={() => inputRef.current?.click()}
-      >
-        <Camera className="size-4" data-icon="inline-start" />
-        Escanear cupom
-      </Button>
+      {prominent ? (
+        <div className="flex flex-col items-center gap-4 border-[1.5px] border-dashed border-foreground px-5 pt-8 pb-6">
+          <Camera className="size-10" aria-hidden />
+          <p className="text-lg font-semibold tracking-wide">Comanda em branco</p>
+          <p className="text-center text-[13px] leading-snug text-balance text-muted-foreground normal-case">
+            A leitura preenche os itens e você confere tudo antes de salvar.
+          </p>
+          <Button
+            type="button"
+            className="h-10 w-full gap-2 text-[0.9375rem] [&_svg:not([class*='size-'])]:size-[18px]"
+            onClick={() => inputRef.current?.click()}
+          >
+            <Camera data-icon="inline-start" />
+            Fotografar o cupom
+          </Button>
+        </div>
+      ) : (
+        <Button
+          type="button"
+          variant="ghost"
+          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
+          onClick={() => inputRef.current?.click()}
+        >
+          <Camera className="size-4" data-icon="inline-start" />
+          Escanear cupom
+        </Button>
+      )}
 
       {overlayOpen && (
         <div
@@ -235,7 +250,7 @@ export function ReceiptScanButton({
                 billId={billId}
                 receiptId={state.receiptId}
                 initialItems={state.items}
-                existingItemsCount={liveExistingItemsCount}
+                existingItemsCount={existingItemsCount}
                 onSaved={handleSaved}
                 onDone={closeOverlay}
               />
