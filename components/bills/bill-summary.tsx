@@ -310,7 +310,12 @@ export function BillSummary({
 
       {isOpen &&
         (isOwner ? (
-          <CloseBillButton action={closeBill.bind(null, billId)} />
+          <CloseBillButton
+            action={closeBill.bind(null, billId)}
+            totalLabel={formatCurrency(grandTotalCents)}
+            peopleCount={participants.length}
+            serviceTaxPercent={serviceTaxPercent}
+          />
         ) : (
           <p className="text-center text-sm text-muted-foreground">
             Só {ownerName} pode marcar a conta como paga.

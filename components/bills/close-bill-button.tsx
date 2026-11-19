@@ -26,8 +26,14 @@ function ConfirmButton() {
 
 export function CloseBillButton({
   action,
+  totalLabel,
+  peopleCount,
+  serviceTaxPercent,
 }: {
   action: () => void | Promise<void>;
+  totalLabel: string;
+  peopleCount: number;
+  serviceTaxPercent: number;
 }) {
   const [open, setOpen] = useState(false);
   const portalContainer = usePortalContainer();
@@ -43,8 +49,10 @@ export function CloseBillButton({
         <DialogHeader>
           <DialogTitle>Marcar esta conta como paga?</DialogTitle>
           <DialogDescription>
-            Essa ação é definitiva e não pode ser desfeita — depois de paga, a conta
-            não pode mais ser editada.
+            Fica congelado: <strong className="font-semibold">{totalLabel}</strong>{" "}
+            entre {peopleCount} {peopleCount === 1 ? "pessoa" : "pessoas"}, com{" "}
+            {serviceTaxPercent}% de taxa. Depois de paga, ninguém edita mais itens,
+            partes nem a taxa — e não dá pra desfazer.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
