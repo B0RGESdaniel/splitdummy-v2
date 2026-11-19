@@ -28,7 +28,7 @@ export function useRealtimeTable({
   table: string;
   billId: string;
   queryKey: QueryKey;
-  onChange?: (row: Row) => void;
+  onChange?: (row: Row, event: "INSERT" | "UPDATE" | "DELETE") => void;
 }) {
   const queryClient = useQueryClient();
   const queryKeyJson = JSON.stringify(queryKey);
@@ -47,7 +47,7 @@ export function useRealtimeTable({
         { event: "*", schema: "public", table, filter: `bill_id=eq.${billId}` },
         (payload) => {
           queryClient.invalidateQueries({ queryKey: JSON.parse(queryKeyJson) });
-          onChangeRef.current?.((payload.new ?? payload.old) as Row);
+          onChangeRef.current?.((payload.new ?? payload.old) as Row, payload.eventType);
         },
       )
       .on(
@@ -69,7 +69,7 @@ export function useRealtimeTable({
 
           if (isCached) {
             queryClient.invalidateQueries({ queryKey: key });
-            onChangeRef.current?.(payload.old as Row);
+            onChangeRef.current?.(payload.old as Row, "DELETE");
           }
         },
       )

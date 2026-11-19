@@ -2,12 +2,14 @@
 
 import { Trash2 } from "lucide-react";
 import { useState } from "react";
+import { motion } from "motion/react";
 import { toast } from "sonner";
 
 import {
   confirmReceiptItems,
   discardReceipt,
   type ReceiptItemInput,
+  type SavedReceiptItem,
 } from "@/app/(bill)/bills/[billId]/items/receipt-actions";
 import { usePortalContainer } from "@/components/theme-scope";
 import { Button } from "@/components/ui/button";
@@ -22,17 +24,23 @@ import {
 import { Input } from "@/components/ui/input";
 import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
 
+// Mesma cascata da lista de Itens: as linhas lidas entram uma após a outra.
+const ROW_STAGGER_S = 0.05;
+const ROW_ENTER = { opacity: 0, y: -6 };
+
 export function ExtractedItemsReviewTable({
   billId,
   receiptId,
   initialItems,
   existingItemsCount,
+  onSaved,
   onDone,
 }: {
   billId: string;
   receiptId: string;
   initialItems: ExtractedReceiptItem[];
   existingItemsCount: number;
+  onSaved: (savedItems: SavedReceiptItem[], mode: "append" | "replace") => void;
   onDone: () => void;
 }) {
   const portalContainer = usePortalContainer();
@@ -55,7 +63,8 @@ export function ExtractedItemsReviewTable({
   async function save(mode: "append" | "replace") {
     setIsSaving(true);
     try {
-      await confirmReceiptItems(billId, receiptId, items, mode);
+      const savedItems = await confirmReceiptItems(billId, receiptId, items, mode);
+      onSaved(savedItems, mode);
       onDone();
     } catch (error) {
       toast.error(
@@ -123,7 +132,14 @@ export function ExtractedItemsReviewTable({
           </thead>
           <tbody>
             {items.map((item, index) => (
-              <tr key={index}>
+              // Só anima na montagem: as linhas não remontam depois (chave é o
+              // índice), então editar/remover um item não repete a cascata.
+              <motion.tr
+                key={index}
+                initial={ROW_ENTER}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * ROW_STAGGER_S, duration: 0.2 }}
+              >
                 <td className="px-1 py-2">
                   <Input
                     aria-label="Descrição"
@@ -171,13 +187,18 @@ export function ExtractedItemsReviewTable({
                     <Trash2 />
                   </Button>
                 </td>
-              </tr>
+              </motion.tr>
             ))}
           </tbody>
         </table>
       )}
 
-      <div className="mt-2 flex flex-col gap-2">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: initialItems.length * ROW_STAGGER_S, duration: 0.2 }}
+        className="mt-2 flex flex-col gap-2"
+      >
         <Button
           type="button"
           disabled={isSaving || items.length === 0}
@@ -190,7 +211,7 @@ export function ExtractedItemsReviewTable({
         <Button type="button" variant="ghost" disabled={isSaving} onClick={discard}>
           Descartar
         </Button>
-      </div>
+      </motion.div>
 
       <Dialog open={modeDialogOpen} onOpenChange={setModeDialogOpen}>
         <DialogContent container={portalContainer}>

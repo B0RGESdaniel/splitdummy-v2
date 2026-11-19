@@ -344,6 +344,30 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      confirm_receipt_items: {
+        Args: {
+          p_bill_id: string
+          p_items: Json
+          p_receipt_id: string
+          p_replace: boolean
+        }
+        Returns: {
+          bill_id: string
+          created_at: string
+          created_by: string
+          description: string
+          id: string
+          quantity: number
+          unit_price: number
+          updated_at: string
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "items"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       is_bill_participant: { Args: { p_bill_id: string }; Returns: boolean }
     }
     Enums: {

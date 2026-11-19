@@ -11,6 +11,13 @@ export type ReceiptItemInput = {
   unitPrice: number;
 };
 
+export type SavedReceiptItem = {
+  id: string;
+  description: string;
+  unit_price: number;
+  quantity: number;
+};
+
 function sanitizeItems(items: ReceiptItemInput[]) {
   const sanitized = items
     .map((item) => ({
@@ -39,7 +46,7 @@ export async function confirmReceiptItems(
   receiptId: string,
   items: ReceiptItemInput[],
   mode: "append" | "replace",
-) {
+): Promise<SavedReceiptItem[]> {
   const sanitized = sanitizeItems(items);
 
   const supabase = await createClient();
@@ -50,41 +57,30 @@ export async function confirmReceiptItems(
     redirect("/login");
   }
 
-  if (mode === "replace") {
-    const { error: deleteError } = await supabase
-      .from("items")
-      .delete()
-      .eq("bill_id", billId);
+  // Apagar (no "substituir"), inserir e marcar o cupom como revisado numa
+  // transação só, pra que o realtime nunca entregue um estado intermediário
+  // da lista (ver migration `confirm_receipt_items_function`).
+  const { data: inserted, error } = await supabase.rpc("confirm_receipt_items", {
+    p_bill_id: billId,
+    p_receipt_id: receiptId,
+    p_items: sanitized,
+    p_replace: mode === "replace",
+  });
 
-    if (deleteError) {
-      throw new Error(deleteError.message);
-    }
-  }
-
-  const { error: insertError } = await supabase.from("items").insert(
-    sanitized.map((item) => ({
-      bill_id: billId,
-      description: item.description,
-      unit_price: item.unit_price,
-      quantity: item.quantity,
-      created_by: userId,
-    })),
-  );
-
-  if (insertError) {
-    throw new Error(insertError.message);
-  }
-
-  const { error: receiptError } = await supabase
-    .from("receipts")
-    .update({ status: "reviewed" })
-    .eq("id", receiptId);
-
-  if (receiptError) {
-    throw new Error(receiptError.message);
+  if (error) {
+    throw new Error(error.message);
   }
 
   revalidatePath(`/bills/${billId}/items`);
+
+  // Quem salvou escreve a lista final direto no cache, sem esperar o eco do
+  // realtime.
+  return inserted.map(({ id, description, unit_price, quantity }) => ({
+    id,
+    description,
+    unit_price,
+    quantity,
+  }));
 }
 
 export async function discardReceipt(billId: string, receiptId: string) {

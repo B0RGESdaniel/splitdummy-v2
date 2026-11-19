@@ -1,11 +1,13 @@
 "use client";
 
-import { Camera, X } from "lucide-react";
+import { Camera, ScanText, X } from "lucide-react";
 import dynamic from "next/dynamic";
 import { useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 
+import type { SavedReceiptItem } from "@/app/(bill)/bills/[billId]/items/receipt-actions";
 import { Button } from "@/components/ui/button";
+import { TextScanner } from "@/components/ui/text-scanner";
 import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
 
 const ExtractedItemsReviewTable = dynamic(
@@ -22,12 +24,23 @@ type ScanState =
   | { step: "review"; receiptId: string; items: ExtractedReceiptItem[] }
   | { step: "error"; message: string };
 
+function ScanningStatus() {
+  return (
+    <div role="status" className="flex flex-1 items-center justify-center pb-16">
+      <TextScanner text="Lendo o cupom" className="text-3xl" />
+    </div>
+  );
+}
+
 const MAX_DIMENSION = 1600;
 const JPEG_QUALITY = 0.8;
 
 async function compressToJpeg(file: File): Promise<Blob> {
   const bitmap = await createImageBitmap(file);
-  const scale = Math.min(1, MAX_DIMENSION / Math.max(bitmap.width, bitmap.height));
+  const scale = Math.min(
+    1,
+    MAX_DIMENSION / Math.max(bitmap.width, bitmap.height),
+  );
   const width = Math.round(bitmap.width * scale);
   const height = Math.round(bitmap.height * scale);
 
@@ -99,13 +112,30 @@ export function ReceiptScanButton({
         return;
       }
 
-      setState({ step: "review", receiptId: body.receiptId, items: body.items });
+      setState({
+        step: "review",
+        receiptId: body.receiptId,
+        items: body.items,
+      });
     } catch (error) {
       if (error instanceof DOMException && error.name === "AbortError") {
         return;
       }
       setState({ step: "error", message: "Não foi possível ler o cupom." });
     }
+  }
+
+  // Quem salvou já recebe a lista final da action e escreve no cache: uma
+  // troca só, sem depender do eco do realtime.
+  function handleSaved(
+    savedItems: SavedReceiptItem[],
+    mode: "append" | "replace",
+  ) {
+    queryClient.setQueryData<SavedReceiptItem[]>(
+      ["items", billId],
+      (current = []) =>
+        mode === "replace" ? savedItems : [...current, ...savedItems],
+    );
   }
 
   // Lido do cache do TanStack Query em vez de receber como prop fixa: sem
@@ -142,9 +172,10 @@ export function ReceiptScanButton({
 
       {state.step !== "closed" && (
         <div className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-background p-4">
-          <div className="mx-auto flex w-full max-w-md flex-col">
+          <div className="mx-auto flex w-full max-w-md flex-1 flex-col">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="font-mono text-sm uppercase tracking-wide text-foreground">
+              <h2 className="flex items-center gap-1.5 font-mono text-sm uppercase tracking-wide text-foreground">
+                <ScanText className="size-4" aria-hidden />
                 Escanear cupom
               </h2>
               <Button
@@ -157,24 +188,23 @@ export function ReceiptScanButton({
                 <X />
               </Button>
             </div>
-  
-            {state.step === "extracting" && (
-              <p className="text-sm text-muted-foreground">Lendo o cupom...</p>
-            )}
-  
+
+            {state.step === "extracting" && <ScanningStatus />}
+
             {state.step === "error" && (
               <div className="flex flex-col gap-3">
                 <p className="text-sm text-destructive">{state.message}</p>
                 <Button onClick={closeOverlay}>Tentar de novo</Button>
               </div>
             )}
-  
+
             {state.step === "review" && (
               <ExtractedItemsReviewTable
                 billId={billId}
                 receiptId={state.receiptId}
                 initialItems={state.items}
                 existingItemsCount={liveExistingItemsCount}
+                onSaved={handleSaved}
                 onDone={closeOverlay}
               />
             )}
