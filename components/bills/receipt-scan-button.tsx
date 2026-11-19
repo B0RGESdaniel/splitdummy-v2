@@ -171,8 +171,8 @@ export function ReceiptScanButton({
       {prominent ? (
         <div className="flex flex-col items-center gap-4 border-[1.5px] border-dashed border-foreground px-5 pt-8 pb-6">
           <Camera className="size-10" aria-hidden />
-          <p className="text-lg font-semibold tracking-wide">Comanda em branco</p>
-          <p className="text-center text-[13px] leading-snug text-balance text-muted-foreground normal-case">
+          <h2 className="text-lg font-semibold tracking-wide">Comanda em branco</h2>
+          <p className="text-center text-[13px] leading-snug text-balance text-muted-foreground">
             A leitura preenche os itens e você confere tudo antes de salvar.
           </p>
           <Button

@@ -191,6 +191,18 @@
 }
 
 /*
+ * Caixa-alta é voz de rótulo e botão, não de frase: parágrafos e descrições
+ * de diálogo (remoção, "marcar como paga", partes…) voltam ao normal, porque
+ * texto corrido em caixa-alta lê devagar. Fora de qualquer @layer, então
+ * ganha da utility `uppercase` — título curto que precisa de caixa-alta usa
+ * heading, não <p>.
+ */
+.paper-check p,
+.paper-check [data-slot="dialog-description"] {
+  text-transform: none;
+}
+
+/*
  * background-image is not an inherited property, and `inherit` only reads
  * the computed value from the immediate DOM parent — useless here since
  * these sit behind plain wrapper divs with no background-image of their
