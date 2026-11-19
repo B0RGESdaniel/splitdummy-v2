@@ -23,7 +23,7 @@ import {
 } from "@/lib/realtime/use-realtime-table";
 import {
   billItemSharesQueryKey,
-  splitItemIdsOf,
+  sharerCountsOf,
   useBillItemShares,
   type BillItemShare,
 } from "@/lib/bill/bill-item-shares";
@@ -114,9 +114,10 @@ export function ItemsList({
     },
   });
 
-  // Partes da conta inteira, só pra marcar quais itens ainda não foram divididos.
+  // Partes da conta inteira, só pra mostrar no botão de dividir quantas pessoas
+  // dividem cada item (e marcar, tracejado, os que ainda não têm ninguém).
   const shares = useBillItemShares(billId, initialShares);
-  const splitItemIds = splitItemIdsOf(shares);
+  const sharerCounts = sharerCountsOf(shares);
   useRealtimeTable({ table: "item_shares", billId, queryKey: billItemSharesQueryKey(billId) });
 
   const updateMutation = useMutation({
@@ -234,14 +235,17 @@ export function ItemsList({
               </th>
               <th
                 scope="col"
-                className="w-14 border-[1.5px] border-foreground px-3 py-2 font-medium"
+                className="w-14 border-[1.5px] border-foreground px-1 py-2 text-center font-medium"
               >
-                <span className="sr-only">Dividir</span>
+                <abbr title="Dividir" className="no-underline">
+                  Div.
+                </abbr>
               </th>
             </tr>
           </thead>
           <tbody>
             {items.map((item) => {
+              const sharerCount = sharerCounts.get(item.id) ?? 0;
               const description = (
                 <div className="flex min-w-0 flex-col justify-center text-left">
                   <span className="truncate font-handwritten text-lg leading-tight text-[color:var(--ink-handwritten)]">
@@ -308,7 +312,7 @@ export function ItemsList({
                     </div>
                   </td>
 
-                  <td className="border-[1.5px] border-foreground px-2 py-2">
+                  <td className="border-[1.5px] border-foreground px-1 py-2">
                     <div className="flex justify-center">
                       <ItemSplitDialog
                         billId={billId}
@@ -316,17 +320,29 @@ export function ItemsList({
                         isOpen={isOpen}
                         participants={participants}
                         trigger={
+                          // Pesos invertidos: o pendente é o bloco cheio (é o que falta
+                          // fazer e trava o "Marcar como paga"); o já dividido fica em
+                          // contorno, com o número de pessoas como protagonista. Mesma
+                          // largura nos dois, pra coluna não pular quando divide ao vivo.
                           <Button
-                            variant="outline"
-                            size="icon-sm"
+                            variant={sharerCount > 0 ? "outline" : "default"}
                             aria-label={
-                              splitItemIds.has(item.id)
-                                ? `Dividir ${item.description}`
+                              sharerCount > 0
+                                ? `Dividir ${item.description}, dividido entre ${sharerCount} ${sharerCount === 1 ? "pessoa" : "pessoas"}`
                                 : `Dividir ${item.description} (ainda não dividido)`
                             }
-                            className={cn(!splitItemIds.has(item.id) && "border-dashed")}
+                            className="w-[42px] gap-0.5 px-0 tabular-nums"
                           >
-                            <Divide />
+                            {sharerCount > 0 ? (
+                              <>
+                                <Divide aria-hidden className="size-3" />
+                                <span aria-hidden className="text-base leading-none font-semibold">
+                                  {sharerCount}
+                                </span>
+                              </>
+                            ) : (
+                              <Divide aria-hidden className="size-[18px]" />
+                            )}
                           </Button>
                         }
                       />

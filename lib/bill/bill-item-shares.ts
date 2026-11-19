@@ -33,3 +33,12 @@ export function useBillItemShares(billId: string, initialShares: BillItemShare[]
 export function splitItemIdsOf(shares: BillItemShare[]): Set<string> {
   return new Set(shares.filter((share) => (share.parts ?? 0) > 0).map((share) => share.item_id));
 }
+
+/** Quantas pessoas têm pelo menos uma parte em cada item (item sem ninguém fica fora do mapa). */
+export function sharerCountsOf(shares: BillItemShare[]): Map<string, number> {
+  const counts = new Map<string, number>();
+  for (const share of shares) {
+    if ((share.parts ?? 0) > 0) counts.set(share.item_id, (counts.get(share.item_id) ?? 0) + 1);
+  }
+  return counts;
+}
