@@ -229,6 +229,12 @@
 }
 
 .comanda-toast {
+  /*
+   * Diálogo modal do Radix põe `pointer-events: none` no body, e o toast
+   * herdaria: o toque atravessava o "Desfazer" e caía no fundo, fechando o
+   * diálogo. Toast escondido segue sem clique (regra do próprio Sonner).
+   */
+  pointer-events: auto;
   display: flex;
   align-items: flex-start;
   gap: 10px;

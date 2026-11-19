@@ -222,6 +222,15 @@ export function ItemSplit({
       }
       toast.error("Não deu pra desfazer. Tente de novo.", { id: "item-parts-error" });
     },
+    // Mesmo id do "Partes limpas.": troca o aviso em vez de empilhar outro.
+    // O Sonner mescla com o toast anterior, então o "Desfazer" sai à mão.
+    onSuccess: () => {
+      toast.success("Partes de volta.", {
+        id: "item-parts-cleared",
+        duration: 3000,
+        action: undefined,
+      });
+    },
     onSettled: () => {
       invalidateAfterLastMutation(queryClient, queryKey);
       return invalidateBillShares();

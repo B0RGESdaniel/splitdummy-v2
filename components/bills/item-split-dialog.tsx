@@ -35,6 +35,16 @@ export function ItemSplitDialog({
       <DialogContent
         container={portalContainer}
         className="flex max-h-[min(calc(100dvh-2rem),32rem)] flex-col"
+        // Toque no toast (ex.: "Desfazer" do limpar partes) não conta como
+        // clicar fora: o diálogo fica aberto pra mostrar as partes voltando.
+        onInteractOutside={(event) => {
+          if (
+            event.target instanceof Element &&
+            event.target.closest("[data-sonner-toaster]")
+          ) {
+            event.preventDefault();
+          }
+        }}
       >
         <DialogHeader>
           <DialogTitle className="font-handwritten text-2xl text-[color:var(--ink-handwritten)]">
