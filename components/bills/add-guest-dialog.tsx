@@ -43,13 +43,13 @@ export function AddGuestDialog({
         {trigger ?? (
           <Button>
             <UserPlus data-icon="inline-start" />
-            Adicionar convidado
+            Adicionar à mesa
           </Button>
         )}
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle>Adicionar convidado</DialogTitle>
+          <DialogTitle>Adicionar à mesa</DialogTitle>
         </DialogHeader>
         <form
           action={async (formData) => {
@@ -60,7 +60,7 @@ export function AddGuestDialog({
               toast.error(
                 error instanceof Error
                   ? error.message
-                  : "Não foi possível adicionar o convidado.",
+                  : "Não deu pra adicionar à mesa.",
               );
             }
           }}

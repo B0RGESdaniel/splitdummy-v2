@@ -10,7 +10,6 @@ import {
 } from "@/app/(bill)/bills/[billId]/participants/actions";
 import { AddGuestDialog } from "@/components/bills/add-guest-dialog";
 import { AvatarIcon, type AvatarKey } from "@/components/bills/avatar-icon";
-import { BackToItemsLink } from "@/components/bills/back-to-items-link";
 import { ImportParticipantsDialog } from "@/components/bills/import-participants-dialog";
 import { SeatDialog } from "@/components/bills/seat-dialog";
 import {
@@ -330,8 +329,6 @@ export default async function ParticipantsPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <BackToItemsLink billId={billId} />
-
       {isOwner && isOpen && (
         <div className="flex justify-end gap-2 pb-2">
           <ImportParticipantsDialog

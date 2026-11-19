@@ -2,7 +2,6 @@ import { notFound } from "next/navigation";
 import { connection } from "next/server";
 import { Courier_Prime, DotGothic16 } from "next/font/google";
 
-import { BackToItemsLink } from "@/components/bills/back-to-items-link";
 import { BillSummary } from "@/components/bills/bill-summary";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
@@ -97,7 +96,6 @@ export default async function BillSummaryPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      {isOpen && <BackToItemsLink billId={billId} />}
 
       <div
         className={`${courierPrime.variable} ${dotGothic16.variable} flex flex-1 flex-col gap-4`}

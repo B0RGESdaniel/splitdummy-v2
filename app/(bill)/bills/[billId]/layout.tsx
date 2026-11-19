@@ -1,12 +1,9 @@
-import { ArrowLeft } from "lucide-react";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { Bitter, Kalam } from "next/font/google";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
-import { SignOutButton } from "@/components/auth/sign-out-button";
-import { Button } from "@/components/ui/button";
+import { BillBackButton } from "@/components/bills/bill-back-button";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { archivoNarrow } from "@/app/fonts";
@@ -91,19 +88,14 @@ export default async function BillLayout({
         <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
           <div className="flex items-center justify-between gap-2 px-4 py-3.5">
             <div className="flex min-w-0 items-center gap-1">
-              <Button asChild variant="ghost" size="icon-lg" className="-ml-2 shrink-0">
-                <Link href="/" aria-label="Voltar para suas contas">
-                  <ArrowLeft />
-                </Link>
-              </Button>
+              <BillBackButton billId={billId} isOpen={bill.status === "open"} />
               <h1 className="truncate font-display text-2xl font-bold tracking-tight text-foreground">
                 {bill.name}
               </h1>
             </div>
-            <div className="flex items-center gap-1">
-              {canInvite && <InviteQrPanel billId={billId} invite={invite} />}
-              <SignOutButton />
-            </div>
+            {/* Desconectar fica só no histórico: aqui, ao lado do nome da
+                conta, o ícone era lido como "sair desta conta". */}
+            {canInvite && <InviteQrPanel billId={billId} invite={invite} />}
           </div>
         </header>
 
