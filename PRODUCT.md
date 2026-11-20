@@ -34,7 +34,7 @@ Uso principal acontece na mesa, no celular, com o grupo ainda reunido — mobile
 
 ## Brand Commitments
 
-Nenhuma identidade visual existe ainda (sem logo/ícone). O nome "Splitdummy" está em aberto — pode mudar como parte dessa nova direção visual, não é compromisso fixo.
+Nome do app: **Divide/ai** (decidido em 2026-11-19, substitui "Splitdummy"). Três leituras de propósito: "divide aí" (como se pede na mesa), a "/" de divisão e "ai" de AI (leitura do cupom) — e o "ai!" de quem vê a conta. Sempre escrito "Divide/ai", sem acento; onde "/" não cabe (domínio, pacote), `divideai`. O trocadilho com IA fica só no nome: a marca não é "app de IA". Logo mínima: "/ai" sozinho, usado só como ícone (favicon). Desenho da marca em `DESIGN.md`.
 
 Referência visual vinculante dada pelo usuário pra essa rodada de redesign: estética de "guest check" (nota de pedido de bar/restaurante) — fundo de papel, letras retrô, texto de preenchimento com aparência manuscrita. Imagem de referência: `/Users/danielborges/Downloads/conta_4.jpeg`. Desenvolvimento dessa direção (paleta, tipografia, componentes) é trabalho de `new-work`, não deste arquivo.
 

@@ -1,5 +1,5 @@
 ---
-name: Splitdummy
+name: Divide/ai
 description: Comanda de papel que vira cupom fiscal no momento de fechar a conta
 colors:
   royal-ink: "oklch(0.42 0.19 262)"
@@ -86,7 +86,7 @@ components:
     padding: "0"
 ---
 
-# Design System: Splitdummy
+# Design System: Divide/ai
 
 ## Overview
 
@@ -94,7 +94,7 @@ components:
 
 O uso de verdade acontece na comanda: papel cru, tinta azul royal, preenchimento manuscrito, aberta a maior parte do tempo que o grupo está sentado à mesa dividindo a conta. Mas todo o sistema é desenhado em função de um destino — o momento em que a conta fecha e a comanda se transforma literalmente num cupom fiscal, com sua própria voz tipográfica (Courier Prime + DotGothic16 nos números), como se tivesse saído de uma impressora térmica de restaurante de verdade. Essa transição de registro — de rascunho manuscrito pra documento impresso definitivo — é a cerimônia central do produto, não um simples flip de status. O histórico de contas (dashboard) mostra esse ciclo inteiro de uma vez: é um balcão royal escuro onde as contas abertas aparecem como comandas em miniatura e as pagas como cupons térmicos curtos com o carimbo PAGO.
 
-**A casa é o Splitdummy.** O que vem impresso em toda comanda é o nome da casa, "Splitdummy" (Bitter); o nome da conta é um campo que alguém preencheu à mão (Kalam). O balcão e a conta seguem esse conceito. Dentro da conta, o masthead só traz o impresso ("← Splitdummy Nº 007" e Compartilhar, com régua embaixo); o nome da conta é o primeiro campo da comanda, uma linha inteira "CONTA" no topo da grade de Itens, colado em Dono/Participantes — o nome pertence à comanda, não ao cabeçalho do app.
+**A casa é o Divide/ai.** O que vem impresso em toda comanda é o nome da casa, "Divide/ai" (Bitter); o nome da conta é um campo que alguém preencheu à mão (Kalam). O balcão e a conta seguem esse conceito. Dentro da conta, o masthead só traz o impresso ("← Divide/ai Nº 007" e Compartilhar, com régua embaixo); o nome da conta é o primeiro campo da comanda, uma linha inteira "CONTA" no topo da grade de Itens, colado em Dono/Participantes — o nome pertence à comanda, não ao cabeçalho do app.
 
 O sistema nunca mistura as duas vozes no mesmo **objeto** (o mesmo papel): a comanda (Itens, Participantes, cabeçalho, comandas do balcão) é estrutural e condensada; o cupom (Resumo, cupons pagos do balcão) é datilografado e só usa a voz pixelada pra números. Na mesma tela os dois podem conviver, como no balcão, desde que cada papel fale uma voz só. Fora dessa combinação, a direção rejeita explicitamente a estética de dashboard SaaS genérico — nada de cards cinza chapados, badge em pílula ou dark mode zinc+azul, a aparência que qualquer concorrente de divisão de conta teria sem pensar.
 
@@ -135,7 +135,8 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 **Character:** a comanda pareia uma condensada impressa (Archivo Narrow, uppercase) com uma manuscrita real (Kalam) pro que a pessoa escreveu; o cupom troca de registro pra datilografado (Courier Prime) com dígitos literalmente pixelados (DotGothic16), como se tivesse saído de uma impressora térmica.
 
 ### Hierarchy
-- **Display** (Bitter 700, tracking -0.01em): só a marca impressa "Splitdummy" — 1.125rem/18px no masthead da conta, 15px no topo das comandas do balcão. O nome da conta nunca é Bitter: é campo manuscrito (Kalam, 1.25rem/20px na linha "Conta" da grade de Itens, até 2 linhas).
+- **Display** (Bitter, tracking -0.01em): só a marca impressa "Divide/ai" (`BrandWordmark`) — "Divide" em 400 e "/ai" em 800, com a barra da própria fonte. O peso é o que separa as duas partes; barra desenhada à parte foi testada e descartada (desalinhava), assim como "/ai" em Courier Prime e em selo. 1.125rem/18px no masthead da conta e no topo das comandas do balcão, 1.25rem/20px no topo do balcão. No cupom a marca é só texto datilografado ("DIVIDE/AI"), sem pesos: impressora térmica não tem marca.
+- **Ícone** ("/ai" sozinho, `app/icon.svg`): Bitter 800 em papel cru sobre quadrado royal cheio, sem raio, letras convertidas em contorno (o SVG não depende de fonte). É o único uso do "/ai" isolado; em todo papel vai o nome inteiro. O nome da conta nunca é Bitter: é campo manuscrito (Kalam, 1.25rem/20px na linha "Conta" da grade de Itens, até 2 linhas).
 - **Title** (Archivo Narrow, 500, 0.6875rem/11px, tracking 0.05em, uppercase): rótulos estruturais fixos — "Dono", "Participantes", cabeçalhos de coluna da tabela de itens.
 - **Body — comanda** (Archivo Narrow, 500, 0.875rem/14px, uppercase): texto estrutural padrão de Itens e Participantes.
 - **Handwritten** (Kalam, 400, cor `tinta-manuscrita`): 1.125rem/18px na descrição do item, nos campos da grade (dono, contagem de participantes) e nos campos dos diálogos; 1.5rem/24px no nome da conta nas comandas do balcão; 1.5rem no título do diálogo de dividir (nome do item).
@@ -144,7 +145,7 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 
 Tamanhos fora da escala, decididos de propósito (o detector acusa; não "corrigir"):
 - **Carimbo de papel na mesa** (Archivo Narrow 700, 10px, tracking 0.06em, uppercase): ORGANIZADOR / COLABORANDO / NA MESA sobre a base do avatar. É carimbo, não texto corrido.
-- **Subtítulo do cupom** (Courier Prime, 13px): "SPLITDUMMY · CONTA #NNN" e linhas de apoio do cabeçalho do cupom; também o texto das comandas e cupons do balcão.
+- **Subtítulo do cupom** (Courier Prime, 13px): "DIVIDE/AI · CONTA #NNN" e linhas de apoio do cabeçalho do cupom; também o texto das comandas e cupons do balcão.
 - **"Fecha para mim"** (Archivo Narrow, 15px; 13px abaixo de 640px, o texto inteiro): botão em destaque com o vocativo girando; o apelido mais longo fica no limite em 375px.
 - **Contagem no botão de dividir** (Archivo Narrow 600, 16px): o número de pessoas é o protagonista do botão; o ÷ encolhe pra 12px como prefixo.
 
@@ -214,10 +215,10 @@ Não há navegação por abas simétrica — foi removida de propósito. Itens �
 Tela de Participantes representada como uma mesa vista de cima — referência direta ao dito "quem senta na ponta paga a conta". O dono ocupa a cabeceira (3 colunas no topo); cada participante que entra alterna lado esquerdo/direito, crescendo a mesa pra baixo em vez de reorganizar o layout. Uma coluna central decorativa (ver `viga-da-mesa` em Elevation) conecta visualmente as fileiras. Avatar é um de 4 ilustrados fixos (`avatar_key`); vaga vazia é um quadrado tracejado com "+".
 
 ### Cupom Fiscal (signature component)
-Tela de Resumo: tira de papel térmico (`.cupom-fiscal`) com serrilha, saindo de uma boca de impressora fixa. Cabeçalho com nome da conta, "SPLITDUMMY · CONTA #NNN", data, pessoas e garçom; colunas NOME / VALOR; uma linha por pessoa (nome + total em negrito, "N itens · subtotal + taxa" embaixo) com os itens num `<details>` nativo (não `Accordion`), setas ▾/▴ escondidas do leitor de tela. Itens sem dono aparecem como aviso tracejado dentro do cupom. Conta aberta é prévia ao vivo, com impressão animada ao abrir; o carimbo PAGO só bate na transição aberta → paga. É a "cerimônia de fechamento" registrada no Overview.
+Tela de Resumo: tira de papel térmico (`.cupom-fiscal`) com serrilha, saindo de uma boca de impressora fixa. Cabeçalho com nome da conta, "DIVIDE/AI · CONTA #NNN", data, pessoas e garçom; colunas NOME / VALOR; uma linha por pessoa (nome + total em negrito, "N itens · subtotal + taxa" embaixo) com os itens num `<details>` nativo (não `Accordion`), setas ▾/▴ escondidas do leitor de tela. Itens sem dono aparecem como aviso tracejado dentro do cupom. Conta aberta é prévia ao vivo, com impressão animada ao abrir; o carimbo PAGO só bate na transição aberta → paga. É a "cerimônia de fechamento" registrada no Overview.
 
 ### O Balcão (signature component)
-Dashboard: fundo royal escuro chapado (`.balcao`, sem grão) com os papéis da pessoa em lista. Conta aberta = comanda em miniatura (marca "Splitdummy" impressa + Nº + selo ABERTA, nome da conta manuscrito sobre a linha, pessoas/abertura/dono, parcial). Conta paga = cupom térmico curto com carimbo PAGO, total e "você pagou" em destaque. Papéis retos (giro descartado). "Abrir nova comanda" é a próxima folha do bloco, tracejada.
+Dashboard: fundo royal escuro chapado (`.balcao`, sem grão) com os papéis da pessoa em lista. Conta aberta = comanda em miniatura (marca "Divide/ai" impressa + Nº + selo ABERTA, nome da conta manuscrito sobre a linha, pessoas/abertura/dono, parcial). Conta paga = cupom térmico curto com carimbo PAGO, total e "você pagou" em destaque. Papéis retos (giro descartado). "Abrir nova comanda" é a próxima folha do bloco, tracejada.
 
 ## Do's and Don'ts
 

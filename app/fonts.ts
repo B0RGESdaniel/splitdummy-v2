@@ -13,7 +13,7 @@ export const archivoNarrow = Archivo_Narrow({
 export const bitter = Bitter({
   variable: "--font-display",
   subsets: ["latin"],
-  weight: ["400", "600", "700"],
+  weight: ["400", "600", "700", "800"],
 });
 
 export const kalam = Kalam({

@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Splitdummy",
+  title: "Divide/ai",
   description: "Divida contas de bar e restaurante com seus amigos",
 };
 

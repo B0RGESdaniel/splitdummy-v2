@@ -43,10 +43,10 @@ export function SignOutButton({ className }: { className?: string }) {
       </DialogTrigger>
       <DialogContent container={portalContainer}>
         <DialogHeader>
-          <DialogTitle>Desconectar do Splitdummy?</DialogTitle>
+          <DialogTitle>Desconectar do Divide/ai?</DialogTitle>
           <DialogDescription>
             Você vai precisar entrar de novo com o Google pra continuar usando o
-            Splitdummy.
+            Divide/ai.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

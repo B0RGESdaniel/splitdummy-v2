@@ -3,6 +3,7 @@ import { connection } from "next/server";
 
 import { archivoNarrow, bitter, courierPrime, dotGothic16, kalam } from "@/app/fonts";
 import { SignOutButton } from "@/components/auth/sign-out-button";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { ThemeScope } from "@/components/theme-scope";
 import { createClient } from "@/lib/supabase/server";
 
@@ -35,7 +36,7 @@ export default async function DashboardLayout({
       <div className="flex w-full max-w-md flex-1 flex-col">
         <header className="flex items-center justify-between gap-2 px-5 pt-4 pb-1">
           {/* Nome da casa: o que vem impresso em toda comanda do bloco. */}
-          <span className="font-display text-xl font-bold tracking-tight">Splitdummy</span>
+          <BrandWordmark className="text-xl" />
           <SignOutButton className="text-[color:var(--balcao-soft)] hover:bg-[color:var(--balcao-ink)]/10 hover:text-[color:var(--balcao-ink)]" />
         </header>
         <main className="flex flex-1 flex-col gap-7 px-5 pt-3 pb-10">{children}</main>

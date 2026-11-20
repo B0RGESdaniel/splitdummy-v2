@@ -175,7 +175,7 @@ export function BillSummary({
             <div className="cupom-fiscal px-4 py-[18px] text-sm leading-[1.45]">
               <h1 className="text-center font-bold uppercase">{billName}</h1>
               <div className="text-muted-foreground text-center text-[13px]">
-                SPLITDUMMY · CONTA #
+                DIVIDE/AI · CONTA #
                 <span className="font-digits">{String(billNumber).padStart(3, "0")}</span>
               </div>
 

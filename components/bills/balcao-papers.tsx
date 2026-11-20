@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
+import { BrandWordmark } from "@/components/brand-wordmark";
 
 function formatCurrency(cents: number) {
   return (cents / 100).toLocaleString("pt-BR", {
@@ -40,7 +41,7 @@ export function BalcaoComanda({
       className={`balcao-comanda ${paperLinkClass} flex flex-col gap-2.5 px-3.5 pt-2.5 pb-3.5 text-foreground`}
     >
       <div className="-mx-3.5 flex items-baseline gap-2 border-b-[1.5px] border-border px-3.5 pb-2.5">
-        <span className="font-display text-lg font-bold tracking-tight">Splitdummy</span>
+        <BrandWordmark className="text-lg" />
         <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
           Nº {String(number).padStart(3, "0")}
         </span>
@@ -111,7 +112,7 @@ export function BalcaoCupom({
       <div className="cupom-fiscal flex flex-col gap-0.5 px-4 py-3 text-[13px] leading-[1.45]">
         <div className="pr-16 text-center text-[15px] font-bold break-words uppercase">{name}</div>
         <div className="pr-16 text-center text-[11px] text-muted-foreground">
-          SPLITDUMMY · CONTA #<span className="font-digits">{String(number).padStart(3, "0")}</span>
+          DIVIDE/AI · CONTA #<span className="font-digits">{String(number).padStart(3, "0")}</span>
         </div>
 
         <hr className="mt-2 mb-1.5 border-dashed" />

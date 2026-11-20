@@ -3,6 +3,7 @@ import { connection } from "next/server";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillBackButton } from "@/components/bills/bill-back-button";
+import { BrandWordmark } from "@/components/brand-wordmark";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { archivoNarrow, bitter, kalam } from "@/app/fonts";
@@ -74,7 +75,7 @@ export default async function BillLayout({
         profileIds={profileIds}
       />
       <div className="flex w-full max-w-md flex-1 flex-col">
-        {/* A casa é o Splitdummy: o masthead só traz o que vem impresso (nome
+        {/* A casa é o Divide/ai: o masthead só traz o que vem impresso (nome
             da casa e Nº). O nome da conta é campo preenchido à mão e mora na
             grade de campos de Itens, como a primeira linha (ver items/page.tsx). */}
         <header className="sticky top-0 z-10 border-b-[1.5px] border-border bg-background/95 px-4 py-2.5 backdrop-blur-sm">
@@ -82,7 +83,7 @@ export default async function BillLayout({
             <div className="flex min-w-0 items-center gap-1">
               <BillBackButton billId={billId} isOpen={bill.status === "open"} />
               <span className="flex items-baseline gap-2">
-                <span className="font-display text-lg font-bold tracking-tight">Splitdummy</span>
+                <BrandWordmark className="text-lg" />
                 <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
                   Nº {String(billNumber).padStart(3, "0")}
                 </span>

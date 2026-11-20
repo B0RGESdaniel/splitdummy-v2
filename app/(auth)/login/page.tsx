@@ -25,7 +25,7 @@ export default async function LoginPage({
     <div className="flex flex-1 items-center justify-center p-4">
       <Card className="w-full max-w-sm">
         <CardHeader>
-          <CardTitle>Splitdummy</CardTitle>
+          <CardTitle>Divide/ai</CardTitle>
         </CardHeader>
         <CardContent>
           <GoogleSignInButton next={next} />
