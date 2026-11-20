@@ -147,7 +147,7 @@ Tamanhos fora da escala, decididos de propósito (o detector acusa; não "corrig
 - **Carimbo de papel na mesa** (Archivo Narrow 700, 10px, tracking 0.06em, uppercase): ORGANIZADOR / COLABORANDO / NA MESA sobre a base do avatar. É carimbo, não texto corrido.
 - **Subtítulo do cupom** (Courier Prime, 13px): "DIVIDE/AI · CONTA #NNN" e linhas de apoio do cabeçalho do cupom; também o texto das comandas e cupons do balcão.
 - **"Fecha para mim"** (Archivo Narrow, 15px; 13px abaixo de 640px, o texto inteiro): botão em destaque com o vocativo girando; o apelido mais longo fica no limite em 375px.
-- **Contagem no botão de dividir** (Archivo Narrow 600, 16px): o número de pessoas é o protagonista do botão; o ÷ encolhe pra 12px como prefixo.
+- **Botão de dividir** (Archivo Narrow 600): "/3" em 16px no dividido (barra e número no mesmo tamanho, lido como "dividido por 3"); "/" sozinha em 20px no pendente.
 
 ### Named Rules
 **The Preenchido É Manuscrito Rule.** (Substitui a antiga "Números São Impressos", derrubada pelo uso real.) O que alguém escreveu num campo é manuscrito, número incluído: preço e quantidade no diálogo de item, contagem de participantes na grade, nome da conta. O que a comanda calcula, conta ou imprime é voz impressa: preço por unidade e total na linha do item, stepper de quantidade, contagem no botão de dividir, e tudo no cupom (DotGothic16 nos dígitos). A pergunta é "alguém escreveu isso?", não "isso é um número?".
@@ -178,7 +178,7 @@ Raio zero em praticamente tudo dentro de `.paper-check` — botões, badges, car
 ### Named Rules
 **The Tracejado-é-Provisório Rule.** Borda tracejada sinaliza "ainda não existe" — vaga vazia na mesa, "próxima folha" do bloco no balcão (abrir nova comanda), moldura "Comanda em branco" da conta vazia, avisos (`Alert variant="warning"`, ex.: itens sem dono no cupom). Preenchimento sólido sinaliza autoridade ou a próxima ação — carimbo "organizador", selo "aberta"/"paga", botão de ação principal.
 
-**The Pendente-É-Cheio Rule.** Na coluna Div. de Itens os pesos são invertidos: o item ainda sem ninguém é o bloco cheio royal (é o trabalho que falta e o que trava o "Marcar como paga"); o já dividido é contorno, com o número de pessoas em destaque (÷3). Os dois têm a mesma largura (42px). Tracejado foi tentado pra esse estado e descartado por falta de destaque.
+**The Pendente-É-Cheio Rule.** Na coluna Div. de Itens os pesos são invertidos: o item ainda sem ninguém é o bloco cheio royal (é o trabalho que falta e o que trava o "Marcar como paga"); o já dividido é contorno, com "/n" (n = pessoas, "/3"). O glifo é a barra da marca Divide/ai, não um ícone: "/" sozinha no bloco cheio é a divisão ainda em aberto. Os dois têm a mesma largura (42px). Tracejado foi tentado pra esse estado e descartado por falta de destaque; o ícone ÷ saiu com a marca nova.
 
 ## Components
 

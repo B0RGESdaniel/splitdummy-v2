@@ -256,7 +256,7 @@
       },
       {
         "name": "Pendente É Cheio",
-        "body": "Na coluna Div. de Itens, item sem ninguém é o bloco cheio royal; o já dividido é contorno com o número de pessoas em destaque. Mesma largura nos dois.",
+        "body": "Na coluna Div. de Itens, item sem ninguém é o bloco cheio royal com \"/\" sozinha; o já dividido é contorno com \"/n\" (n = pessoas). A barra é a da marca Divide/ai. Mesma largura nos dois.",
         "section": "components"
       }
     ],

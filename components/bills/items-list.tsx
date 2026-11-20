@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Divide, Pencil } from "lucide-react";
+import { Pencil } from "lucide-react";
 import { motion } from "motion/react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -331,17 +331,18 @@ export function ItemsList({
                                 ? `Dividir ${item.description}, dividido entre ${sharerCount} ${sharerCount === 1 ? "pessoa" : "pessoas"}`
                                 : `Dividir ${item.description} (ainda não dividido)`
                             }
-                            className="w-[42px] gap-0.5 px-0 tabular-nums"
+                            className="w-[42px] px-0 tabular-nums"
                           >
+                            {/* A barra é a mesma da marca (Divide/ai): "/" sozinha é a
+                                divisão ainda em aberto; "/3" é "dividido por 3". */}
                             {sharerCount > 0 ? (
-                              <>
-                                <Divide aria-hidden className="size-3" />
-                                <span aria-hidden className="text-base leading-none font-semibold">
-                                  {sharerCount}
-                                </span>
-                              </>
+                              <span aria-hidden className="text-base leading-none font-semibold">
+                                /{sharerCount}
+                              </span>
                             ) : (
-                              <Divide aria-hidden className="size-[18px]" />
+                              <span aria-hidden className="text-xl leading-none font-semibold">
+                                /
+                              </span>
                             )}
                           </Button>
                         }
