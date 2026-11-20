@@ -13,9 +13,9 @@ const paperLinkClass =
   "block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--balcao-ink)] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5";
 
 /**
- * Comanda aberta em cima do balcão: cabeçalho impresso da casa com o selo,
- * nome da conta preenchido à mão sobre a linha, e o rodapé com pessoas,
- * abertura, dono e o parcial.
+ * Comanda aberta em cima do balcão: repete o topo da tela da conta em
+ * miniatura — masthead só com o impresso (casa + Nº) e a grade de campos
+ * (Conta, Dono, Participantes, selo) — e um rodapé com abertura e parcial.
  */
 export function BalcaoComanda({
   billId,
@@ -37,34 +37,43 @@ export function BalcaoComanda({
   return (
     <Link
       href={`/bills/${billId}/items`}
-      className={`balcao-comanda ${paperLinkClass} flex flex-col gap-1.5 px-3.5 pt-3 pb-3.5 text-foreground`}
+      className={`balcao-comanda ${paperLinkClass} flex flex-col gap-2.5 px-3.5 pt-2.5 pb-3.5 text-foreground`}
     >
-      <div className="flex items-center justify-between gap-3">
-        <span className="flex items-baseline gap-2">
-          <span className="font-display text-[15px] font-bold tracking-tight">Splitdummy</span>
-          <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
-            Nº {String(number).padStart(3, "0")}
-          </span>
+      <div className="-mx-3.5 flex items-baseline gap-2 border-b-[1.5px] border-border px-3.5 pb-2.5">
+        <span className="font-display text-lg font-bold tracking-tight">Splitdummy</span>
+        <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
+          Nº {String(number).padStart(3, "0")}
         </span>
-        <BillStatusBadge isOpen />
       </div>
 
-      <div className="border-b-[1.5px] border-foreground/45 pt-0.5 pb-1.5 font-handwritten text-2xl leading-tight break-words text-[color:var(--ink-handwritten)]">
-        {name}
-      </div>
-
-      <div className="flex items-end justify-between gap-3 pt-0.5">
-        <div className="flex min-w-0 flex-col gap-0.5 text-[13px] leading-snug font-medium tracking-[0.02em]">
-          <span className="tabular-nums">
-            {participantCount} {participantCount === 1 ? "pessoa" : "pessoas"} · {openedAt}
-          </span>
-          <span className="flex min-w-0 items-baseline gap-1.5">
-            Dono
-            <span className="truncate font-handwritten text-base leading-none text-[color:var(--ink-handwritten)]">
-              {ownerFirstName}
-            </span>
-          </span>
+      <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
+        <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
+          <div className="text-[11px] uppercase tracking-wide">Conta</div>
+          <div className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
+            {name}
+          </div>
         </div>
+        <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
+          <div className="text-[11px] uppercase tracking-wide">Dono</div>
+          <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+            {ownerFirstName}
+          </div>
+        </div>
+        <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
+          <div className="text-[11px] uppercase tracking-wide">Participantes</div>
+          <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+            {participantCount}
+          </div>
+        </div>
+        <div className="flex items-center justify-center px-3 py-2">
+          <BillStatusBadge isOpen />
+        </div>
+      </div>
+
+      <div className="flex items-end justify-between gap-3">
+        <span className="text-[13px] leading-snug font-medium tracking-[0.02em] tabular-nums">
+          Aberta {openedAt}
+        </span>
         <span className="flex shrink-0 flex-col items-end">
           <span className="text-[11px] font-semibold tracking-[0.08em]">Parcial</span>
           <span className="text-xl leading-tight font-semibold tabular-nums">
