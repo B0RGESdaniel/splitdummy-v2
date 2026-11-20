@@ -1,6 +1,6 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-11-17T00:00:00Z",
+  "generatedAt": "2026-11-19T23:59:00Z",
   "title": "Design System: Splitdummy",
   "extensions": {
     "colorMeta": {
@@ -102,12 +102,30 @@
       }
     },
     "typographyMeta": {
-      "display": { "displayName": "Display (Bitter)", "purpose": "Nome da conta no cabeçalho, único uso." },
-      "comanda": { "displayName": "Corpo da Comanda (Archivo Narrow)", "purpose": "Voz estrutural de Itens, Participantes e cabeçalho — sempre uppercase." },
-      "comanda-label": { "displayName": "Rótulo da Comanda", "purpose": "Rótulos fixos (Dono, Participantes, cabeçalhos de coluna) — menor e mais espaçado que o corpo." },
-      "manuscrita": { "displayName": "Voz Manuscrita (Kalam)", "purpose": "Só o que o usuário digitou: descrição do item, valores preenchidos no cabeçalho. Nunca números." },
-      "cupom": { "displayName": "Corpo do Cupom (Courier Prime)", "purpose": "Voz datilografada do Resumo — nomes, rótulos, tudo exceto dígitos." },
-      "cupom-digitos": { "displayName": "Dígitos do Cupom (DotGothic16)", "purpose": "Só dígitos, \"R$\" e frações dentro do Resumo — nunca palavras inteiras." }
+      "display": {
+        "displayName": "Display (Bitter)",
+        "purpose": "Nome da conta no cabeçalho, único uso."
+      },
+      "comanda": {
+        "displayName": "Corpo da Comanda (Archivo Narrow)",
+        "purpose": "Voz estrutural de Itens, Participantes e cabeçalho — sempre uppercase."
+      },
+      "comanda-label": {
+        "displayName": "Rótulo da Comanda",
+        "purpose": "Rótulos fixos (Dono, Participantes, cabeçalhos de coluna) — menor e mais espaçado que o corpo."
+      },
+      "manuscrita": {
+        "displayName": "Voz Manuscrita (Kalam)",
+        "purpose": "Só o que o usuário digitou: descrição do item, valores preenchidos no cabeçalho. Nunca números."
+      },
+      "cupom": {
+        "displayName": "Corpo do Cupom (Courier Prime)",
+        "purpose": "Voz datilografada do Resumo — nomes, rótulos, tudo exceto dígitos."
+      },
+      "cupom-digitos": {
+        "displayName": "Dígitos do Cupom (DotGothic16)",
+        "purpose": "Só dígitos, \"R$\" e frações dentro do Resumo — nunca palavras inteiras."
+      }
     },
     "shadows": [
       {
@@ -197,35 +215,65 @@
   ],
   "narrative": {
     "northStar": "Da Comanda ao Cupom",
-    "overview": "O uso de verdade acontece na comanda: papel cru, tinta azul royal, preenchimento manuscrito, aberta a maior parte do tempo que o grupo está sentado à mesa dividindo a conta. Mas todo o sistema é desenhado em função de um destino — o momento em que a conta fecha e a comanda se transforma literalmente num cupom fiscal, com sua própria voz tipográfica (Courier Prime + DotGothic16 nos números), como se tivesse saído de uma impressora térmica de restaurante de verdade. Essa transição de registro — de rascunho manuscrito pra documento impresso definitivo — é a cerimônia central do produto, não um simples flip de status. Direção declarada pelo usuário (2026-11-17, ainda não implementada): o histórico de contas (dashboard) deve eventualmente herdar essa mesma linguagem de cupom fiscal pra visualizar contas antigas, em vez do tema genérico que usa hoje.",
+    "overview": "O uso de verdade acontece na comanda: papel cru, tinta azul royal, preenchimento manuscrito, aberta a maior parte do tempo que o grupo está sentado à mesa dividindo a conta. Mas todo o sistema é desenhado em função de um destino — o momento em que a conta fecha e a comanda se transforma literalmente num cupom fiscal, com sua própria voz tipográfica (Courier Prime + DotGothic16 nos números), como se tivesse saído de uma impressora térmica de restaurante de verdade. Essa transição de registro — de rascunho manuscrito pra documento impresso definitivo — é a cerimônia central do produto, não um simples flip de status. O histórico de contas (dashboard) mostra esse ciclo inteiro: um balcão royal escuro com as abertas como comandas em miniatura e as pagas como cupons térmicos com carimbo PAGO. A casa é o Splitdummy: o nome da casa vem impresso (Bitter), o nome da conta é preenchido à mão (Kalam).",
     "keyCharacteristics": [
-      "Duas vozes tipográficas paralelas (comanda vs. cupom), nunca combinadas na mesma superfície.",
+      "Duas vozes tipográficas paralelas (comanda vs. cupom), nunca combinadas no mesmo papel.",
       "Papel + tinta, não vidro: textura de grão real, bordas retas, zero sombra decorativa.",
       "Vermelho é raro e sempre um sinal — fechamento ou risco — nunca uma segunda cor de marca.",
-      "Números são sempre confiáveis: vivem na voz impressa, nunca na manuscrita.",
+      "O que se escreve num campo é manuscrito, número incluído; o que a comanda calcula ou conta é impresso.",
       "Estrutura pré-impressa contrasta com o conteúdo preenchido à mão."
     ],
     "rules": [
-      { "name": "Vermelho É Sinal", "body": "Vermelho Carimbo aparece só no selo \"fechada\" e em ações destrutivas/alertas de risco. Nunca decoração, nunca segunda cor de marca.", "section": "colors" },
-      { "name": "Uma Tinta", "body": "Fora do vermelho de sinal e da tinta manuscrita reservada, toda a estrutura visual lê a mesma cor — azul royal. Não existe segunda cor de acento concorrendo por atenção.", "section": "colors" },
-      { "name": "Números São Impressos", "body": "Nenhum valor numérico usa a voz manuscrita em lugar nenhum do app — números sempre na voz impressa, pra manter a confiança no valor a qualquer momento.", "section": "typography" },
-      { "name": "DotGothic16 Só Dígito", "body": "DotGothic16 em maiúsculas renderiza com altura desigual (confirmado pelo usuário) — restrita a dígitos, \"R$\" e frações, nunca a uma palavra inteira.", "section": "typography" },
-      { "name": "Chapado-com-Propósito", "body": "Toda vez que o sistema usa algo parecido com profundidade, é pra simular um objeto físico real — nunca um efeito de elevação de UI genérico.", "section": "elevation" },
-      { "name": "Tracejado-é-Provisório", "body": "Borda tracejada sinaliza \"ainda não é definitivo\"; preenchimento sólido sinaliza autoridade/definitivo.", "section": "shapes" }
+      {
+        "name": "Vermelho É Sinal",
+        "body": "Vermelho Carimbo aparece só no carimbo \"PAGO\" e em ações destrutivas/alertas de risco. Nunca decoração, nunca segunda cor de marca.",
+        "section": "colors"
+      },
+      {
+        "name": "Uma Tinta",
+        "body": "Fora do vermelho de sinal e da tinta manuscrita reservada, toda a estrutura visual lê a mesma cor — azul royal. Não existe segunda cor de acento concorrendo por atenção.",
+        "section": "colors"
+      },
+      {
+        "name": "Preenchido É Manuscrito",
+        "body": "O que alguém escreveu num campo é manuscrito, número incluído (preço/qtd no diálogo, contagem de participantes, nome da conta); o que a comanda calcula, conta ou imprime é voz impressa. Substitui a antiga \"Números São Impressos\".",
+        "section": "typography"
+      },
+      {
+        "name": "DotGothic16 Só Dígito",
+        "body": "DotGothic16 em maiúsculas renderiza com altura desigual (confirmado pelo usuário) — restrita a dígitos, \"R$\" e frações, nunca a uma palavra inteira.",
+        "section": "typography"
+      },
+      {
+        "name": "Chapado-com-Propósito",
+        "body": "Toda vez que o sistema usa algo parecido com profundidade, é pra simular um objeto físico real — nunca um efeito de elevação de UI genérico.",
+        "section": "elevation"
+      },
+      {
+        "name": "Tracejado-é-Provisório",
+        "body": "Borda tracejada sinaliza \"ainda não existe\" (vaga vazia, próxima folha, comanda em branco, avisos); preenchimento sólido sinaliza autoridade ou a próxima ação.",
+        "section": "shapes"
+      },
+      {
+        "name": "Pendente É Cheio",
+        "body": "Na coluna Div. de Itens, item sem ninguém é o bloco cheio royal; o já dividido é contorno com o número de pessoas em destaque. Mesma largura nos dois.",
+        "section": "components"
+      }
     ],
     "dos": [
-      "Do manter vermelho reservado só pro selo \"fechada\" e pra ações destrutivas/alertas de risco.",
-      "Do manter todo número na voz impressa — nunca manuscrita.",
+      "Do manter vermelho reservado só pro carimbo \"PAGO\" e pra ações destrutivas/alertas de risco.",
+      "Do escrever em Kalam o que alguém preencheu num campo (número incluído) e manter impresso o que a comanda calcula.",
       "Do usar borda tracejada só pra estados provisórios e preenchimento sólido só pra estados definitivos.",
       "Do dar textura de grão a toda superfície do tipo card/dialog/popover/header dentro de .paper-check.",
-      "Do manter Courier Prime + DotGothic16 isolados ao Resumo."
+      "Do manter Courier Prime + DotGothic16 isolados ao cupom (Resumo e cupons pagos do balcão)."
     ],
     "donts": [
       "Don't usar raio de borda maior que zero em botão, badge, card, diálogo ou popover dentro de .paper-check.",
       "Don't usar sombra ambiente de UI em cards ou botões.",
       "Don't aplicar DotGothic16 a uma palavra inteira.",
-      "Don't aplicar a voz manuscrita a números ou rótulos estruturais fixos.",
-      "Don't reintroduzir o visual de dashboard SaaS genérico dentro do escopo .paper-check."
+      "Don't aplicar a voz manuscrita a rótulos estruturais fixos, a valores calculados ou ao cupom.",
+      "Don't reintroduzir o visual de dashboard SaaS genérico dentro do escopo .paper-check.",
+      "Don't misturar as vozes da comanda e do cupom no mesmo papel."
     ]
   }
 }
