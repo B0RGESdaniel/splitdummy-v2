@@ -7,6 +7,7 @@ import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
 import { archivoNarrow, bitter, kalam } from "@/app/fonts";
 import { ThemeScope } from "@/components/theme-scope";
+import { getBillNumber } from "@/lib/bill/bill-number";
 import { createClient } from "@/lib/supabase/server";
 
 // This route group has no shared ancestor with app/(dashboard)/layout.tsx
@@ -33,7 +34,7 @@ export default async function BillLayout({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, name, owner_id, status")
+    .select("id, name, owner_id, status, created_at")
     .eq("id", billId)
     .single();
 
@@ -46,9 +47,10 @@ export default async function BillLayout({
   // então não há o que compartilhar.
   const canInvite = isOwner && bill.status === "open";
 
-  const [invite, { data: participantRows }] = await Promise.all([
+  const [invite, { data: participantRows }, billNumber] = await Promise.all([
     canInvite ? getOrCreateActiveInvite(billId) : null,
     supabase.from("bill_participants").select("id, profile_id").eq("bill_id", billId),
+    getBillNumber(bill.owner_id, bill.created_at),
   ]);
 
   const participants = participantRows ?? [];
@@ -72,13 +74,19 @@ export default async function BillLayout({
         profileIds={profileIds}
       />
       <div className="flex w-full max-w-md flex-1 flex-col">
-        <header className="sticky top-0 z-10 bg-background/95 backdrop-blur-sm">
-          <div className="flex items-center justify-between gap-2 px-4 py-3.5">
+        {/* A casa é o Splitdummy: o masthead só traz o que vem impresso (nome
+            da casa e Nº). O nome da conta é campo preenchido à mão e mora na
+            grade de campos de Itens, como a primeira linha (ver items/page.tsx). */}
+        <header className="sticky top-0 z-10 border-b-[1.5px] border-border bg-background/95 px-4 py-2.5 backdrop-blur-sm">
+          <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-1">
               <BillBackButton billId={billId} isOpen={bill.status === "open"} />
-              <h1 className="truncate font-display text-2xl font-bold tracking-tight text-foreground">
-                {bill.name}
-              </h1>
+              <span className="flex items-baseline gap-2">
+                <span className="font-display text-lg font-bold tracking-tight">Splitdummy</span>
+                <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
+                  Nº {String(billNumber).padStart(3, "0")}
+                </span>
+              </span>
             </div>
             {/* Desconectar fica só no histórico: aqui, ao lado do nome da
                 conta, o ícone era lido como "sair desta conta". */}

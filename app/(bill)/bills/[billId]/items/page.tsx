@@ -25,7 +25,7 @@ export default async function ItemsPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, status, profiles(display_name)")
+    .select("id, name, status, profiles(display_name)")
     .eq("id", billId)
     .single();
 
@@ -59,6 +59,15 @@ export default async function ItemsPage({
   return (
     <div className="flex flex-1 flex-col gap-3">
       <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
+        {/* Nome da conta é o primeiro campo da comanda: preenchido à mão,
+            colado em Dono/Participantes, e não no masthead (que é só o que
+            vem impresso). */}
+        <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
+          <div className="text-[11px] uppercase tracking-wide text-foreground">Conta</div>
+          <h1 className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
+            {bill.name}
+          </h1>
+        </div>
         <div className="border-r-[1.5px] border-foreground px-3 py-2">
           <div className="text-[11px] uppercase tracking-wide text-foreground">
             Dono

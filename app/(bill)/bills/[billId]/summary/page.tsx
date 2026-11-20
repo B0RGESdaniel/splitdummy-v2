@@ -6,7 +6,7 @@ import { BillSummary } from "@/components/bills/bill-summary";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
 import { createClient } from "@/lib/supabase/server";
-import { createServiceRoleClient } from "@/lib/supabase/service-role";
+import { getBillNumber } from "@/lib/bill/bill-number";
 
 export const instant = false;
 
@@ -53,7 +53,7 @@ export default async function BillSummaryPage({
     { data: participants },
     { data: items },
     { data: shares },
-    { count: billNumber },
+    billNumber,
   ] = await Promise.all([
       supabase
         .from("bill_participants")
@@ -69,14 +69,7 @@ export default async function BillSummaryPage({
         .from("item_shares")
         .select("item_id, participant_id, parts")
         .eq("bill_id", billId),
-      // Número da conta = posição dela entre as contas do dono. Service-role
-      // porque um participante não enxerga (por RLS) as outras contas do
-      // dono; só a contagem sai daqui, e a conta já foi lida acima via RLS.
-      createServiceRoleClient()
-        .from("bills")
-        .select("id", { count: "exact", head: true })
-        .eq("owner_id", bill.owner_id)
-        .lte("created_at", bill.created_at),
+      getBillNumber(bill.owner_id, bill.created_at),
     ]);
 
   const isOpen = bill.status === "open";
@@ -91,7 +84,7 @@ export default async function BillSummaryPage({
         <BillSummary
           billId={billId}
           billName={bill.name}
-          billNumber={billNumber ?? 1}
+          billNumber={billNumber}
           waiter={waiterForBill(bill.id)}
           receiptDate={formatReceiptDate(bill.closed_at ?? bill.created_at)}
           serviceTaxPercent={bill.service_tax_percent}
