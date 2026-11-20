@@ -13,7 +13,6 @@ import {
 import { AvatarIcon } from "@/components/bills/avatar-icon";
 import { PartsStepper } from "@/components/bills/parts-stepper";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
 import { billItemSharesQueryKey } from "@/lib/bill/bill-item-shares";
@@ -281,22 +280,23 @@ export function ItemSplit({
         </div>
       )}
 
-      <div className="-mx-1 flex min-h-0 flex-col gap-2 overflow-y-auto px-1 py-px">
+      {/* Régua da comanda, igual à tabela de Itens: borda sólida em volta e
+          entre as linhas, sem caixa por pessoa. A própria linha ganha uma moldura
+          grossa por dentro da régua (fundo sombreado sozinho não se distinguia). */}
+      <ul className="flex min-h-0 flex-col divide-y-[1.5px] divide-foreground overflow-y-auto border-[1.5px] border-foreground">
         {participants.map((participant) => {
           const parts = partsByParticipant.get(participant.participant_id) ?? 0;
           const amount = amountsByParticipant?.get(participant.participant_id) ?? 0;
 
           return (
-            <Card
+            <li
               key={participant.participant_id}
               className={cn(
-                // Card tem overflow-hidden, o que deixa ele encolher numa coluna flex em vez de a lista rolar
-                "shrink-0",
-                participant.is_self && "ring-[1.5px] ring-foreground",
+                "flex shrink-0 items-center justify-between gap-4 px-3 py-2",
+                participant.is_self && "inset-ring-[1.5px] inset-ring-foreground",
                 flashing.has(participant.participant_id) && "realtime-flash",
               )}
             >
-              <CardContent className="flex items-center justify-between gap-4">
                 <span className="flex min-w-0 items-center gap-2">
                   {participant.avatar_key && (
                     <AvatarIcon
@@ -321,15 +321,14 @@ export function ItemSplit({
                     onIncrement={() => increment.mutate(participant.participant_id)}
                     onDecrement={() => decrement.mutate(participant.participant_id)}
                   />
-                  <span className="text-muted-foreground w-20 text-right text-sm">
+                  <span className="w-20 text-right text-sm font-medium tabular-nums">
                     {amountsByParticipant ? formatCurrency(amount) : "—"}
                   </span>
                 </div>
-              </CardContent>
-            </Card>
+            </li>
           );
         })}
-      </div>
+      </ul>
     </>
   );
 }

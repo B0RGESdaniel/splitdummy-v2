@@ -88,6 +88,7 @@ export function ItemFormDialog({
                 name="unit_price"
                 className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
                 type="number"
+                inputMode="decimal"
                 step="0.01"
                 min="0"
                 defaultValue={initialValues?.unit_price}
@@ -101,6 +102,7 @@ export function ItemFormDialog({
                 name="quantity"
                 className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
                 type="number"
+                inputMode="numeric"
                 step="1"
                 min="1"
                 defaultValue={initialValues?.quantity ?? 1}

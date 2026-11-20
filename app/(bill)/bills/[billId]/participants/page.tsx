@@ -165,7 +165,7 @@ function EmptySeatSlot({ billId }: { billId: string }) {
           </button>
         }
       />
-      <span className="text-[10px] font-medium text-muted-foreground opacity-70">
+      <span className="text-[11px] font-medium text-muted-foreground">
         Próxima vaga
       </span>
     </div>
@@ -234,7 +234,7 @@ export default async function ParticipantsPage({
 
   const { data: bill } = await supabase
     .from("bills")
-    .select("id, status, owner_id, service_tax_percent")
+    .select("id, name, status, owner_id, service_tax_percent")
     .eq("id", billId)
     .single();
 
@@ -329,6 +329,8 @@ export default async function ParticipantsPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
+      {/* O nome da conta só aparece na grade de Itens; aqui fica pro leitor de tela. */}
+      <h1 className="sr-only">Mesa de {bill.name}</h1>
       {isOwner && isOpen && (
         <div className="flex justify-end gap-2 pb-2">
           <ImportParticipantsDialog

@@ -125,7 +125,7 @@ export function ExtractedItemsReviewTable({
       ) : (
         <table className="w-full table-fixed border-collapse text-sm">
           <thead>
-            <tr className="text-left text-[11px] uppercase tracking-wide text-muted-foreground">
+            <tr className="text-left text-[11px] uppercase tracking-wide text-foreground">
               <th scope="col" className="border-b-[1.5px] border-border px-1 pb-1.5 font-medium">
                 Descrição
               </th>
@@ -173,6 +173,7 @@ export function ExtractedItemsReviewTable({
                   <Input
                     aria-label="Quantidade"
                     type="number"
+                    inputMode="numeric"
                     min="1"
                     step="1"
                     className="text-right"
@@ -187,6 +188,7 @@ export function ExtractedItemsReviewTable({
                   <Input
                     aria-label="Preço unitário"
                     type="number"
+                    inputMode="decimal"
                     min="0"
                     step="0.01"
                     className="text-right"
