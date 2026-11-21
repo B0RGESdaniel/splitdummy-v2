@@ -47,6 +47,12 @@ function seatKey(seat: Seat | undefined, fallback: string) {
   return seat.kind === "empty" ? "empty-seat" : seat.participant.id;
 }
 
+// Ordem em que os lugares se sentam na entrada da mesa: dono na cabeceira
+// primeiro, depois os lugares na ordem em que as pessoas entraram.
+function entranceStyle(index: number) {
+  return { "--i": index } as React.CSSProperties;
+}
+
 function PendingAvatarSlot() {
   return (
     <div className="flex h-12 w-12 items-center justify-center border-2 border-dashed border-foreground text-lg font-bold text-foreground opacity-40">
@@ -197,10 +203,12 @@ function Slot({
   context,
   seat,
   align,
+  entrance,
 }: {
   context: SeatContext;
   seat: Seat | undefined;
   align: "start" | "end";
+  entrance: number;
 }) {
   const alignClass =
     align === "end" ? "justify-self-end mr-2.5" : "justify-self-start ml-2.5";
@@ -210,7 +218,7 @@ function Slot({
   }
 
   return (
-    <div className={alignClass}>
+    <div className={`mesa-entrada ${alignClass}`} style={entranceStyle(entrance)}>
       {seat.kind === "empty" ? (
         <EmptySeatSlot billId={context.billId} />
       ) : (
@@ -355,7 +363,10 @@ export default async function ParticipantsPage({
 
       <div className="grid grid-cols-[minmax(3.5rem,1fr)_8rem_minmax(3.5rem,1fr)] items-center justify-center gap-x-4 gap-y-6 py-2">
         {owner && (
-          <div className="col-span-3 -mb-3 flex flex-col items-center justify-self-center gap-1">
+          <div
+            className="mesa-entrada col-span-3 -mb-3 flex flex-col items-center justify-self-center gap-1"
+            style={entranceStyle(0)}
+          >
             <SeatButton
               context={context}
               participant={owner}
@@ -374,6 +385,7 @@ export default async function ParticipantsPage({
               context={context}
               seat={row[0]}
               align="end"
+              entrance={1 + index * 2}
             />
             {index === 0 && (
               <div
@@ -391,6 +403,7 @@ export default async function ParticipantsPage({
               context={context}
               seat={row[1]}
               align="start"
+              entrance={2 + index * 2}
             />
           </Fragment>
         ))}

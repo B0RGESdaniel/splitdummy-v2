@@ -911,6 +911,23 @@
 }
 
 /*
+ * Entrada na mesa: as pessoas se sentam uma de cada vez, da cabeceira pra
+ * baixo. A cada visita (a mesa é destino, não tela de passagem); quem chega
+ * depois pelo realtime monta sozinho e se senta também. Atraso limitado aos
+ * 12 primeiros lugares (ritmo 1,5× o do balcão).
+ */
+.mesa-entrada {
+  animation: balcao-entrada var(--duration-fast) var(--ease-smooth-out) both;
+  animation-delay: calc(min(var(--i, 0), 12) * var(--duration-stagger) * 1.5);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mesa-entrada {
+    animation: none;
+  }
+}
+
+/*
  * Toque no papel: ele afunda 1px e a sombra encurta, como uma folha apertada
  * contra o balcão. Entra rápido (resposta ao dedo) e solta mais devagar.
  */
