@@ -10,10 +10,10 @@ export const instant = false;
 export default async function LoginPage({
   searchParams,
 }: {
-  searchParams: Promise<{ next?: string }>;
+  searchParams: Promise<{ next?: string; erro?: string }>;
 }) {
   await connection();
-  const { next } = await searchParams;
+  const { next, erro } = await searchParams;
   const supabase = await createClient();
   const { data } = await supabase.auth.getClaims();
 
@@ -27,7 +27,12 @@ export default async function LoginPage({
         <CardHeader>
           <CardTitle>Divide/ai</CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col gap-4">
+          {erro === "link" && (
+            <p className="text-destructive text-sm">
+              Esse link de login venceu ou já foi usado. Peça um código novo.
+            </p>
+          )}
           <SignInOptions next={next} />
         </CardContent>
       </Card>

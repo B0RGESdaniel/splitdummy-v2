@@ -34,7 +34,14 @@ export function EmailSignInForm({ next }: { next?: string }) {
     setIsPending(true);
     setError(null);
     const supabase = createClient();
-    const { error: sendError } = await supabase.auth.signInWithOtp({ email });
+    // O mesmo e-mail traz um link de atalho, que passa pelo /auth/confirm e
+    // volta pro mesmo destino.
+    const confirmUrl = new URL("/auth/confirm", window.location.origin);
+    confirmUrl.searchParams.set("next", next ?? "/");
+    const { error: sendError } = await supabase.auth.signInWithOtp({
+      email,
+      options: { emailRedirectTo: confirmUrl.toString() },
+    });
     setIsPending(false);
 
     if (sendError) {
