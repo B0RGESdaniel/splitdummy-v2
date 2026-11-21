@@ -2,7 +2,7 @@
 
 App **multi-usuário e colaborativo em tempo real** de divisão de contas de bar/restaurante, evolução do [splitdummy v1](https://github.com/B0RGESdaniel/splitdummy). É o **TCC** do usuário (Sistemas de Informação): priorizar stack coesa e fácil de justificar por escrito sobre otimização prematura.
 
-Em produção: https://divideai.danielborges.me (push na `main` = deploy de produção na Vercel).
+Em produção: https://divideai.danielborges.me (push na `main` = deploy de produção na Vercel). **Tudo em São Paulo**: funções em `gru1` (`vercel.json`) e Supabase `divideai` (ref `dlqiryqzhajowpbkwebu`, `sa-east-1`), migrado em 2026-11-21. Banco e funções têm de ficar sempre na mesma região.
 
 Onde está o resto:
 - `TCC.md`: stack, regras de negócio, decisões técnicas notáveis e changelog (histórico de tudo que foi feito).
@@ -34,14 +34,14 @@ Onde está o resto:
 
 **Vocabulário**: "fecha para mim" = pedir a conta (qualquer um, leva pro Resumo). Ato do organizador = **"Marcar como paga"**; estados aberta / **paga**; carimbo **PAGO**. Banco segue `status = 'closed'`. Logout = **"Desconectar"** (só no dashboard); "Sair desta conta" = sair da comanda. Na mesa: ORGANIZADOR / COLABORANDO (com login) / NA MESA (sem login). "Adicionar à mesa" (não "convidado").
 
-**Nome e marca**: **Divide/ai**, sem acento (`divideai` onde "/" não cabe). Marca = `BrandWordmark` (Bitter, "Divide" 400 + "/ai" 800). "/ai" sozinho só como ícone. Trocadilho com IA fica só no nome — nada de "/ai" em botão/loading. Mantêm o nome antigo: migrations aplicadas, `project_id` do Supabase, pasta/repo.
+**Nome e marca**: **Divide/ai**, sem acento (`divideai` onde "/" não cabe). Marca = `BrandWordmark` (Bitter, "Divide" 400 + "/ai" 800). "/ai" sozinho só como ícone. Trocadilho com IA fica só no nome — nada de "/ai" em botão/loading. Mantêm o nome antigo: migrations aplicadas, pasta/repo e o projeto Vercel `splitdummy-v2`.
 
 ## Arquitetura
 
 | Camada | Escolha |
 |---|---|
 | App | Next.js 16 App Router, TS strict, Cache Components. **Ler o guia em `node_modules/next/dist/docs/` antes de usar API do Next** (ver `AGENTS.md`) |
-| Backend | Supabase (Postgres + Auth + Realtime) via Vercel Marketplace |
+| Backend | Supabase (Postgres + Auth + Realtime) via Vercel Marketplace (`vercel storage status` mostra a conexão) |
 | Login | Google OAuth ou código por e-mail (8 dígitos + link via `/auth/confirm`). Perfil guarda só o primeiro nome; nome e avatar obrigatórios (`/welcome`, `redirectIfProfileIncomplete`) |
 | Dados | `@supabase/supabase-js` direto, sem ORM. RLS faz toda a autorização; service-role só em convite, contagem de leituras e número da conta |
 | IA do cupom | AI SDK 7 `generateText` + `Output.object` + Zod via AI Gateway, `google/gemini-2.5-flash-lite`. Teto: 5 leituras/conta, 20/usuário/24h |
@@ -74,6 +74,7 @@ supabase/templates/                      # e-mails de login em pt-BR (colar no p
 ## Gotchas (não repetir)
 
 - **RLS + `INSERT ... RETURNING`**: o `RETURNING` passa pela política de **SELECT**, antes de qualquer trigger `AFTER INSERT`. Se o select depende de uma linha-filha criada depois, o insert falha com `new row violates row-level security policy`. Correção usada em `bills`: alargar o select (`owner_id = auth.uid() OR is_bill_participant(id)`).
+- **Conexão `psql`**: o host direto `db.<ref>.supabase.co` é só IPv6 e não resolve na rede do usuário; usar `POSTGRES_URL_NON_POOLING` do `.env.local`, que é o pooler em modo sessão (`aws-1-sa-east-1.pooler.supabase.com:5432`, aceita DDL). `supabase db push --db-url` aplica migrations.
 - **Depurar RLS**: `psql "$POSTGRES_URL_NON_POOLING"` com `set local role authenticated; set local "request.jwt.claims" to '{"sub":"<uuid>","role":"authenticated"}';`.
 - **Realtime: nunca `replica identity full`** — aqui ele faz `realtime.apply_rls` descartar todo evento ("no primary key", silencioso). Com RLS, DELETE só traz a PK, então filtro por `bill_id` não casa: assinar DELETE sem filtro e reconhecer pelo `id`. Por isso "limpar partes" zera `parts` via UPDATE em vez de apagar.
 - **Realtime: assinar o canal uma vez só** (ids lidos por `ref`, nunca nas deps do effect) — reassinar deixa o canal cego por segundos.
@@ -95,6 +96,9 @@ supabase/templates/                      # e-mails de login em pt-BR (colar no p
 - Navegação em "vias" (pilha de folhas): não decidida; não retomar nem assumir arquitetura sem perguntar.
 
 ## Pendente / pra depois
+
+- **Apagar o projeto Supabase antigo** `splitdummy` (`us-east-1`, ref `gbigcjzyoovheiwpagoc`) depois de uns dias estável; está desconectado da Vercel. Junto: tirar o callback antigo do cliente OAuth no Google Cloud e revogar a senha de app antiga do SMTP. Apagar `.env.local.us-east-1` e `.env.sa`.
+- **Loadings / navegação instantânea** (próximo): hoje toda rota é `instant = false` sem `loading.tsx`/`Suspense`; também deduplicar `getClaims`/busca da conta entre layout e página (`cache()`), e tirar Poppins/Geist Mono do layout raiz (preload inútil).
 
 - **Avaliação do TCC** com usuários (ex.: teste de usabilidade, SUS), não só validação técnica.
 - **LGPD**: exclusão de conta, política de dados, nome de convidados sem conta.
