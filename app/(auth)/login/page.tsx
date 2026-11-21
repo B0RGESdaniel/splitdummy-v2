@@ -1,5 +1,6 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
+import Link from "next/link";
 
 import { BalcaoSheet } from "@/components/auth/balcao-sheet";
 import { SignInOptions } from "@/components/auth/sign-in-options";
@@ -29,6 +30,12 @@ export default async function LoginPage({
         </p>
       )}
       <SignInOptions next={next} />
+      <Link
+        href="/privacidade"
+        className="self-center text-[11px] font-semibold tracking-wide uppercase underline underline-offset-[3px]"
+      >
+        Política de Privacidade
+      </Link>
     </BalcaoSheet>
   );
 }
