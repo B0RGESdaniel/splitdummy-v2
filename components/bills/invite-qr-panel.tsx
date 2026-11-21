@@ -65,7 +65,7 @@ export function InviteQrPanel({
           ) : (
             <>
               {link && (
-                <div className="bg-white p-4">
+                <div className="qr-sticker p-4">
                   <QRCodeSVG value={link} size={190} />
                 </div>
               )}

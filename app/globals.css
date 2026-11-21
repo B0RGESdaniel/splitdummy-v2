@@ -615,6 +615,45 @@
   filter: drop-shadow(0 8px 8px oklch(0 0 0 / 50%));
 }
 
+/*
+ * QR do convite como adesivo: o papel branco do QR preso na comanda por
+ * dois pedaços de fita crepe nas diagonais (cantos superior esquerdo e
+ * inferior direito). Fita é translúcida, com as pontas rasgadas em
+ * zigue-zague (clip-path) — mais uma metáfora física, como o selo.
+ */
+.qr-sticker {
+  position: relative;
+  background-color: white;
+  box-shadow: 0 1px 2px oklch(0 0 0 / 18%);
+}
+
+.qr-sticker::before,
+.qr-sticker::after {
+  content: "";
+  position: absolute;
+  width: 84px;
+  height: 24px;
+  background-color: oklch(0.92 0.035 85 / 72%);
+  box-shadow: 0 1px 1px oklch(0 0 0 / 10%);
+  clip-path: polygon(
+    0% 8%, 4% 0%, 96% 0%, 100% 12%, 97% 30%, 100% 50%, 96% 70%, 100% 88%,
+    96% 100%, 4% 100%, 0% 90%, 3% 70%, 0% 50%, 4% 30%
+  );
+  pointer-events: none;
+}
+
+.qr-sticker::before {
+  top: -4px;
+  left: -34px;
+  transform: rotate(-45deg);
+}
+
+.qr-sticker::after {
+  bottom: -4px;
+  right: -34px;
+  transform: rotate(-45deg);
+}
+
 @layer base {
   * {
     @apply border-border outline-ring/50;
