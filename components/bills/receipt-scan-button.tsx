@@ -197,8 +197,9 @@ export function ReceiptScanButton({
       <input
         ref={inputRef}
         type="file"
+        // Sem `capture`: no celular o navegador oferece câmera ou galeria
+        // (com `capture`, abria direto a câmera, sem como escolher uma foto já tirada).
         accept="image/*"
-        capture="environment"
         className="sr-only"
         onChange={(event) => {
           const file = event.target.files?.[0];
