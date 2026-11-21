@@ -23,12 +23,12 @@ export function PartsStepper({
 
   return (
     // Botões colados no número, uma peça só: a coluna Qtd de Itens fica estreita
-    // e sobra largura pra descrição numa linha.
+    // e sobra largura pra descrição numa linha. Botões de 32px pro dedo.
     <div className="flex items-center">
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="icon"
         onClick={onDecrement}
         aria-label={`Diminuir ${label}`}
       >
@@ -38,7 +38,7 @@ export function PartsStepper({
       <Button
         type="button"
         variant="outline"
-        size="icon-sm"
+        size="icon"
         onClick={onIncrement}
         aria-label={`Aumentar ${label}`}
       >
