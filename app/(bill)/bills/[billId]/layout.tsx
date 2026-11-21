@@ -1,3 +1,4 @@
+import type { Viewport } from "next";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
 import { ViewTransition } from "react";
@@ -18,6 +19,11 @@ import { createClient } from "@/lib/supabase/server";
 // (different top-level group, so it gets its own paper-world chrome instead
 // of the dashboard's), so it repeats the auth-gate redirect check here.
 export const instant = false;
+
+// Barra do sistema na cor do papel (`--background` do `.paper-check`).
+export const viewport: Viewport = {
+  themeColor: "#f9f4ee",
+};
 
 export default async function BillLayout({
   children,

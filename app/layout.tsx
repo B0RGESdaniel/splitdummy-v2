@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,13 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Divide/ai",
   description: "Divida contas de bar e restaurante com seus amigos",
+  appleWebApp: { title: "Divide/ai" },
+};
+
+// Barra do sistema na cor do balcão (dashboard, login); a conta troca pra cor
+// do papel no próprio layout.
+export const viewport: Viewport = {
+  themeColor: "#051638",
 };
 
 // Papéis entram no balcão em cascata só na primeira carga da sessão, e só se
