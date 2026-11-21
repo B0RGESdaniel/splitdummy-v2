@@ -16,6 +16,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { usePortalContainer } from "@/components/theme-scope";
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 
 function SubmitButton({ label }: { label: string }) {
   const { pending } = useFormStatus();
@@ -76,6 +77,7 @@ export function ItemFormDialog({
               className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
               placeholder="Ex: Cerveja long neck"
               defaultValue={initialValues?.description}
+              maxLength={MAX_ITEM_DESCRIPTION_LENGTH}
               required
               autoFocus
             />

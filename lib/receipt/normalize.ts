@@ -1,6 +1,8 @@
 import type { ExtractedReceiptItem } from "./schema";
 
-export const MAX_DESCRIPTION_LENGTH = 24;
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
+
+export const MAX_DESCRIPTION_LENGTH = MAX_ITEM_DESCRIPTION_LENGTH;
 
 const LOWERCASE_WORDS = new Set([
   "a", "à", "ao", "aos", "as", "com", "da", "das", "de", "do", "dos",

@@ -1,6 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { generateText, Output } from "ai";
 
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { extractedReceiptSchema } from "@/lib/receipt/schema";
@@ -25,7 +26,7 @@ const EXTRACTION_PROMPT = `Você está lendo a foto de um cupom fiscal de bar ou
 Extraia cada item consumido como uma linha, com: descrição, quantidade, e preço unitário em reais (R$).
 
 Regras:
-- A descrição é o nome curto do item como apareceria num cardápio, em Capitalize (só a primeira letra de cada palavra maiúscula, preposições em minúsculo), sem códigos internos, abreviações truncadas ou CAIXA ALTA, com no máximo 24 caracteres (é o que cabe na lista do app). Se não couber, priorize o nome do produto e descarte detalhes como tamanho ou embalagem, sem abreviar palavras. Ex.: "CERV HEINEKEN LN 330ML" vira "Heineken Long Neck 330ml"; "PICANHA NA CHAPA C/ ARROZ FEIJAO FAROFA" vira "Picanha na Chapa".
+- A descrição é o nome curto do item como apareceria num cardápio, em Capitalize (só a primeira letra de cada palavra maiúscula, preposições em minúsculo), sem códigos internos, abreviações truncadas ou CAIXA ALTA, com no máximo ${MAX_ITEM_DESCRIPTION_LENGTH} caracteres (é o que cabe na lista do app). Se não couber, priorize o nome do produto e descarte detalhes como tamanho ou embalagem, sem abreviar palavras. Ex.: "CERV HEINEKEN LN 330ML" vira "Heineken Long Neck"; "PICANHA NA CHAPA C/ ARROZ FEIJAO FAROFA" vira "Picanha na Chapa".
 - Ignore linhas de subtotal, total, taxa de serviço, troco, forma de pagamento, CNPJ e outros dados fiscais — só itens consumidos.
 - Se um item for vendido por peso (kg) em vez de unidade, use quantity: 1 e unitPrice como o valor total daquele item.
 - Se a mesma descrição aparecer em mais de uma linha do cupom, mantenha como linhas separadas — não some.

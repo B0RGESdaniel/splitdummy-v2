@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 import { createClient } from "@/lib/supabase/server";
 
 export async function createItem(billId: string, formData: FormData) {
@@ -12,6 +13,10 @@ export async function createItem(billId: string, formData: FormData) {
 
   if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
     throw new Error("Preencha a descrição e um preço válido.");
+  }
+
+  if (description.length > MAX_ITEM_DESCRIPTION_LENGTH) {
+    throw new Error(`A descrição pode ter até ${MAX_ITEM_DESCRIPTION_LENGTH} caracteres.`);
   }
 
   const supabase = await createClient();
@@ -48,6 +53,10 @@ export async function updateItem(
 
   if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
     throw new Error("Preencha a descrição e um preço válido.");
+  }
+
+  if (description.length > MAX_ITEM_DESCRIPTION_LENGTH) {
+    throw new Error(`A descrição pode ter até ${MAX_ITEM_DESCRIPTION_LENGTH} caracteres.`);
   }
 
   const supabase = await createClient();

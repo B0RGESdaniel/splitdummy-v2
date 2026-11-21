@@ -22,6 +22,7 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
 
 // Mesma cascata da lista de Itens: as linhas lidas entram uma após a outra.
@@ -164,6 +165,7 @@ export function ExtractedItemsReviewTable({
                     aria-label="Descrição"
                     className="font-handwritten text-base text-[color:var(--ink-handwritten)]"
                     value={item.description}
+                    maxLength={MAX_ITEM_DESCRIPTION_LENGTH}
                     onChange={(event) =>
                       updateItem(index, { description: event.target.value })
                     }

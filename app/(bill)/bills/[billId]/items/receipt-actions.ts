@@ -3,6 +3,7 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 import { createClient } from "@/lib/supabase/server";
 
 export type ReceiptItemInput = {
@@ -36,6 +37,10 @@ function sanitizeItems(items: ReceiptItemInput[]) {
 
   if (sanitized.length === 0) {
     throw new Error("Nenhum item válido pra salvar.");
+  }
+
+  if (sanitized.some((item) => item.description.length > MAX_ITEM_DESCRIPTION_LENGTH)) {
+    throw new Error(`A descrição pode ter até ${MAX_ITEM_DESCRIPTION_LENGTH} caracteres.`);
   }
 
   return sanitized;
