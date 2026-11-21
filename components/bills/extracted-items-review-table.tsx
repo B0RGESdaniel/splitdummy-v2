@@ -12,6 +12,7 @@ import {
   type SavedReceiptItem,
 } from "@/app/(bill)/bills/[billId]/items/receipt-actions";
 import { usePortalContainer } from "@/components/theme-scope";
+import { ConfirmDeleteButton } from "@/components/bills/confirm-delete-button";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -271,9 +272,20 @@ export function ExtractedItemsReviewTable({
             ? "Salvando..."
             : `Salvar ${items.length} ${items.length === 1 ? "item" : "itens"}`}
         </Button>
-        <Button type="button" variant="ghost" disabled={isSaving} onClick={discard}>
-          Descartar
-        </Button>
+        {/* Descartar joga fora uma leitura que já gastou cota (5 por conta):
+            confirma antes, pra um toque errado não custar uma leitura. */}
+        <ConfirmDeleteButton
+          action={discard}
+          trigger={
+            <Button type="button" variant="ghost" disabled={isSaving}>
+              Descartar
+            </Button>
+          }
+          title="Descartar a leitura?"
+          description={`${items.length === 1 ? "O item lido" : `Os ${items.length} itens lidos`} do cupom ${items.length === 1 ? "some" : "somem"} sem ir pra conta. Pra usar esse cupom, vai ser preciso ler a foto de novo, e cada leitura conta no limite de 5 por conta.`}
+          confirmLabel="Descartar"
+          pendingLabel="Descartando..."
+        />
       </motion.div>
 
       <Dialog open={modeDialogOpen} onOpenChange={setModeDialogOpen}>
