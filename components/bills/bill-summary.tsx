@@ -316,7 +316,7 @@ export function BillSummary({
                 <span>SUBTOTAL</span>
                 <span className="font-digits">{formatCurrency(subtotalCents)}</span>
               </div>
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-baseline justify-between gap-2">
                 {isOpen ? (
                   <ServiceTaxEditor
                     serviceTaxPercent={serviceTaxPercent}
