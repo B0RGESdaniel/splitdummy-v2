@@ -174,17 +174,19 @@ export function BillSummary({
           >
             <div className="cupom-fiscal px-4 py-[18px] text-sm leading-[1.45]">
               {/* Paga: respiro dos dois lados (não só à direita, pra o texto seguir
-                  centrado no papel) do tamanho do carimbo, que não cobre o nome. */}
+                  centrado no papel) do tamanho do carimbo, que entra ~74px no texto.
+                  O subtítulo não cabe numa linha nesse respiro: quebra de propósito
+                  depois do "·", em vez de deixar o número sozinho embaixo. */}
               <h1
                 className={cn(
                   "text-center text-lg leading-tight font-bold break-words uppercase",
-                  !isOpen && "px-[4.5rem]",
+                  !isOpen && "px-20",
                 )}
               >
                 {billName}
               </h1>
-              <div className={cn("text-muted-foreground text-center text-[13px]", !isOpen && "px-[4.5rem]")}>
-                DIVIDE/AI · CONTA #
+              <div className={cn("text-muted-foreground text-center text-[13px]", !isOpen && "px-20")}>
+                DIVIDE/AI ·{isOpen ? " " : <br />}CONTA #
                 <span className="font-digits">{String(billNumber).padStart(3, "0")}</span>
               </div>
 
