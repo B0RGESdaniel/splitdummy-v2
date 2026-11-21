@@ -100,7 +100,12 @@ export default async function ItemsPage({
         isOpen={isOpen}
         participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
       />
-      <ItemsEntryActions billId={billId} initialItems={items ?? []} isOpen={isOpen} />
+      <ItemsEntryActions
+        billId={billId}
+        initialItems={items ?? []}
+        initialShares={shares ?? []}
+        isOpen={isOpen}
+      />
     </div>
   );
 }
