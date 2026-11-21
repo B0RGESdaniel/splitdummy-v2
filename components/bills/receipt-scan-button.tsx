@@ -230,7 +230,7 @@ export function ReceiptScanButton({
           ref={triggerRef}
           type="button"
           variant="ghost"
-          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="h-12 w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
           onClick={() => inputRef.current?.click()}
         >
           <Camera className="size-4" data-icon="inline-start" />

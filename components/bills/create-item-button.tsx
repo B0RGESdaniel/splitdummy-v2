@@ -57,7 +57,7 @@ export function CreateItemButton({
       trigger={
         <Button
           variant="ghost"
-          className="w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 py-3 font-handwritten text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
+          className="h-12 w-full justify-start gap-2 rounded-none border-t border-dashed border-border px-0 font-handwritten text-base text-muted-foreground hover:bg-transparent hover:text-foreground"
         >
           <Plus className="size-4" data-icon="inline-start" />
           {label}
