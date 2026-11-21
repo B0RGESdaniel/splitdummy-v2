@@ -1,5 +1,4 @@
 import type { Metadata, Viewport } from "next";
-import { Poppins, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 import { archivoNarrow } from "@/app/fonts";
@@ -7,17 +6,6 @@ import { archivoNarrow } from "@/app/fonts";
 import { MotionProvider } from "@/components/providers/motion-provider";
 import { QueryProvider } from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/sonner";
-
-const poppins = Poppins({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
 
 export const metadata: Metadata = {
   title: "Divide/ai",
@@ -43,7 +31,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="pt-BR"
-      className={`${poppins.variable} ${geistMono.variable} ${archivoNarrow.variable} dark h-full antialiased`}
+      className={`${archivoNarrow.variable} dark h-full antialiased`}
       // O script da entrada do balcão marca o <html> antes da hidratação.
       suppressHydrationWarning
     >
