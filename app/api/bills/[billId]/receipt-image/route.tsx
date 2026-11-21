@@ -186,7 +186,7 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/bills/[
   height += titleLines.length * lineBox(TITLE) + lineBox(13);
   height += ruleHeight();
   height += lineBox(BASE) + lineBox(SMALL) * 3;
-  height += 10 + 1 + lineBox(SMALL) + 8 + 1; // cabeçalho NOME/VALOR: respiro, traços e respiro de baixo
+  height += 10 + 1 + lineBox(SMALL) + 1; // cabeçalho NOME/VALOR: margem e os dois traços, colados no texto
   for (const person of people) {
     const breakdown = breakdowns.get(person.id)!;
     height += 16 + lineBox(BASE); // respiro da linha + nome/valor
@@ -273,7 +273,6 @@ export async function GET(_request: NextRequest, ctx: RouteContext<"/api/bills/[
             marginTop: s(10),
             borderTop: `${s(1)}px dashed ${RULE}`,
             borderBottom: `${s(1)}px dashed ${RULE}`,
-            paddingBottom: s(8),
           }}
         >
           <Row fontSize={SMALL} left="NOME" right="VALOR" />
