@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useLayoutEffect, useRef, useState, useTransition, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
+import { AnimatePresence, motion, useReducedMotion, type Variants } from "motion/react";
 import { ArrowLeft, History } from "lucide-react";
 import { toast } from "sonner";
 
@@ -36,6 +37,44 @@ function normalizeName(name: string) {
   return name.toLocaleLowerCase("pt-BR");
 }
 
+// Passo 1 ↔ passo 2 lado a lado ("page side-by-side" do transitions.dev, sem
+// desfoque): avançar entra pela direita, voltar entra pela esquerda.
+const PAGE_EASE = [0.22, 1, 0.36, 1] as const;
+const pageVariants: Variants = {
+  enter: (direction: number) => ({ x: direction * 8, opacity: 0 }),
+  center: { x: 0, opacity: 1 },
+  exit: (direction: number) => ({ x: direction * -8, opacity: 0 }),
+};
+
+/** A altura do diálogo acompanha a troca de passo, em vez de pular. */
+function AnimatedHeight({ children }: { children: ReactNode }) {
+  const innerRef = useRef<HTMLDivElement>(null);
+  const [height, setHeight] = useState<number | "auto">("auto");
+  const reduceMotion = useReducedMotion();
+
+  useLayoutEffect(() => {
+    const inner = innerRef.current;
+    if (!inner) return;
+    const observer = new ResizeObserver(() => setHeight(inner.offsetHeight));
+    observer.observe(inner);
+    return () => observer.disconnect();
+  }, []);
+
+  return (
+    // -m-1/p-1: folga pro anel de foco das linhas, que o overflow cortaria.
+    <motion.div
+      className="-m-1 overflow-hidden"
+      initial={false}
+      animate={{ height }}
+      transition={{ duration: reduceMotion ? 0 : 0.25, ease: PAGE_EASE }}
+    >
+      <div ref={innerRef} className="p-1">
+        {children}
+      </div>
+    </motion.div>
+  );
+}
+
 export function ImportParticipantsDialog({
   billId,
   ownerId,
@@ -55,6 +94,7 @@ export function ImportParticipantsDialog({
   const [open, setOpen] = useState(false);
   const [source, setSource] = useState<SourceBill | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
+  const [direction, setDirection] = useState(1);
   const [pending, startTransition] = useTransition();
   const portalContainer = usePortalContainer();
 
@@ -109,6 +149,7 @@ export function ImportParticipantsDialog({
   });
 
   function pickSource(bill: SourceBill) {
+    setDirection(1);
     setSource(bill);
     setSelected(
       new Set(
@@ -172,86 +213,103 @@ export function ImportParticipantsDialog({
           </DialogTitle>
         </DialogHeader>
 
-        {!source ? (
-          isPending ? (
-            <p className="text-sm text-muted-foreground">Carregando...</p>
-          ) : !bills || bills.length === 0 ? (
-            <p className="text-sm text-muted-foreground">
-              Nenhuma outra conta sua com participantes.
-            </p>
-          ) : (
-            <ul className="flex max-h-80 flex-col overflow-y-auto">
-              {bills.map((bill) => (
-                <li key={bill.id} className="border-b border-foreground/30">
+        <AnimatedHeight>
+          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+            <motion.div
+              key={source ? "pessoas" : "contas"}
+              custom={direction}
+              variants={pageVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{ duration: 0.25, ease: PAGE_EASE }}
+            >
+              {!source ? (
+                isPending ? (
+                  <p className="text-sm text-muted-foreground">Carregando...</p>
+                ) : !bills || bills.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">
+                    Nenhuma outra conta sua com participantes.
+                  </p>
+                ) : (
+                  <ul className="flex max-h-80 flex-col overflow-y-auto">
+                    {bills.map((bill) => (
+                      <li key={bill.id} className="border-b border-foreground/30">
+                        <button
+                          type="button"
+                          onClick={() => pickSource(bill)}
+                          className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left"
+                        >
+                          <span className="truncate font-semibold">{bill.name}</span>
+                          <span className="shrink-0 text-xs text-muted-foreground">
+                            {new Date(bill.createdAt).toLocaleDateString("pt-BR")} ·{" "}
+                            {bill.people.length}{" "}
+                            {bill.people.length === 1 ? "pessoa" : "pessoas"}
+                          </span>
+                        </button>
+                      </li>
+                    ))}
+                  </ul>
+                )
+              ) : (
+                <div className="flex flex-col gap-4">
                   <button
                     type="button"
-                    onClick={() => pickSource(bill)}
-                    className="flex w-full items-baseline justify-between gap-3 py-2.5 text-left"
+                    onClick={() => {
+                      setDirection(-1);
+                      setSource(null);
+                    }}
+                    className="flex items-center gap-1 self-start text-xs font-medium text-muted-foreground"
                   >
-                    <span className="truncate font-semibold">{bill.name}</span>
-                    <span className="shrink-0 text-xs text-muted-foreground">
-                      {new Date(bill.createdAt).toLocaleDateString("pt-BR")} ·{" "}
-                      {bill.people.length}{" "}
-                      {bill.people.length === 1 ? "pessoa" : "pessoas"}
-                    </span>
+                    <ArrowLeft className="size-3.5" />
+                    Outras contas
                   </button>
-                </li>
-              ))}
-            </ul>
-          )
-        ) : (
-          <div className="flex flex-col gap-4">
-            <button
-              type="button"
-              onClick={() => setSource(null)}
-              className="flex items-center gap-1 self-start text-xs font-medium text-muted-foreground"
-            >
-              <ArrowLeft className="size-3.5" />
-              Outras contas
-            </button>
-            <ul className="flex max-h-80 flex-col overflow-y-auto">
-              {source.people.map((person) => (
-                <li key={person.id}>
-                  <label
-                    className={`flex items-center gap-3 py-2 ${
-                      person.alreadyHere ? "opacity-50" : ""
-                    }`}
+                  <ul className="flex max-h-80 flex-col overflow-y-auto">
+                    {source.people.map((person) => (
+                      <li key={person.id}>
+                        <label
+                          className={`flex items-center gap-3 py-2 ${
+                            person.alreadyHere ? "opacity-50" : ""
+                          }`}
+                        >
+                          <Checkbox
+                            checked={selected.has(person.id)}
+                            disabled={person.alreadyHere}
+                            onCheckedChange={(checked) =>
+                              toggle(person.id, checked === true)
+                            }
+                          />
+                          {person.avatarKey ? (
+                            <AvatarIcon
+                              avatarKey={person.avatarKey}
+                              className="h-7 w-7 text-foreground"
+                            />
+                          ) : (
+                            <span className="h-7 w-7 border-[1.5px] border-dashed border-foreground opacity-40" />
+                          )}
+                          <span className="truncate font-semibold">{person.name}</span>
+                          {person.alreadyHere && (
+                            <span className="ml-auto shrink-0 text-xs text-muted-foreground">
+                              já na mesa
+                            </span>
+                          )}
+                        </label>
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    type="button"
+                    onClick={submit}
+                    disabled={pending || selected.size === 0}
+                    className="w-full"
                   >
-                    <Checkbox
-                      checked={selected.has(person.id)}
-                      disabled={person.alreadyHere}
-                      onCheckedChange={(checked) =>
-                        toggle(person.id, checked === true)
-                      }
-                    />
-                    {person.avatarKey ? (
-                      <AvatarIcon
-                        avatarKey={person.avatarKey}
-                        className="h-7 w-7 text-foreground"
-                      />
-                    ) : (
-                      <span className="h-7 w-7 border-[1.5px] border-dashed border-foreground opacity-40" />
-                    )}
-                    <span className="truncate font-semibold">{person.name}</span>
-                    {person.alreadyHere && (
-                      <span className="ml-auto shrink-0 text-xs text-muted-foreground">
-                        já na mesa
-                      </span>
-                    )}
-                  </label>
-                </li>
-              ))}
-            </ul>
-            <Button
-              type="button"
-              onClick={submit}
-              disabled={pending || selected.size === 0}
-              className="w-full"
-            >
-              {pending ? "Importando..." : `Importar ${selected.size}`}
-            </Button>
-          </div>
-        )}
+                    {pending ? "Importando..." : `Importar ${selected.size}`}
+                  </Button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
+        </AnimatedHeight>
       </DialogContent>
     </Dialog>
   );
