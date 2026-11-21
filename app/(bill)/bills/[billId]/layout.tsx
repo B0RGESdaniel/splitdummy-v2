@@ -7,6 +7,7 @@ import { BillBackButton } from "@/components/bills/bill-back-button";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { BillRealtimeRefresh } from "@/components/bills/bill-realtime-refresh";
 import { InviteQrPanel } from "@/components/bills/invite-qr-panel";
+import { ScrollToTopOnEnter } from "@/components/bills/scroll-to-top-on-enter";
 import { archivoNarrow, bitter, kalam } from "@/app/fonts";
 import { ThemeScope } from "@/components/theme-scope";
 import { getBillNumber } from "@/lib/bill/bill-number";
@@ -69,6 +70,7 @@ export default async function BillLayout({
     <ThemeScope
       className={`${bitter.variable} ${kalam.variable} ${archivoNarrow.variable} paper-check flex flex-1 flex-col items-center bg-background text-foreground`}
     >
+      <ScrollToTopOnEnter />
       <BillRealtimeRefresh
         billId={billId}
         ownParticipantId={ownParticipantId}
