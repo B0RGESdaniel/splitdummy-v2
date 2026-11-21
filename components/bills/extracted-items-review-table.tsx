@@ -156,7 +156,11 @@ export function ExtractedItemsReviewTable({
             </tr>
           </thead>
           <tbody>
-            {items.map((item, index) => (
+            {items.map((item, index) => {
+              // Leitor de tela: cada campo diz de qual linha é. A descrição usa
+              // a posição (é o próprio campo sendo editado); os outros, o nome.
+              const itemName = item.description.trim() || `item ${index + 1}`;
+              return (
               // Só anima na montagem: as linhas não remontam depois (chave é o
               // índice), então editar/remover um item não repete a cascata.
               <motion.tr
@@ -167,7 +171,7 @@ export function ExtractedItemsReviewTable({
               >
                 <td className="px-1 py-2">
                   <Input
-                    aria-label="Descrição"
+                    aria-label={`Descrição do item ${index + 1} de ${items.length}`}
                     className="font-handwritten text-base text-[color:var(--ink-handwritten)]"
                     value={item.description}
                     maxLength={MAX_ITEM_DESCRIPTION_LENGTH}
@@ -178,7 +182,7 @@ export function ExtractedItemsReviewTable({
                 </td>
                 <td className="px-1 py-2">
                   <Input
-                    aria-label="Quantidade"
+                    aria-label={`Quantidade de ${itemName}`}
                     type="number"
                     inputMode="numeric"
                     min="1"
@@ -195,7 +199,7 @@ export function ExtractedItemsReviewTable({
                 </td>
                 <td className="px-1 py-2">
                   <Input
-                    aria-label="Preço unitário"
+                    aria-label={`Preço unitário de ${itemName}`}
                     type="number"
                     inputMode="decimal"
                     min="0.01"
@@ -215,14 +219,15 @@ export function ExtractedItemsReviewTable({
                     type="button"
                     variant="ghost"
                     size="icon-sm"
-                    aria-label="Remover item"
+                    aria-label={`Remover ${itemName}`}
                     onClick={() => removeItem(index)}
                   >
                     <Trash2 />
                   </Button>
                 </td>
               </motion.tr>
-            ))}
+              );
+            })}
           </tbody>
           {/* Só a soma dos itens revisados, sem taxa: é pra conferir com o papel. */}
           <tfoot>
