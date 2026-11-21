@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { SignInOptions } from "@/components/auth/sign-in-options";
+import { redirectIfProfileIncomplete } from "@/lib/auth/profile-gate";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
@@ -68,6 +69,8 @@ export default async function JoinPage({
       </JoinCard>
     );
   }
+
+  await redirectIfProfileIncomplete(supabase, claims.claims.sub, `/join/${inviteToken}`);
 
   const { data: unclaimed } = await serviceRole
     .from("bill_participants")

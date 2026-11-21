@@ -5,6 +5,7 @@ import { archivoNarrow, bitter, courierPrime, dotGothic16, kalam } from "@/app/f
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { ThemeScope } from "@/components/theme-scope";
+import { redirectIfProfileIncomplete } from "@/lib/auth/profile-gate";
 import { createClient } from "@/lib/supabase/server";
 
 // Every route under here is an auth-gated redirect check — it must block
@@ -26,6 +27,7 @@ export default async function DashboardLayout({
   if (!data?.claims) {
     redirect("/login");
   }
+  await redirectIfProfileIncomplete(supabase, data.claims.sub, "/");
 
   // O balcão: papéis da comanda (Archivo/Kalam/Bitter) e do cupom (Courier/
   // DotGothic16) lado a lado, cada um na própria voz.

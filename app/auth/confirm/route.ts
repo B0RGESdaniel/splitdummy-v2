@@ -1,6 +1,7 @@
 import type { EmailOtpType } from "@supabase/supabase-js";
 import { type NextRequest, NextResponse } from "next/server";
 
+import { safeNextPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/server";
 
 // Link do e-mail de login. Confere o token no servidor (token_hash), então
@@ -11,8 +12,7 @@ export async function GET(request: NextRequest) {
   const tokenHash = searchParams.get("token_hash");
   const type = searchParams.get("type") as EmailOtpType | null;
   const next = searchParams.get("next");
-  // Só caminho do próprio app: "//outro.site" seria um redirect pra fora.
-  const safeNext = next?.startsWith("/") && !next.startsWith("//") ? next : "/";
+  const safeNext = safeNextPath(next);
 
   if (tokenHash && type) {
     const supabase = await createClient();

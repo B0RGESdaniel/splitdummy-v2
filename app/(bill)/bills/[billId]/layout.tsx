@@ -11,6 +11,7 @@ import { ScrollToTopOnEnter } from "@/components/bills/scroll-to-top-on-enter";
 import { archivoNarrow, bitter, kalam } from "@/app/fonts";
 import { ThemeScope } from "@/components/theme-scope";
 import { getBillNumber } from "@/lib/bill/bill-number";
+import { redirectIfProfileIncomplete } from "@/lib/auth/profile-gate";
 import { createClient } from "@/lib/supabase/server";
 
 // This route group has no shared ancestor with app/(dashboard)/layout.tsx
@@ -34,6 +35,7 @@ export default async function BillLayout({
     redirect("/login");
   }
   const userId = claims.claims.sub;
+  await redirectIfProfileIncomplete(supabase, userId, `/bills/${billId}`);
 
   const { data: bill } = await supabase
     .from("bills")

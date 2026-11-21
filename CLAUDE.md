@@ -18,7 +18,7 @@ Plano completo original (contexto de decisão, não reescrever): `/Users/danielb
 |---|---|
 | App | Next.js 16 App Router, TypeScript strict, Cache Components habilitado |
 | Backend | Supabase (Postgres + Auth + Realtime + Storage) via Vercel Marketplace |
-| Login | Supabase Auth, **só Google OAuth** pra quem edita algo. **Participante pode existir sem conta** (cadastrado pelo organizador, só com nome) — reabertura da decisão original, ver TCC.md |
+| Login | Supabase Auth: **Google OAuth ou código por e-mail sem senha** (decidido 2026-11-21; o e-mail traz código de 8 dígitos + link de atalho via `/auth/confirm`). Perfil guarda **só o primeiro nome**; nome e avatar obrigatórios, pedidos em `/welcome` (`redirectIfProfileIncomplete` nos layouts do dashboard e da conta e no convite). **Participante pode existir sem conta** (cadastrado pelo organizador, só com nome) — reabertura da decisão original, ver TCC.md |
 | Acesso a dados | `@supabase/supabase-js` direto, sem ORM. RLS faz toda a autorização |
 | Convite | Link + QR code (mesmo link), sem e-mail |
 | IA do cupom | Vercel AI SDK 7 `generateText` + `Output.object` + Zod via AI Gateway, modelo `google/gemini-2.5-flash-lite`. Foto nunca é persistida (só em memória) |
@@ -71,7 +71,8 @@ Toda tabela "por conta" indexa `bill_id`, que é o filtro de RLS e o escopo do c
 ## Estrutura do app
 
 ```
-app/(auth)/login, auth/callback
+app/(auth)/login, (auth)/welcome (primeiro acesso: nome + avatar), auth/callback (Google, PKCE), auth/confirm (link do e-mail, token_hash)
+supabase/templates/{magic_link,confirmation}.html                 # e-mail de login em pt-BR (código + link); colar no painel do Supabase, o remoto não lê daqui
 app/(dashboard)/page.tsx                                       # "o balcão": histórico de contas sobre fundo royal escuro (`.paper-check.balcao`), abertas como comanda em miniatura (`BalcaoComanda`, mesmo topo da tela da conta: masthead "Divide/ai Nº" com régua + grade Conta/Dono/Participantes/selo, rodapé com abertura + parcial) e pagas como cupom térmico curto com carimbo PAGO (`BalcaoCupom`: total + "você pagou"), em `components/bills/balcao-papers.tsx`; valores via `lib/bill/bill-totals.ts`; "Abrir nova comanda" (folha tracejada) abre o `CreateBillDialog`
 app/(dashboard)/bills/actions.ts                                # createBill, createInvite, regenerateInvite, closeBill — compartilhado pelos dois grupos de rota abaixo
 app/(bill)/bills/[billId]/layout.tsx                            # chrome mínimo da conta, num grupo de rota próprio separado de (dashboard) — faz seu próprio auth-gate porque não compartilha ancestral com app/(dashboard)/layout.tsx. Só masthead (← contextual `BillBackButton` — Mesa/Resumo voltam pra Itens, Itens e conta paga voltam pro histórico —, "Divide/ai Nº 007" impresso (o nome da conta mora na grade de Itens, 1ª linha "Conta"); sem Desconectar, que fica só no dashboard) e, pra quem é dono, a barra "Compartilhar" (InviteQrPanel); a grade de campos Dono/Participantes/Status não mora mais aqui, ver items/page.tsx. Aplica o escopo `.paper-check` (fontes Bitter/Kalam/Archivo Narrow, uppercase) na tela inteira
