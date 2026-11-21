@@ -91,7 +91,12 @@ export function InviteQrPanel({
                     setTimeout(() => setCopied(false), 1500);
                   }}
                 >
-                  {copied ? <Check /> : <Copy />}
+                  {/* Os dois ícones ficam montados no mesmo lugar e trocam por
+                      escala + opacidade (icon swap do transitions.dev). */}
+                  <span className="icon-swap" data-state={copied ? "b" : "a"} aria-hidden>
+                    <Copy className="icon-swap-icon" data-icon="a" />
+                    <Check className="icon-swap-icon" data-icon="b" />
+                  </span>
                 </Button>
               </div>
               <form action={regenerateInvite.bind(null, billId, invite.id)} className="w-full">

@@ -216,6 +216,36 @@
 }
 
 /*
+ * Dois ícones no mesmo lugar (ex.: copiar → copiado): troca por escala e
+ * opacidade, sem o desfoque do original (papel e tinta).
+ */
+.icon-swap {
+  display: inline-grid;
+}
+.icon-swap .icon-swap-icon {
+  grid-area: 1 / 1;
+  transition:
+    opacity var(--duration-fast) var(--ease-in-out),
+    transform var(--duration-fast) var(--ease-in-out);
+}
+.icon-swap[data-state="a"] .icon-swap-icon[data-icon="a"],
+.icon-swap[data-state="b"] .icon-swap-icon[data-icon="b"] {
+  opacity: 1;
+  transform: scale(1);
+}
+.icon-swap[data-state="a"] .icon-swap-icon[data-icon="b"],
+.icon-swap[data-state="b"] .icon-swap-icon[data-icon="a"] {
+  opacity: 0;
+  transform: scale(0.25);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-swap .icon-swap-icon {
+    transition: none !important;
+  }
+}
+
+/*
  * Itens de cada pessoa no cupom (ReceiptDisclosure): a altura anima por
  * grid-template-rows, sem medir em JS. Padding fica no filho de dentro do
  * inner, nunca no painel: no trilho 0fr sobraria uma faixa aberta.

@@ -7,6 +7,7 @@ import { ViewTransition } from "react";
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { ItemsEntryActions } from "@/components/bills/items-entry-actions";
 import { ItemsList } from "@/components/bills/items-list";
+import { RollingNumber } from "@/components/bills/rolling-number";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { createClient } from "@/lib/supabase/server";
 
@@ -88,7 +89,8 @@ export default async function ItemsPage({
               <ChevronRight className="size-3" />
             </div>
             <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-              {participants?.length ?? 0}
+              {/* Alguém entrou pelo convite (realtime → refresh): o número rola. */}
+              <RollingNumber value={participants?.length ?? 0} />
             </div>
           </Link>
           <div className="flex items-center justify-center px-3 py-2">
