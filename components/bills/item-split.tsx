@@ -292,7 +292,7 @@ export function ItemSplit({
             <li
               key={participant.participant_id}
               className={cn(
-                "flex shrink-0 items-center justify-between gap-4 px-3 py-2",
+                "flex shrink-0 items-center justify-between gap-4 px-3 py-3",
                 participant.is_self && "inset-ring-[1.5px] inset-ring-foreground",
                 flashing.has(participant.participant_id) && "realtime-flash",
               )}
@@ -304,27 +304,29 @@ export function ItemSplit({
                       className="size-7 shrink-0 text-foreground"
                     />
                   )}
-                  {/* Própria linha vira "Você": mais curto que o nome e já vem primeiro, com avatar */}
-                  <span className="truncate font-medium">
-                    {participant.is_self ? "Você" : participant.display_name}
+                  {/* Nome em cima, valor embaixo: com valor e stepper na mesma linha
+                      sobravam ~40px pro nome num celular de 375px. */}
+                  <span className="flex min-w-0 flex-col">
+                    {/* Própria linha vira "Você": mais curto que o nome e já vem primeiro, com avatar */}
+                    <span className="line-clamp-2 leading-tight font-medium text-pretty wrap-break-word">
+                      {participant.is_self ? "Você" : participant.display_name}
+                    </span>
+                    <span className="text-sm font-medium tabular-nums">
+                      {amountsByParticipant ? formatCurrency(amount) : "—"}
+                    </span>
                   </span>
                 </span>
-                <div className="flex shrink-0 items-center gap-4">
-                  <PartsStepper
-                    parts={parts}
-                    label={
-                      participant.is_self
-                        ? "suas partes"
-                        : `partes de ${participant.display_name}`
-                    }
-                    disabled={!isOpen}
-                    onIncrement={() => increment.mutate(participant.participant_id)}
-                    onDecrement={() => decrement.mutate(participant.participant_id)}
-                  />
-                  <span className="w-20 text-right text-sm font-medium tabular-nums">
-                    {amountsByParticipant ? formatCurrency(amount) : "—"}
-                  </span>
-                </div>
+                <PartsStepper
+                  parts={parts}
+                  label={
+                    participant.is_self
+                      ? "suas partes"
+                      : `partes de ${participant.display_name}`
+                  }
+                  disabled={!isOpen}
+                  onIncrement={() => increment.mutate(participant.participant_id)}
+                  onDecrement={() => decrement.mutate(participant.participant_id)}
+                />
             </li>
           );
         })}
