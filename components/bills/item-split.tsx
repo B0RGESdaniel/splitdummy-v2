@@ -12,6 +12,7 @@ import {
 } from "@/app/(bill)/bills/[billId]/items/actions";
 import { AvatarIcon } from "@/components/bills/avatar-icon";
 import { PartsStepper } from "@/components/bills/parts-stepper";
+import { SubtleNumber } from "@/components/bills/subtle-number";
 import { Button } from "@/components/ui/button";
 import { cn } from "cn";
 import { createClient } from "@/lib/supabase/client";
@@ -312,7 +313,12 @@ export function ItemSplit({
                       {participant.is_self ? "Você" : participant.display_name}
                     </span>
                     <span className="text-sm font-medium tabular-nums">
-                      {amountsByParticipant ? formatCurrency(amount) : "—"}
+                      {/* Muda a cada toque no stepper: troca só o dígito que mudou. */}
+                      {amountsByParticipant ? (
+                        <SubtleNumber value={amount} format={formatCurrency} />
+                      ) : (
+                        "—"
+                      )}
                     </span>
                   </span>
                 </span>

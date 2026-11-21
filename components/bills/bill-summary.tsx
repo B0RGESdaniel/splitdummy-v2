@@ -6,7 +6,9 @@ import { cn } from "cn";
 
 import { closeBill, updateServiceTax } from "@/app/(dashboard)/bills/actions";
 import { CloseBillButton } from "@/components/bills/close-bill-button";
+import { ReceiptDisclosure } from "@/components/bills/receipt-disclosure";
 import { ServiceTaxEditor } from "@/components/bills/service-tax-editor";
+import { SubtleNumber } from "@/components/bills/subtle-number";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
 import {
@@ -234,7 +236,7 @@ export function BillSummary({
                             <span className="font-normal"> (VOCÊ)</span>
                           )}
                         </span>
-                        <span className="font-digits font-bold">{formatCurrency(total)}</span>
+                        <SubtleNumber value={total} format={formatCurrency} className="font-digits font-bold" />
                       </span>
                       <span className="text-muted-foreground flex items-baseline justify-between gap-2 text-[11px]">
                         {participantItems.length === 0 ? (
@@ -244,13 +246,16 @@ export function BillSummary({
                             <span>
                               <span className="font-digits">{participantItems.length}</span>{" "}
                               {participantItems.length === 1 ? "item" : "itens"} ·{" "}
-                              <span className="font-digits">{formatCurrency(subtotal)}</span> + taxa
+                              <SubtleNumber value={subtotal} format={formatCurrency} className="font-digits" /> + taxa
                             </span>
-                            <span className="underline decoration-dotted group-open:hidden">
-                              ver itens <span aria-hidden>▾</span>
-                            </span>
-                            <span className="hidden underline decoration-dotted group-open:inline">
-                              ver itens <span aria-hidden>▴</span>
+                            <span className="underline decoration-dotted">
+                              ver itens{" "}
+                              <span
+                                aria-hidden
+                                className="inline-block transition-transform duration-(--duration-fast) ease-(--ease-smooth-out) group-data-[open=true]:-scale-y-100 motion-reduce:transition-none"
+                              >
+                                ▾
+                              </span>
                             </span>
                           </>
                         )}
@@ -266,10 +271,7 @@ export function BillSummary({
                       {participantItems.length === 0 ? (
                         <div className="flex flex-col">{header}</div>
                       ) : (
-                        <details className="group">
-                          <summary className="flex cursor-pointer list-none flex-col [&::-webkit-details-marker]:hidden">
-                            {header}
-                          </summary>
+                        <ReceiptDisclosure summary={header}>
                           <div className="flex flex-col gap-1 pt-2.5 pb-0.5 pl-3 text-xs">
                             {participantItems.map((item) => (
                               <div key={item.id} className="flex justify-between gap-2">
@@ -293,7 +295,7 @@ export function BillSummary({
                               </span>
                             </div>
                           </div>
-                        </details>
+                        </ReceiptDisclosure>
                       )}
                     </div>
                   );
@@ -312,7 +314,7 @@ export function BillSummary({
                       <div className="font-bold">
                         <span className="font-digits">{unsplitIds.size}</span>{" "}
                         {unsplitIds.size === 1 ? "ITEM SEM DONO" : "ITENS SEM DONO"} ·{" "}
-                        <span className="font-digits">{formatCurrency(unsplitCents)}</span> FORA
+                        <SubtleNumber value={unsplitCents} format={formatCurrency} className="font-digits" /> FORA
                         DO TOTAL
                       </div>
                       <div>Divida em Itens antes de marcar como paga.</div>
@@ -325,7 +327,7 @@ export function BillSummary({
 
               <div className="flex justify-between gap-2">
                 <span>SUBTOTAL</span>
-                <span className="font-digits">{formatCurrency(subtotalCents)}</span>
+                <SubtleNumber value={subtotalCents} format={formatCurrency} className="font-digits" />
               </div>
               <div className="flex items-baseline justify-between gap-2">
                 {isOpen ? (
@@ -338,16 +340,18 @@ export function BillSummary({
                     TAXA SERVIÇO <span className="font-digits">{serviceTaxPercent}%</span>
                   </span>
                 )}
-                <span className="font-digits">
-                  {formatCurrency(grandTotalCents - subtotalCents)}
-                </span>
+                <SubtleNumber
+                  value={grandTotalCents - subtotalCents}
+                  format={formatCurrency}
+                  className="font-digits"
+                />
               </div>
 
               <hr className="my-2.5 border-t-[3px] border-double border-foreground" />
 
               <div className="flex items-center justify-between gap-2 font-bold">
                 <span className="text-base">TOTAL</span>
-                <span className="font-digits">{formatCurrency(grandTotalCents)}</span>
+                <SubtleNumber value={grandTotalCents} format={formatCurrency} className="font-digits" />
               </div>
 
               {!isOpen && (

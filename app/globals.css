@@ -174,6 +174,86 @@
   }
 }
 
+/*
+ * Valor que muda ao vivo (SubtleNumber): só o dígito que mudou troca no
+ * lugar, subindo ou descendo com o valor, sem desfoque.
+ */
+.subtle-number {
+  display: inline-flex;
+  align-items: baseline;
+  white-space: pre;
+}
+.subtle-number-slot {
+  position: relative;
+  display: inline-block;
+}
+.subtle-number-new {
+  display: inline-block;
+}
+.subtle-number-old {
+  position: absolute;
+  inset: 0;
+  text-align: center;
+  pointer-events: none;
+}
+.subtle-number.is-animating .subtle-number-new {
+  animation: subtle-number-in var(--duration-very-slow) var(--ease-smooth-out) both;
+}
+.subtle-number.is-animating .subtle-number-old {
+  animation: subtle-number-out var(--duration-very-slow) var(--ease-smooth-out) both;
+}
+@keyframes subtle-number-in {
+  from {
+    transform: translateY(calc(0.14em * var(--subtle-dir, 1)));
+    opacity: 0;
+  }
+}
+@keyframes subtle-number-out {
+  to {
+    transform: translateY(calc(0.14em * var(--subtle-dir, 1) * -1));
+    opacity: 0;
+  }
+}
+
+/*
+ * Itens de cada pessoa no cupom (ReceiptDisclosure): a altura anima por
+ * grid-template-rows, sem medir em JS. Padding fica no filho de dentro do
+ * inner, nunca no painel: no trilho 0fr sobraria uma faixa aberta.
+ */
+.receipt-disclosure-panel {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows var(--duration-fast) var(--ease-smooth-out);
+}
+.group[data-open="true"] > .receipt-disclosure-panel {
+  grid-template-rows: 1fr;
+}
+.receipt-disclosure-inner {
+  min-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  transition: opacity var(--duration-fast) var(--ease-smooth-out);
+}
+.group[data-open="true"] > .receipt-disclosure-panel > .receipt-disclosure-inner {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .receipt-disclosure-panel,
+  .receipt-disclosure-inner {
+    transition: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .subtle-number .subtle-number-new {
+    animation: none !important;
+  }
+  .subtle-number .subtle-number-old {
+    display: none;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   ::view-transition-old(*),
   ::view-transition-new(*),

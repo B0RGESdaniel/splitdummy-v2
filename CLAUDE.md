@@ -88,7 +88,7 @@ lib/bill/waiter.ts                                              # apelidos de ga
 lib/realtime/{use-realtime-table,use-remote-change-flash}.ts    # hook genérico postgres_changes por bill_id -> invalida query do TanStack Query; + hook de flash visual (classe `realtime-flash`) quando a mudança vem de outro participante, não da própria mutation otimista
 components/bills/bill-realtime-refresh.tsx                      # realtime de bills/bill_participants/profiles (dados de Server Components): evento -> router.refresh() com debounce; exclusão da própria linha -> volta pro dashboard
 components/providers/query-provider.tsx                         # QueryClientProvider global (app/layout.tsx)
-components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,items-entry-actions,bill-back-button,item-split-dialog,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,seat-dialog,import-participants-dialog,bill-status-badge,confirm-delete-button,avatar-icon,avatar-picker}.tsx
+components/bills/{create-bill-dialog,invite-qr-panel,item-form-dialog,delete-item-button,items-list,items-entry-actions,bill-back-button,item-split-dialog,create-item-button,parts-stepper,item-split,close-bill-button,bill-summary,service-tax-editor,add-guest-dialog,seat-dialog,import-participants-dialog,bill-status-badge,confirm-delete-button,avatar-icon,avatar-picker,subtle-number,scroll-to-top-on-enter,receipt-disclosure}.tsx
 ```
 
 `BillTabs` e a rota `split/page.tsx` (SplitWorkspace) foram removidos — não há mais navegação por abas (ver Bloco C abaixo).
