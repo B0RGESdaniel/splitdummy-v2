@@ -165,7 +165,7 @@ Chapado por padrão — não existe sombra ambiente de UI em cards, botões ou d
 ### Shadow Vocabulary
 - **viga-da-mesa** (`box-shadow: 0 10px 18px -8px color-mix(in oklch, var(--foreground), transparent 55%), inset 0 1px 0 color-mix(in oklch, var(--background), transparent 15%), inset 0 -1px 0 color-mix(in oklch, var(--foreground), transparent 80%)`): a coluna central que conecta as fileiras de assentos na mesa de Participantes.
 - **selo-relevado** (`box-shadow: inset 0 0 0 1.5px var(--background)`): anel interno do `BillStatusBadge`, lendo como caixa impressa. Leve rotação (`-2deg`) nos dois estados, aberta e paga — efeito carimbo; a cor (azul/vermelho) é o que distingue o estado.
-- **papel-no-balcão** (`0 1px 0 oklch(0 0 0 / 30%), 0 10px 16px -8px oklch(0 0 0 / 65%)` na comanda; `drop-shadow(0 8px 8px oklch(0 0 0 / 50%))` no cupom, porque a serrilha é recorte e `box-shadow` ignoraria os dentes): só dentro de `.balcao`.
+- **papel-no-balcão** (`0 1px 0 oklch(0 0 0 / 30%), 0 10px 16px -8px oklch(0 0 0 / 65%)` na comanda; `drop-shadow(0 8px 8px oklch(0 0 0 / 50%))` no cupom, porque a serrilha é recorte e `box-shadow` ignoraria os dentes): só dentro de `.balcao` No toque (`:active`) o papel afunda 1px e a sombra encurta (`0 4px 8px -6px` na comanda, `drop-shadow(0 3px 4px)` no cupom): a folha apertada contra o balcão.
 - **etiqueta-do-toast** (`3px 3px 0`, tinta a 22%; sinal a 25% no erro): o toast é uma etiqueta de papel colada sobre a tela.
 
 ### Named Rules

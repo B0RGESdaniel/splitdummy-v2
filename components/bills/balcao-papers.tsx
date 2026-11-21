@@ -12,7 +12,7 @@ function formatCurrency(cents: number) {
 }
 
 const paperLinkClass =
-  "block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--balcao-ink)] motion-safe:transition-transform motion-safe:hover:-translate-y-0.5";
+  "block focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[color:var(--balcao-ink)] motion-safe:hover:-translate-y-0.5 motion-safe:active:translate-y-px";
 
 /**
  * Comanda aberta em cima do balcão: repete o topo da tela da conta em

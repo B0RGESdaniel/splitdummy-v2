@@ -868,6 +868,37 @@
 }
 
 /*
+ * Toque no papel: ele afunda 1px e a sombra encurta, como uma folha apertada
+ * contra o balcão. Entra rápido (resposta ao dedo) e solta mais devagar.
+ */
+.balcao-comanda,
+.balcao-cupom {
+  transition:
+    translate var(--duration-quick) var(--ease-smooth-out),
+    box-shadow var(--duration-quick) var(--ease-smooth-out),
+    filter var(--duration-quick) var(--ease-smooth-out);
+}
+.balcao-comanda:active,
+.balcao-cupom:active {
+  transition-duration: var(--duration-micro);
+}
+.balcao-comanda:active {
+  box-shadow:
+    0 1px 0 oklch(0 0 0 / 30%),
+    0 4px 8px -6px oklch(0 0 0 / 65%);
+}
+.balcao-cupom:active {
+  filter: drop-shadow(0 3px 4px oklch(0 0 0 / 50%));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .balcao-comanda,
+  .balcao-cupom {
+    transition: none;
+  }
+}
+
+/*
  * QR do convite como adesivo: o papel branco do QR preso na comanda por
  * dois pedaços de fita crepe nas diagonais (cantos superior esquerdo e
  * inferior direito). Fita é translúcida, com as pontas rasgadas em
