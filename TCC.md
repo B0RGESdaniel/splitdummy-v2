@@ -19,7 +19,7 @@ Evolução do [splitdummy v1](https://github.com/B0RGESdaniel/splitdummy) — SP
 | Backend | Supabase (Postgres + Auth + Realtime + Storage), provisionado via Vercel Marketplace | — |
 | Acesso a dados | `@supabase/supabase-js` direto, sem ORM — autorização inteira via RLS | ^2.118.0 |
 | SSR/cookies Supabase | `@supabase/ssr` | ^0.12.7 |
-| Login | Supabase Auth, só Google OAuth (sem convidado anônimo) | — |
+| Login | Supabase Auth: Google OAuth ou código por e-mail, sem senha (participante sem conta existe, só com nome) | — |
 | Estado/colaboração cliente | TanStack Query (`@tanstack/react-query`) | ^5.104.4 |
 | Colaboração em tempo real | Supabase Realtime (`postgres_changes`, via publication `supabase_realtime`) | — |
 | Convite | Link + QR code (mesmo link) via `qrcode.react` | ^4.2.0 |
@@ -136,6 +136,9 @@ A passagem do histórico pra uma conta aberta usa a View Transitions API do nave
 - **A ligação só se forma se a tela de destino chega no mesmo commit da navegação.** Aqui funciona porque as rotas da conta não têm tela de carregamento: o roteador espera os dados e troca tudo de uma vez.
 - **O `enter` do React (animação de entrada de um bloco novo) não disparou nessa navegação**, então a lista de itens entra por CSS: durante a transição a tela nova é ao vivo, e o seletor `:active-view-transition-type(abrir-comanda)` (tipo marcado no link do balcão) restringe a animação a essa navegação, sem afetar atualizações em tempo real nem as outras telas.
 - **Limitações aceitas:** voltar pelo botão do navegador não anima (comportamento do Next), e navegador sem suporte simplesmente troca de tela sem animação. Com "reduzir movimento" a troca também é direta.
+
+### Login por e-mail: código em vez de (só) link mágico
+O "link mágico" (clicar no e-mail e já estar logado) parece o caminho óbvio, mas o link loga o navegador em que é aberto. No celular, os apps de e-mail costumam abrir links no próprio navegador interno: a pessoa pedia o login no Safari, tocava no link e quem ficava logado era o navegador do app de e-mail, que ela fecha em seguida. Com o fluxo PKCE (padrão do `@supabase/ssr`) é pior: o link nem funciona fora do navegador que pediu, porque o segredo da troca ficou guardado nele. Por isso o e-mail traz primeiro um código, digitado na mesma tela em que a pessoa pediu: a sessão fica sempre no navegador certo. O link continua no e-mail como atalho pra quem abre no computador.
 
 ## Changelog de funcionalidades e ferramentas
 
@@ -308,3 +311,4 @@ Plano completo: `snuggly-sleeping-ember.md` (`~/.claude/plans/`). Duas decisões
 - **Papel afunda no toque** — no histórico, tocar numa comanda ou num cupom faz o papel afundar 1px e a sombra encurtar, como uma folha apertada contra o balcão. No celular não existe o "levantar" do mouse por cima, então essa é a resposta física ao dedo antes de a conta abrir.
 - **A folha em branco vira o diálogo** — no histórico, tocar em "Abrir nova comanda" (a próxima folha do bloco, tracejada) faz o diálogo de criar conta nascer exatamente no lugar e no tamanho dessa folha, já como papel, e crescer até o centro da tela. O crescimento é um recorte que se abre (não uma escala), pra o texto do diálogo não esticar no caminho.
 - **Papéis chegam no balcão** — na primeira vez que a pessoa abre o histórico na sessão, as comandas e os cupons entram em cascata, um depois do outro, como folhas sendo postas na mesa. Nas outras vezes (voltando de uma conta, recarregando a página) os papéis já estão lá, pra a tela mais visitada não ficar repetindo a mesma animação. Um script mínimo decide isso antes do primeiro quadro, senão os papéis apareceriam e depois sumiriam pra animar.
+- **Entrar sem Google, só com e-mail** — além do "Entrar com Google", o login e a tela de convite aceitam um e-mail: o app manda um código e a pessoa digita ali mesmo, sem senha. Quem usa os dois jeitos com o mesmo e-mail continua sendo uma pessoa só. Recurso nativo do Supabase Auth, sem biblioteca nova. Por que código e não só o link do e-mail, em "Decisões técnicas notáveis".

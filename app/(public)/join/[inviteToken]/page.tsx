@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { SignInOptions } from "@/components/auth/sign-in-options";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
@@ -62,9 +62,9 @@ export default async function JoinPage({
     return (
       <JoinCard title={bill.name}>
         <p className="text-muted-foreground text-sm">
-          Entre com o Google para participar dessa conta.
+          Entre para participar dessa conta.
         </p>
-        <GoogleSignInButton next={`/join/${inviteToken}`} />
+        <SignInOptions next={`/join/${inviteToken}`} />
       </JoinCard>
     );
   }

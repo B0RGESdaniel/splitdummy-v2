@@ -1,7 +1,7 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
-import { GoogleSignInButton } from "@/components/auth/google-sign-in-button";
+import { SignInOptions } from "@/components/auth/sign-in-options";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { createClient } from "@/lib/supabase/server";
 
@@ -28,7 +28,7 @@ export default async function LoginPage({
           <CardTitle>Divide/ai</CardTitle>
         </CardHeader>
         <CardContent>
-          <GoogleSignInButton next={next} />
+          <SignInOptions next={next} />
         </CardContent>
       </Card>
     </div>
