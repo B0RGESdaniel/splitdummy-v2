@@ -34,6 +34,13 @@ function groupByBill<T extends { bill_id: string }>(rows: T[]) {
   return groups;
 }
 
+// Papéis entram no balcão em cascata, só na primeira carga da sessão: o
+// script roda antes de os papéis serem pintados (por isso inline, e não um
+// effect, que chegaria depois do primeiro quadro e faria os papéis piscarem).
+// Navegação pelo app não executa script inserido pelo React, então voltar de
+// uma conta não repete a entrada.
+const ENTRANCE_SCRIPT = `try{if(!sessionStorage.getItem("balcao-entrada")){sessionStorage.setItem("balcao-entrada","1");var el=document.currentScript.parentElement;el.setAttribute("data-balcao-entrada","");setTimeout(function(){el.removeAttribute("data-balcao-entrada")},1500)}}catch(e){}`;
+
 function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
     <h2 className="flex items-baseline justify-between border-b border-[color:var(--balcao-line)] pb-1.5 text-xs font-semibold tracking-[0.12em] text-[color:var(--balcao-soft)]">
@@ -105,8 +112,13 @@ export default async function DashboardPage() {
 
   const firstName = profile?.display_name?.split(" ")[0];
 
+  let entranceIndex = 0;
+  const entrance = () => ({ "--i": entranceIndex++ }) as React.CSSProperties;
+
   return (
-    <>
+    // `contents`: o atributo da entrada mora aqui sem mexer no layout do main.
+    <div className="contents" suppressHydrationWarning>
+      <script dangerouslySetInnerHTML={{ __html: ENTRANCE_SCRIPT }} />
       <h1 className="text-xl font-semibold tracking-[0.04em]">
         {firstName ? `Olá, ${firstName}` : "Olá"}
       </h1>
@@ -117,19 +129,20 @@ export default async function DashboardPage() {
         {openBills.map((bill) => {
           const billParticipants = participantsByBill.get(bill.id) ?? [];
           return (
-            <BalcaoComanda
-              key={bill.id}
-              billId={bill.id}
-              name={bill.name}
-              number={billNumbers.get(bill.id) ?? 1}
-              ownerFirstName={bill.profiles?.display_name?.split(" ")[0] ?? "—"}
-              participantCount={billParticipants.length}
-              openedAt={openedAtFormat.format(new Date(bill.created_at)).replace(",", " ·")}
-              partialCents={openBillPartialCents(
-                itemsByBill.get(bill.id) ?? [],
-                bill.service_tax_percent,
-              )}
-            />
+            <div key={bill.id} className="balcao-entrada" style={entrance()}>
+              <BalcaoComanda
+                billId={bill.id}
+                name={bill.name}
+                number={billNumbers.get(bill.id) ?? 1}
+                ownerFirstName={bill.profiles?.display_name?.split(" ")[0] ?? "—"}
+                participantCount={billParticipants.length}
+                openedAt={openedAtFormat.format(new Date(bill.created_at)).replace(",", " ·")}
+                partialCents={openBillPartialCents(
+                  itemsByBill.get(bill.id) ?? [],
+                  bill.service_tax_percent,
+                )}
+              />
+            </div>
           );
         })}
 
@@ -139,7 +152,9 @@ export default async function DashboardPage() {
           </p>
         )}
 
-        <CreateBillDialog />
+        <div className="balcao-entrada" style={entrance()}>
+          <CreateBillDialog />
+        </div>
       </section>
 
       {paidBills.length > 0 && (
@@ -157,20 +172,21 @@ export default async function DashboardPage() {
               bill.service_tax_percent,
             );
             return (
-              <BalcaoCupom
-                key={bill.id}
-                billId={bill.id}
-                name={bill.name}
-                number={billNumbers.get(bill.id) ?? 1}
-                paidAt={paidAtFormat.format(new Date(bill.closed_at ?? bill.created_at))}
-                participantCount={billParticipants.length}
-                totalCents={totalCents}
-                ownCents={ownCents}
-              />
+              <div key={bill.id} className="balcao-entrada" style={entrance()}>
+                <BalcaoCupom
+                  billId={bill.id}
+                  name={bill.name}
+                  number={billNumbers.get(bill.id) ?? 1}
+                  paidAt={paidAtFormat.format(new Date(bill.closed_at ?? bill.created_at))}
+                  participantCount={billParticipants.length}
+                  totalCents={totalCents}
+                  ownCents={ownCents}
+                />
+              </div>
             );
           })}
         </section>
       )}
-    </>
+    </div>
   );
 }

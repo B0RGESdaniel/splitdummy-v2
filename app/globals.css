@@ -868,6 +868,29 @@
 }
 
 /*
+ * Primeira carga da sessão: os papéis entram no balcão em cascata, como
+ * folhas sendo postas na mesa (atributo posto por um script inline no
+ * dashboard, que sai depois). Atraso limitado às 10 primeiras folhas.
+ */
+[data-balcao-entrada] .balcao-entrada {
+  animation: balcao-entrada var(--duration-fast) var(--ease-smooth-out) both;
+  animation-delay: calc(min(var(--i, 0), 10) * var(--duration-stagger));
+}
+
+@keyframes balcao-entrada {
+  from {
+    opacity: 0;
+    transform: translateY(var(--distance-base));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-balcao-entrada] .balcao-entrada {
+    animation: none;
+  }
+}
+
+/*
  * Toque no papel: ele afunda 1px e a sombra encurta, como uma folha apertada
  * contra o balcão. Entra rápido (resposta ao dedo) e solta mais devagar.
  */
