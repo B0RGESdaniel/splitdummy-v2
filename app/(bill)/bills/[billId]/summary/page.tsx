@@ -1,15 +1,13 @@
 import { notFound } from "next/navigation";
-import { connection } from "next/server";
 
 import { courierPrime, dotGothic16 } from "@/app/fonts";
 import { BillSummary } from "@/components/bills/bill-summary";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
-import { createClient } from "@/lib/supabase/server";
+import { getSupabase, requireUser } from "@/lib/auth/session";
+import { getBill, getBillParticipantRows } from "@/lib/bill/bill-queries";
 import { getBillNumber } from "@/lib/bill/bill-number";
 import { formatReceiptDate } from "@/lib/bill/receipt-date";
-
-export const instant = false;
 
 export default async function BillSummaryPage({
   params,
@@ -18,35 +16,23 @@ export default async function BillSummaryPage({
   params: Promise<{ billId: string }>;
   searchParams: Promise<{ fechou?: string }>;
 }) {
-  await connection();
   const { billId } = await params;
   const { fechou } = await searchParams;
-  const supabase = await createClient();
-
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims.sub;
-
-  const { data: bill } = await supabase
-    .from("bills")
-    .select("id, name, status, service_tax_percent, owner_id, created_at, closed_at, profiles(display_name)")
-    .eq("id", billId)
-    .single();
+  const userId = await requireUser(`/bills/${billId}`);
+  const supabase = await getSupabase();
+  const bill = await getBill(billId);
 
   if (!bill) {
     notFound();
   }
 
   const [
-    { data: participants },
+    participants,
     { data: items },
     { data: shares },
     billNumber,
   ] = await Promise.all([
-      supabase
-        .from("bill_participants")
-        .select("id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)")
-        .eq("bill_id", billId)
-        .order("joined_at", { ascending: true }),
+      getBillParticipantRows(billId),
       supabase
         .from("items")
         .select("id, description, unit_price, quantity")
@@ -79,7 +65,7 @@ export default async function BillSummaryPage({
           ownerName={bill.profiles?.display_name?.split(" ")[0] ?? "o organizador"}
           isOpen={isOpen}
           justClosed={!isOpen && fechou === "1"}
-          participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
+          participants={toBillParticipantsSelfFirst(participants, userId)}
           initialItems={items ?? []}
           initialShares={shares ?? []}
         />

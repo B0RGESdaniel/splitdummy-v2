@@ -1,7 +1,6 @@
 import { ChevronRight } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
-import { connection } from "next/server";
 import { ViewTransition } from "react";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
@@ -9,27 +8,18 @@ import { ItemsEntryActions } from "@/components/bills/items-entry-actions";
 import { ItemsList } from "@/components/bills/items-list";
 import { RollingNumber } from "@/components/bills/rolling-number";
 import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
-import { createClient } from "@/lib/supabase/server";
-
-export const instant = false;
+import { getSupabase, requireUser } from "@/lib/auth/session";
+import { getBill, getBillParticipantRows } from "@/lib/bill/bill-queries";
 
 export default async function ItemsPage({
   params,
 }: {
   params: Promise<{ billId: string }>;
 }) {
-  await connection();
   const { billId } = await params;
-  const supabase = await createClient();
-
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims.sub;
-
-  const { data: bill } = await supabase
-    .from("bills")
-    .select("id, name, status, profiles(display_name)")
-    .eq("id", billId)
-    .single();
+  const userId = await requireUser(`/bills/${billId}`);
+  const supabase = await getSupabase();
+  const bill = await getBill(billId);
 
   if (!bill) {
     notFound();
@@ -39,17 +29,13 @@ export default async function ItemsPage({
     redirect(`/bills/${billId}/summary`);
   }
 
-  const [{ data: items }, { data: participants }, { data: shares }] = await Promise.all([
+  const [{ data: items }, participants, { data: shares }] = await Promise.all([
     supabase
       .from("items")
       .select("id, description, unit_price, quantity")
       .eq("bill_id", billId)
       .order("created_at", { ascending: true }),
-    supabase
-      .from("bill_participants")
-      .select("id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)")
-      .eq("bill_id", billId)
-      .order("joined_at", { ascending: true }),
+    getBillParticipantRows(billId),
     supabase
       .from("item_shares")
       .select("item_id, participant_id, parts")
@@ -90,7 +76,7 @@ export default async function ItemsPage({
             </div>
             <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
               {/* Alguém entrou pelo convite (realtime → refresh): o número rola. */}
-              <RollingNumber value={participants?.length ?? 0} />
+              <RollingNumber value={participants.length} />
             </div>
           </Link>
           <div className="flex items-center justify-center px-3 py-2">
@@ -108,7 +94,7 @@ export default async function ItemsPage({
           initialItems={items ?? []}
           initialShares={shares ?? []}
           isOpen={isOpen}
-          participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
+          participants={toBillParticipantsSelfFirst(participants, userId)}
         />
         <ItemsEntryActions
           billId={billId}

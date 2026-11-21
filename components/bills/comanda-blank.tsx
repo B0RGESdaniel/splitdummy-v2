@@ -1,8 +1,8 @@
 "use client";
 
 import { ChevronRight } from "lucide-react";
-import { useParams } from "next/navigation";
-import { ViewTransition } from "react";
+
+import { ComandaMorph } from "@/components/bills/comanda-morph";
 
 // Esqueletos de carregamento das telas da conta: a comanda em branco, só com
 // o que vem impresso (rótulos e régua) e os campos manuscritos ainda vazios.
@@ -21,14 +21,12 @@ function LoadingStatus() {
 }
 
 export function ItemsBlank() {
-  const { billId } = useParams<{ billId: string }>();
-
   return (
     <div className="flex flex-1 flex-col gap-3">
       <LoadingStatus />
       {/* Mesmo nome da grade de items/page.tsx: o morph do balcão chega aqui
           e a grade preenchida entra no lugar dela. */}
-      <ViewTransition name={`comanda-grade-${billId}`} share="comanda-morph" default="none">
+      <ComandaMorph part="grade">
         <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
           <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
             <div className={label}>Conta</div>
@@ -47,7 +45,7 @@ export function ItemsBlank() {
           </div>
           <div />
         </div>
-      </ViewTransition>
+      </ComandaMorph>
 
       <table
         aria-hidden

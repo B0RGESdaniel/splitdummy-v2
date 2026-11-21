@@ -1,6 +1,5 @@
 import { Fragment } from "react";
 import { notFound, redirect } from "next/navigation";
-import { connection } from "next/server";
 
 import {
   addGuestParticipant,
@@ -17,9 +16,8 @@ import {
   type ParticipantBreakdown,
 } from "@/lib/split/breakdown";
 import type { PartsShareInput } from "@/lib/split/validate";
-import { createClient } from "@/lib/supabase/server";
-
-export const instant = false;
+import { getSupabase, requireUser } from "@/lib/auth/session";
+import { getBill, getBillParticipantRows } from "@/lib/bill/bill-queries";
 
 type Participant = {
   id: string;
@@ -233,18 +231,10 @@ export default async function ParticipantsPage({
 }: {
   params: Promise<{ billId: string }>;
 }) {
-  await connection();
   const { billId } = await params;
-  const supabase = await createClient();
-
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims.sub;
-
-  const { data: bill } = await supabase
-    .from("bills")
-    .select("id, name, status, owner_id, service_tax_percent")
-    .eq("id", billId)
-    .single();
+  const userId = await requireUser(`/bills/${billId}`);
+  const supabase = await getSupabase();
+  const bill = await getBill(billId);
 
   if (!bill) {
     notFound();
@@ -254,15 +244,9 @@ export default async function ParticipantsPage({
     redirect(`/bills/${billId}/summary`);
   }
 
-  const [{ data: participantRows }, { data: items }, { data: shares }] =
+  const [participantRows, { data: items }, { data: shares }] =
     await Promise.all([
-      supabase
-        .from("bill_participants")
-        .select(
-          "id, profile_id, display_name, avatar_key, profiles(display_name, avatar_key)",
-        )
-        .eq("bill_id", billId)
-        .order("joined_at", { ascending: true }),
+      getBillParticipantRows(billId),
       supabase
         .from("items")
         .select("id, description, unit_price, quantity")
@@ -289,7 +273,7 @@ export default async function ParticipantsPage({
       unitPrice: item.unit_price,
       shares: sharesByItem.get(item.id) ?? [],
     })),
-    (participantRows ?? []).map((row) => row.id),
+    participantRows.map((row) => row.id),
     bill.service_tax_percent,
   );
 
@@ -301,7 +285,7 @@ export default async function ParticipantsPage({
   const isOwner = userId === bill.owner_id;
   const isOpen = bill.status === "open";
 
-  const participants: Participant[] = (participantRows ?? []).map((row) => {
+  const participants: Participant[] = participantRows.map((row) => {
     const isBillOwner = row.profile_id === bill.owner_id;
     const isSelf = row.profile_id === userId;
 
@@ -344,7 +328,7 @@ export default async function ParticipantsPage({
           <ImportParticipantsDialog
             billId={billId}
             ownerId={bill.owner_id}
-            currentProfileIds={(participantRows ?? []).flatMap((row) =>
+            currentProfileIds={participantRows.flatMap((row) =>
               row.profile_id ? [row.profile_id] : [],
             )}
             currentNames={participants.map((participant) => participant.name)}
