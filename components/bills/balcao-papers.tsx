@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ViewTransition } from "react";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { BrandWordmark } from "@/components/brand-wordmark";
@@ -38,38 +39,47 @@ export function BalcaoComanda({
   return (
     <Link
       href={`/bills/${billId}/items`}
+      transitionTypes={["abrir-comanda"]}
       className={`balcao-comanda ${paperLinkClass} flex flex-col gap-2.5 px-3.5 pt-2.5 pb-3.5 text-foreground`}
     >
       <div className="-mx-3.5 flex items-baseline gap-2 border-b-[1.5px] border-border px-3.5 pb-2.5">
-        <BrandWordmark className="text-lg" />
-        <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
-          Nº {String(number).padStart(3, "0")}
-        </span>
+        {/* Par com o masthead da conta e, abaixo, com a grade de Itens: ao
+            abrir, a comanda em miniatura cresce até virar a tela. */}
+        <ViewTransition name={`comanda-masthead-${billId}`} share="comanda-morph" default="none">
+          <span className="flex items-baseline gap-2">
+            <BrandWordmark className="text-lg" />
+            <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
+              Nº {String(number).padStart(3, "0")}
+            </span>
+          </span>
+        </ViewTransition>
       </div>
 
-      <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
-        <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
-          <div className="text-[11px] uppercase tracking-wide">Conta</div>
-          <div className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
-            {name}
+      <ViewTransition name={`comanda-grade-${billId}`} share="comanda-morph" default="none">
+        <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
+          <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
+            <div className="text-[11px] uppercase tracking-wide">Conta</div>
+            <div className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
+              {name}
+            </div>
+          </div>
+          <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
+            <div className="text-[11px] uppercase tracking-wide">Dono</div>
+            <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+              {ownerFirstName}
+            </div>
+          </div>
+          <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
+            <div className="text-[11px] uppercase tracking-wide">Participantes</div>
+            <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+              {participantCount}
+            </div>
+          </div>
+          <div className="flex items-center justify-center px-3 py-2">
+            <BillStatusBadge isOpen />
           </div>
         </div>
-        <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
-          <div className="text-[11px] uppercase tracking-wide">Dono</div>
-          <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-            {ownerFirstName}
-          </div>
-        </div>
-        <div className="min-w-0 border-r-[1.5px] border-foreground px-3 py-2">
-          <div className="text-[11px] uppercase tracking-wide">Participantes</div>
-          <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-            {participantCount}
-          </div>
-        </div>
-        <div className="flex items-center justify-center px-3 py-2">
-          <BillStatusBadge isOpen />
-        </div>
-      </div>
+      </ViewTransition>
 
       <div className="flex items-end justify-between gap-3">
         <span className="text-[13px] leading-snug font-medium tracking-[0.02em] tabular-nums">

@@ -147,6 +147,42 @@
   --scale-tiny: 0.99;
 }
 
+/*
+ * Comanda do balcão crescendo até a tela da conta (e encolhendo de volta):
+ * masthead e grade são pares de ViewTransition com o mesmo nome dos dois
+ * lados. Com reduzir movimento, a troca é direta.
+ */
+::view-transition-group(.comanda-morph) {
+  animation-duration: var(--duration-slow);
+  animation-timing-function: var(--ease-smooth-out);
+}
+
+/*
+ * O resto da tela de Itens entra logo depois do morph. Pela CSS e não por um
+ * `enter` do React, que não disparou nessa navegação (testado). A tela nova
+ * é ao vivo durante a transição, e o tipo "abrir-comanda" (Link do balcão)
+ * limita isso à abertura pelo balcão.
+ */
+:root:active-view-transition-type(abrir-comanda) .comanda-chegada {
+  animation: comanda-chegada var(--duration-fast) var(--ease-smooth-out) var(--duration-quick) both;
+}
+
+@keyframes comanda-chegada {
+  from {
+    opacity: 0;
+    transform: translateY(var(--distance-base));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
 /* Diálogo com reduzir movimento: só o esmaecer, sem a escala. */
 @media (prefers-reduced-motion: reduce) {
   [data-slot="dialog-content"] {

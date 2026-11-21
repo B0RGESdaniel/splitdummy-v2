@@ -1,5 +1,6 @@
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
+import { ViewTransition } from "react";
 
 import { getOrCreateActiveInvite } from "@/app/(dashboard)/bills/actions";
 import { BillBackButton } from "@/components/bills/bill-back-button";
@@ -82,12 +83,14 @@ export default async function BillLayout({
           <div className="flex items-center justify-between gap-2">
             <div className="flex min-w-0 items-center gap-1">
               <BillBackButton billId={billId} isOpen={bill.status === "open"} />
-              <span className="flex items-baseline gap-2">
-                <BrandWordmark className="text-lg" />
-                <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
-                  Nº {String(billNumber).padStart(3, "0")}
+              <ViewTransition name={`comanda-masthead-${billId}`} share="comanda-morph" default="none">
+                <span className="flex items-baseline gap-2">
+                  <BrandWordmark className="text-lg" />
+                  <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
+                    Nº {String(billNumber).padStart(3, "0")}
+                  </span>
                 </span>
-              </span>
+              </ViewTransition>
             </div>
             {/* Desconectar fica só no histórico: aqui, ao lado do nome da
                 conta, o ícone era lido como "sair desta conta". */}

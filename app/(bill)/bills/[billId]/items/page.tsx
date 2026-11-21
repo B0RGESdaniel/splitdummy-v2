@@ -2,6 +2,7 @@ import { ChevronRight } from "lucide-react";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { connection } from "next/server";
+import { ViewTransition } from "react";
 
 import { BillStatusBadge } from "@/components/bills/bill-status-badge";
 import { ItemsEntryActions } from "@/components/bills/items-entry-actions";
@@ -58,54 +59,62 @@ export default async function ItemsPage({
 
   return (
     <div className="flex flex-1 flex-col gap-3">
-      <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
-        {/* Nome da conta é o primeiro campo da comanda: preenchido à mão,
-            colado em Dono/Participantes, e não no masthead (que é só o que
-            vem impresso). */}
-        <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
-          <div className="text-[11px] uppercase tracking-wide text-foreground">Conta</div>
-          <h1 className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
-            {bill.name}
-          </h1>
+      {/* Par com a grade da comanda em miniatura do balcão (balcao-papers.tsx). */}
+      <ViewTransition name={`comanda-grade-${billId}`} share="comanda-morph" default="none">
+        <div className="grid grid-cols-[1fr_1fr_0.8fr] border-[1.5px] border-foreground text-xs">
+          {/* Nome da conta é o primeiro campo da comanda: preenchido à mão,
+              colado em Dono/Participantes, e não no masthead (que é só o que
+              vem impresso). */}
+          <div className="col-span-full border-b-[1.5px] border-foreground px-3 pt-1 pb-1.5">
+            <div className="text-[11px] uppercase tracking-wide text-foreground">Conta</div>
+            <h1 className="line-clamp-2 translate-y-[5px] font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
+              {bill.name}
+            </h1>
+          </div>
+          <div className="border-r-[1.5px] border-foreground px-3 py-2">
+            <div className="text-[11px] uppercase tracking-wide text-foreground">
+              Dono
+            </div>
+            <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+              {bill.profiles?.display_name?.split(" ")[0] ?? "—"}
+            </div>
+          </div>
+          <Link
+            href={`/bills/${billId}/participants`}
+            className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
+          >
+            <div className="flex items-center gap-1 text-[11px] uppercase tracking-wide text-foreground">
+              Participantes
+              <ChevronRight className="size-3" />
+            </div>
+            <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
+              {participants?.length ?? 0}
+            </div>
+          </Link>
+          <div className="flex items-center justify-center px-3 py-2">
+            <BillStatusBadge isOpen={isOpen} />
+          </div>
         </div>
-        <div className="border-r-[1.5px] border-foreground px-3 py-2">
-          <div className="text-[11px] uppercase tracking-wide text-foreground">
-            Dono
-          </div>
-          <div className="translate-y-[5px] truncate font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-            {bill.profiles?.display_name?.split(" ")[0] ?? "—"}
-          </div>
-        </div>
-        <Link
-          href={`/bills/${billId}/participants`}
-          className="border-r-[1.5px] border-foreground px-3 py-2 hover:bg-muted"
-        >
-          <div className="flex items-center gap-1 text-[11px] uppercase tracking-wide text-foreground">
-            Participantes
-            <ChevronRight className="size-3" />
-          </div>
-          <div className="translate-y-[5px] font-handwritten text-lg text-[color:var(--ink-handwritten)]">
-            {participants?.length ?? 0}
-          </div>
-        </Link>
-        <div className="flex items-center justify-center px-3 py-2">
-          <BillStatusBadge isOpen={isOpen} />
-        </div>
-      </div>
+      </ViewTransition>
 
-      <ItemsList
-        billId={billId}
-        initialItems={items ?? []}
-        initialShares={shares ?? []}
-        isOpen={isOpen}
-        participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
-      />
-      <ItemsEntryActions
-        billId={billId}
-        initialItems={items ?? []}
-        initialShares={shares ?? []}
-        isOpen={isOpen}
-      />
+      {/* O resto da comanda chega depois da grade, pra não aparecer de uma vez
+          embaixo das peças que estão crescendo. Só ao abrir pelo balcão (ver
+          `.comanda-chegada` em globals.css). */}
+      <div className="comanda-chegada flex flex-1 flex-col gap-3">
+        <ItemsList
+          billId={billId}
+          initialItems={items ?? []}
+          initialShares={shares ?? []}
+          isOpen={isOpen}
+          participants={toBillParticipantsSelfFirst(participants ?? [], userId)}
+        />
+        <ItemsEntryActions
+          billId={billId}
+          initialItems={items ?? []}
+          initialShares={shares ?? []}
+          isOpen={isOpen}
+        />
+      </div>
     </div>
   );
 }
