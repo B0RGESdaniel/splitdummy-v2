@@ -135,7 +135,7 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 **Character:** a comanda pareia uma condensada impressa (Archivo Narrow, uppercase) com uma manuscrita real (Kalam) pro que a pessoa escreveu; o cupom troca de registro pra datilografado (Courier Prime) com dígitos literalmente pixelados (DotGothic16), como se tivesse saído de uma impressora térmica.
 
 ### Hierarchy
-- **Display** (Bitter, tracking -0.01em): só a marca impressa "Divide/ai" (`BrandWordmark`) — "Divide" em 400 e "/ai" em 800, com a barra da própria fonte. O peso é o que separa as duas partes; barra desenhada à parte foi testada e descartada (desalinhava), assim como "/ai" em Courier Prime e em selo. 1.125rem/18px no masthead da conta e no topo das comandas do balcão, 1.25rem/20px no topo do balcão. No cupom a marca é só texto datilografado ("DIVIDE/AI"), sem pesos: impressora térmica não tem marca.
+- **Display** (Bitter, tracking -0.01em): só a marca impressa "Divide/ai" (`BrandWordmark`) — "Divide" em 400 e "/ai" em 800, com a barra da própria fonte. O peso é o que separa as duas partes; barra desenhada à parte foi testada e descartada (desalinhava), assim como "/ai" em Courier Prime e em selo. 1.125rem/18px no masthead da conta e no topo das comandas do balcão, 1.25rem/20px no topo do balcão, 26px na folha de entrada (login, primeiro acesso, convite). No cupom a marca é só texto datilografado ("DIVIDE/AI"), sem pesos: impressora térmica não tem marca.
 - **Ícone** ("/ai" sozinho, `app/icon.svg`): Bitter 800 em papel cru sobre quadrado royal cheio, sem raio, letras convertidas em contorno (o SVG não depende de fonte). É o único uso do "/ai" isolado; em todo papel vai o nome inteiro. O nome da conta nunca é Bitter: é campo manuscrito (Kalam, 1.25rem/20px na linha "Conta" da grade de Itens, até 2 linhas).
 - **Title** (Archivo Narrow, 500, 0.6875rem/11px, tracking 0.05em, uppercase): rótulos estruturais fixos — "Dono", "Participantes", cabeçalhos de coluna da tabela de itens.
 - **Body — comanda** (Archivo Narrow, 500, 0.875rem/14px, uppercase): texto estrutural padrão de Itens e Participantes.
@@ -146,7 +146,9 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 Tamanhos fora da escala, decididos de propósito (o detector acusa; não "corrigir"):
 - **Carimbo de papel na mesa** (Archivo Narrow 700, 10px, tracking 0.06em, uppercase): ORGANIZADOR / COLABORANDO / NA MESA sobre a base do avatar. É carimbo, não texto corrido.
 - **Subtítulo do cupom** (Courier Prime, 13px): "DIVIDE/AI · CONTA #NNN" e linhas de apoio do cabeçalho do cupom; também o texto das comandas e cupons do balcão.
-- **"Fecha para mim"** (Archivo Narrow, 15px; 13px abaixo de 640px, o texto inteiro): botão em destaque com o vocativo girando; o apelido mais longo fica no limite em 375px.
+- **Ação em destaque** (Archivo Narrow, 15px): a ação principal de uma tela, maior que o botão comum. "Fecha para mim" (13px abaixo de 640px, o texto inteiro; o vocativo gira e o apelido mais longo fica no limite em 375px) e "Fotografar o cupom" na comanda em branco.
+- **Cupom pago no balcão** (sobre a base de 13px acima): nome da conta em Courier Prime 700, 15px, uppercase; o valor de "você pagou" em DotGothic16, 22px — o número que a pessoa procura no histórico é o maior do papel.
+- **Marca na folha de entrada** (Bitter, 26px): "Divide/ai" no cabeçalho impresso da folha de login, primeiro acesso e convite, onde a marca também faz papel de logo.
 - **Botão de dividir** (Archivo Narrow 600): "/3" em 16px no dividido (barra e número no mesmo tamanho, lido como "dividido por 3"); "/" sozinha em 20px no pendente.
 
 ### Named Rules

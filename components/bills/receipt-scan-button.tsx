@@ -212,7 +212,7 @@ export function ReceiptScanButton({
         <div className="flex flex-col items-center gap-4 border-[1.5px] border-dashed border-foreground px-5 pt-8 pb-6">
           <Camera className="size-10" aria-hidden />
           <h2 className="text-lg font-semibold tracking-wide">Comanda em branco</h2>
-          <p className="text-center text-[13px] leading-snug text-balance text-muted-foreground">
+          <p className="text-center text-sm leading-snug text-balance text-muted-foreground">
             A leitura preenche os itens e você confere tudo antes de salvar.
           </p>
           <Button

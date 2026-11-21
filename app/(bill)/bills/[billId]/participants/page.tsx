@@ -347,7 +347,7 @@ export default async function ParticipantsPage({
       )}
       {/* Quem não é dono não tem ação aqui: diz por quê e o que dá pra fazer. */}
       {!isOwner && isOpen && (
-        <p className="pb-2 text-center text-[13px] leading-snug text-balance text-muted-foreground">
+        <p className="pb-2 text-center text-sm leading-snug text-balance text-muted-foreground">
           Só {owner?.name.split(" ")[0] ?? "o organizador"} coloca gente na mesa. Toque no seu
           lugar pra ver quanto você deve.
         </p>
