@@ -120,6 +120,42 @@
 }
 
 /*
+ * Escala de movimento (transitions.dev), compartilhada pelas transições do
+ * app. Sem os tokens de desfoque: blur lê como interface digital, e a
+ * direção é papel e tinta.
+ */
+:root {
+  --duration-stagger: 40ms;
+  --duration-micro: 80ms;
+  --duration-quick: 150ms;
+  --duration-fast: 250ms;
+  --duration-medium: 350ms;
+  --duration-slow: 400ms;
+  --duration-very-slow: 500ms;
+  --ease-smooth-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: ease-in-out;
+  --ease-out: ease-out;
+  --ease-linear: linear;
+  --ease-bounce: cubic-bezier(0.34, 1.36, 0.64, 1);
+  --distance-micro: 4px;
+  --distance-small: 6px;
+  --distance-base: 8px;
+  --distance-medium: 12px;
+  --scale-large: 0.96;
+  --scale-medium: 0.97;
+  --scale-small: 0.98;
+  --scale-tiny: 0.99;
+}
+
+/* Diálogo com reduzir movimento: só o esmaecer, sem a escala. */
+@media (prefers-reduced-motion: reduce) {
+  [data-slot="dialog-content"] {
+    --tw-enter-scale: 1;
+    --tw-exit-scale: 1;
+  }
+}
+
+/*
  * Guest-check paper world — scoped to routes wrapped in .paper-check
  * (currently the whole bill section, app/(bill)/bills/[billId]/layout.tsx).
  * Overrides the ambient .dark tokens for that subtree instead of replacing
