@@ -248,7 +248,7 @@ export function ItemsList({
               const sharerCount = sharerCounts.get(item.id) ?? 0;
               const description = (
                 <div className="flex min-w-0 flex-col justify-center text-left">
-                  <span className="truncate font-handwritten text-lg leading-tight text-[color:var(--ink-handwritten)]">
+                  <span className="truncate font-handwritten text-base leading-tight text-[color:var(--ink-handwritten)]">
                     {item.description}
                   </span>
                   <span className="flex items-center gap-1.5 text-[11px] tabular-nums text-muted-foreground">

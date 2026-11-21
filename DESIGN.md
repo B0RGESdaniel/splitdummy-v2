@@ -139,7 +139,7 @@ Papel neutro como base, azul royal vívido como tinta estrutural de tudo, vermel
 - **Ícone** ("/ai" sozinho, `app/icon.svg`): Bitter 800 em papel cru sobre quadrado royal cheio, sem raio, letras convertidas em contorno (o SVG não depende de fonte). É o único uso do "/ai" isolado; em todo papel vai o nome inteiro. O nome da conta nunca é Bitter: é campo manuscrito (Kalam, 1.25rem/20px na linha "Conta" da grade de Itens, até 2 linhas).
 - **Title** (Archivo Narrow, 500, 0.6875rem/11px, tracking 0.05em, uppercase): rótulos estruturais fixos — "Dono", "Participantes", cabeçalhos de coluna da tabela de itens.
 - **Body — comanda** (Archivo Narrow, 500, 0.875rem/14px, uppercase): texto estrutural padrão de Itens e Participantes.
-- **Handwritten** (Kalam, 400, cor `tinta-manuscrita`): 1.125rem/18px na descrição do item, nos campos da grade (dono, contagem de participantes) e nos campos dos diálogos; 1.5rem/24px no nome da conta nas comandas do balcão; 1.5rem no título do diálogo de dividir (nome do item).
+- **Handwritten** (Kalam, 400, cor `tinta-manuscrita`): 1rem/16px na descrição do item (uma linha só, com "…": a lista de Itens nunca quebra o nome; 18px cortava demais num celular de 375px); 1.125rem/18px nos campos da grade (dono, contagem de participantes) e nos campos dos diálogos; 1.5rem/24px no nome da conta nas comandas do balcão; 1.5rem no título do diálogo de dividir (nome do item).
 - **Body — cupom** (Courier Prime, 400, 0.875rem/14px): nomes, rótulos, "Subtotal + taxa" no Resumo.
 - **Label — dígitos do cupom** (DotGothic16, 400, tamanho herdado do contexto): valores em R$, percentual da taxa, fração "minhas partes/partes totais" — nunca aplicada a palavras inteiras.
 

@@ -22,7 +22,9 @@ export function PartsStepper({
   }
 
   return (
-    <div className="flex items-center gap-2">
+    // Botões colados no número, uma peça só: a coluna Qtd de Itens fica estreita
+    // e sobra largura pra descrição numa linha.
+    <div className="flex items-center">
       <Button
         type="button"
         variant="outline"
@@ -32,7 +34,7 @@ export function PartsStepper({
       >
         −
       </Button>
-      <RollingNumber value={parts} className="w-6 text-lg font-bold" />
+      <RollingNumber value={parts} className="w-7 text-lg font-bold" />
       <Button
         type="button"
         variant="outline"
