@@ -7,22 +7,9 @@ import { toBillParticipantsSelfFirst } from "@/lib/bill/participants";
 import { waiterForBill } from "@/lib/bill/waiter";
 import { createClient } from "@/lib/supabase/server";
 import { getBillNumber } from "@/lib/bill/bill-number";
+import { formatReceiptDate } from "@/lib/bill/receipt-date";
 
 export const instant = false;
-
-// Fuso explícito: o servidor roda em UTC, e o cupom precisa da hora local.
-const receiptDateFormat = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "America/Sao_Paulo",
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-function formatReceiptDate(iso: string) {
-  return receiptDateFormat.format(new Date(iso)).replace(",", "");
-}
 
 export default async function BillSummaryPage({
   params,
