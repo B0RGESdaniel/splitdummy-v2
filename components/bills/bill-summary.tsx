@@ -8,6 +8,7 @@ import { closeBill, updateServiceTax } from "@/app/(dashboard)/bills/actions";
 import { CloseBillButton } from "@/components/bills/close-bill-button";
 import { ReceiptDisclosure } from "@/components/bills/receipt-disclosure";
 import { ServiceTaxEditor } from "@/components/bills/service-tax-editor";
+import { ShareReceiptButton } from "@/components/bills/share-receipt-button";
 import { SubtleNumber } from "@/components/bills/subtle-number";
 import { createClient } from "@/lib/supabase/client";
 import { useRealtimeTable } from "@/lib/realtime/use-realtime-table";
@@ -364,6 +365,8 @@ export function BillSummary({
           </div>
         </div>
       </div>
+
+      {!isOpen && <ShareReceiptButton billId={billId} billName={billName} />}
 
       {isOpen &&
         (isOwner ? (
