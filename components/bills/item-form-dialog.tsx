@@ -92,7 +92,7 @@ export function ItemFormDialog({
                 type="number"
                 inputMode="decimal"
                 step="0.01"
-                min="0"
+                min="0.01"
                 defaultValue={initialValues?.unit_price}
                 required
               />

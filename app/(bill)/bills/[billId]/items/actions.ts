@@ -11,7 +11,7 @@ export async function createItem(billId: string, formData: FormData) {
   const unitPrice = Number(formData.get("unit_price"));
   const quantity = Number(formData.get("quantity") ?? 1);
 
-  if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
+  if (!description || !Number.isFinite(unitPrice) || unitPrice <= 0) {
     throw new Error("Preencha a descrição e um preço válido.");
   }
 
@@ -51,7 +51,7 @@ export async function updateItem(
   const unitPrice = Number(formData.get("unit_price"));
   const quantity = Number(formData.get("quantity") ?? 1);
 
-  if (!description || !Number.isFinite(unitPrice) || unitPrice < 0) {
+  if (!description || !Number.isFinite(unitPrice) || unitPrice <= 0) {
     throw new Error("Preencha a descrição e um preço válido.");
   }
 

@@ -32,7 +32,7 @@ function sanitizeItems(items: ReceiptItemInput[]) {
         Number.isFinite(item.quantity) &&
         item.quantity > 0 &&
         Number.isFinite(item.unit_price) &&
-        item.unit_price >= 0,
+        item.unit_price > 0,
     );
 
   if (sanitized.length === 0) {

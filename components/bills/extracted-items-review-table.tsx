@@ -101,10 +101,13 @@ export function ExtractedItemsReviewTable({
     }
   }
 
-  // O servidor descarta em silêncio item com quantidade inválida; aqui o
-  // botão trava antes, pra "Salvar N itens" não salvar menos que N.
+  // O servidor descarta em silêncio item com quantidade ou preço inválido;
+  // aqui o botão trava antes, pra "Salvar N itens" não salvar menos que N.
   const hasInvalidQuantity = items.some(
     (item) => !Number.isFinite(item.quantity) || item.quantity <= 0,
+  );
+  const hasInvalidPrice = items.some(
+    (item) => !Number.isFinite(item.unitPrice) || item.unitPrice <= 0,
   );
 
   function handleSaveClick() {
@@ -191,9 +194,10 @@ export function ExtractedItemsReviewTable({
                     aria-label="Preço unitário"
                     type="number"
                     inputMode="decimal"
-                    min="0"
+                    min="0.01"
                     step="0.01"
                     className="text-right"
+                    aria-invalid={!(item.unitPrice > 0) || undefined}
                     value={item.unitPrice}
                     onChange={(event) =>
                       updateItem(index, { unitPrice: Number(event.target.value) })
@@ -248,9 +252,14 @@ export function ExtractedItemsReviewTable({
             Quantidade precisa ser maior que zero.
           </p>
         )}
+        {hasInvalidPrice && (
+          <p role="alert" className="text-sm text-destructive">
+            Preço precisa ser maior que zero.
+          </p>
+        )}
         <Button
           type="button"
-          disabled={isSaving || items.length === 0 || hasInvalidQuantity}
+          disabled={isSaving || items.length === 0 || hasInvalidQuantity || hasInvalidPrice}
           onClick={handleSaveClick}
         >
           {isSaving

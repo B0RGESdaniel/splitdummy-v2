@@ -65,11 +65,17 @@ export function normalizeDescription(text: string): string {
   return truncateDescription(toDisplayCase(collapsed));
 }
 
+// Item precisa de valor (não existe item de R$ 0 na conta). Linha lida a
+// zero (cortesia, couvert isento) chega na revisão com R$ 1, pra pessoa
+// corrigir ou excluir, em vez de sumir sem ela ver.
+export const ZERO_PRICE_PLACEHOLDER = 1;
+
 export function normalizeExtractedItems(
   items: ExtractedReceiptItem[],
 ): ExtractedReceiptItem[] {
   return items.map((item) => ({
     ...item,
     description: normalizeDescription(item.description),
+    unitPrice: item.unitPrice > 0 ? item.unitPrice : ZERO_PRICE_PLACEHOLDER,
   }));
 }

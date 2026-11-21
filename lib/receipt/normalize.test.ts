@@ -68,4 +68,10 @@ describe("normalizeExtractedItems", () => {
       ]),
     ).toEqual([{ description: "Chopp Brahma", quantity: 3, unitPrice: 12.5 }]);
   });
+
+  it("troca preço zero por R$ 1, pra revisão", () => {
+    expect(
+      normalizeExtractedItems([{ description: "Cortesia", quantity: 1, unitPrice: 0 }]),
+    ).toEqual([{ description: "Cortesia", quantity: 1, unitPrice: 1 }]);
+  });
 });
