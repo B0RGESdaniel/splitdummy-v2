@@ -134,7 +134,6 @@ export type Database = {
           name: string
           owner_id: string
           service_tax_percent: number
-          share_token: string | null
           status: string
         }
         Insert: {
@@ -144,7 +143,6 @@ export type Database = {
           name: string
           owner_id: string
           service_tax_percent?: number
-          share_token?: string | null
           status?: string
         }
         Update: {
@@ -154,7 +152,6 @@ export type Database = {
           name?: string
           owner_id?: string
           service_tax_percent?: number
-          share_token?: string | null
           status?: string
         }
         Relationships: [
