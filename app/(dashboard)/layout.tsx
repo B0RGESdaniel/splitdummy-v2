@@ -1,34 +1,20 @@
-import { redirect } from "next/navigation";
-import { connection } from "next/server";
+import { Suspense } from "react";
 
 import { archivoNarrow, bitter, courierPrime, dotGothic16, kalam } from "@/app/fonts";
 import { SignOutButton } from "@/components/auth/sign-out-button";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { ThemeScope } from "@/components/theme-scope";
-import { redirectIfProfileIncomplete } from "@/lib/auth/profile-gate";
-import { createClient } from "@/lib/supabase/server";
+import { requireUser } from "@/lib/auth/session";
 
-// Every route under here is an auth-gated redirect check — it must block
-// on the session lookup rather than being prerendered/streamed.
-export const instant = false;
-
-export default async function DashboardLayout({
+// O topo do balcão (marca + Desconectar) não espera o login: sai na hora, e o
+// portão de login/perfil roda num <Suspense> à parte. A página repete o
+// portão (mesmas leituras em cache) e, ela sim, espera os dados — de
+// propósito, pra comanda que volta da conta ter onde encolher (morph).
+export default function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  // Defer to request time before touching cookies()/the Supabase client —
-  // without this, Next still attempts a static shell and trips on a
-  // synchronous Date.now() call inside the Supabase client's init.
-  await connection();
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-
-  if (!data?.claims) {
-    redirect("/login");
-  }
-  await redirectIfProfileIncomplete(supabase, data.claims.sub, "/");
-
   // O balcão: papéis da comanda (Archivo/Kalam/Bitter) e do cupom (Courier/
   // DotGothic16) lado a lado, cada um na própria voz.
   return (
@@ -41,8 +27,16 @@ export default async function DashboardLayout({
           <BrandWordmark className="text-xl" />
           <SignOutButton className="text-[color:var(--balcao-soft)] hover:bg-[color:var(--balcao-ink)]/10 hover:text-[color:var(--balcao-ink)]" />
         </header>
+        <Suspense fallback={null}>
+          <DashboardGate />
+        </Suspense>
         <main className="flex flex-1 flex-col gap-7 px-5 pt-3 pb-10">{children}</main>
       </div>
     </ThemeScope>
   );
+}
+
+async function DashboardGate() {
+  await requireUser("/");
+  return null;
 }

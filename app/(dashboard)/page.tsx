@@ -1,11 +1,12 @@
-import { connection } from "next/server";
-
 import { BalcaoComanda, BalcaoCupom } from "@/components/bills/balcao-papers";
 import { CreateBillDialog } from "@/components/bills/create-bill-dialog";
 import { openBillPartialCents, paidBillTotals } from "@/lib/bill/bill-totals";
-import { createClient } from "@/lib/supabase/server";
+import { getProfile, getSupabase, requireUser } from "@/lib/auth/session";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
+// O balcão espera os dados antes de aparecer, sem esqueleto: a comanda que
+// volta da conta pelo ← encolhe até o lugar dela, e esse lugar tem de existir
+// no momento da troca de tela.
 export const instant = false;
 
 // Fuso explícito: o servidor roda em UTC, e a comanda mostra a hora local.
@@ -45,15 +46,11 @@ function SectionHeading({ label, count }: { label: string; count: number }) {
 }
 
 export default async function DashboardPage() {
-  await connection();
-  const supabase = await createClient();
-  const { data } = await supabase.auth.getClaims();
-  const userId = data?.claims.sub;
+  const userId = await requireUser("/");
+  const supabase = await getSupabase();
 
-  const [{ data: profile }, { data: bills }] = await Promise.all([
-    userId
-      ? supabase.from("profiles").select("display_name").eq("id", userId).single()
-      : Promise.resolve({ data: null }),
+  const [profile, { data: bills }] = await Promise.all([
+    getProfile(userId),
     supabase
       .from("bills")
       .select(

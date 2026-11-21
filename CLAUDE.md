@@ -98,7 +98,7 @@ supabase/templates/                      # e-mails de login em pt-BR (colar no p
 ## Pendente / pra depois
 
 - **Apagar o projeto Supabase antigo** `splitdummy` (`us-east-1`, ref `gbigcjzyoovheiwpagoc`) depois de uns dias estável; está desconectado da Vercel. Junto: tirar o callback antigo do cliente OAuth no Google Cloud e revogar a senha de app antiga do SMTP. Apagar `.env.local.us-east-1` e `.env.sa`.
-- **Loadings / navegação instantânea** (próximo): hoje toda rota é `instant = false` sem `loading.tsx`/`Suspense`; também deduplicar `getClaims`/busca da conta entre layout e página (`cache()`), e tirar Poppins/Geist Mono do layout raiz (preload inútil).
+- **Navegação instantânea** (em andamento): ✅ esqueletos "comanda em branco" (`comanda-blank.tsx`), ✅ conta com casca em streaming + `lib/auth/session.ts`/`lib/bill/bill-queries.ts` (`cache()`), ✅ dashboard: só o topo deixou de esperar — **a página do balcão segue `instant = false` de propósito** (o morph de volta precisa das comandas na tela; decisão do usuário). Falta: telas de entrada (login/welcome/join) e tirar Poppins/Geist Mono do layout raiz.
 
 - **Avaliação do TCC** com usuários (ex.: teste de usabilidade, SUS), não só validação técnica.
 - **LGPD**: exclusão de conta, política de dados, nome de convidados sem conta.

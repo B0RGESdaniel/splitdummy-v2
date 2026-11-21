@@ -21,15 +21,20 @@ export const getUserId = cache(async () => {
   return data?.claims.sub ?? null;
 });
 
-const isProfileComplete = cache(async (userId: string) => {
+export const getProfile = cache(async (userId: string) => {
   const supabase = await getSupabase();
-  const { data: profile } = await supabase
+  const { data } = await supabase
     .from("profiles")
     .select("display_name, avatar_key")
     .eq("id", userId)
     .single();
-  return !profile || (Boolean(profile.display_name.trim()) && Boolean(profile.avatar_key));
+  return data;
 });
+
+async function isProfileComplete(userId: string) {
+  const profile = await getProfile(userId);
+  return !profile || (Boolean(profile.display_name.trim()) && Boolean(profile.avatar_key));
+}
 
 /**
  * Portão de entrada das telas logadas: sem sessão vai pro login; sem nome ou
