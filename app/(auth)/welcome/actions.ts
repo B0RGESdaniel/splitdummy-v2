@@ -2,31 +2,23 @@
 
 import { redirect } from "next/navigation";
 
-import { AVATAR_KEYS, type AvatarKey } from "@/components/bills/avatar-icon";
 import { MAX_FIRST_NAME_LENGTH } from "@/lib/auth/first-name";
 import { safeNextPath } from "@/lib/auth/safe-next";
+import { isAvatarKey, normalizeFirstName } from "@/lib/profile/validate";
 import { createClient } from "@/lib/supabase/server";
 
 export type CompleteProfileState = { error: string } | null;
-
-function isAvatarKey(value: string): value is AvatarKey {
-  return (AVATAR_KEYS as string[]).includes(value);
-}
 
 export async function completeProfile(
   _previous: CompleteProfileState,
   formData: FormData,
 ): Promise<CompleteProfileState> {
-  // Só o primeiro nome, como o que vem do Google: é o que cabe na mesa.
-  const firstName = String(formData.get("display_name") ?? "").trim().split(/\s+/)[0] ?? "";
+  const firstName = normalizeFirstName(String(formData.get("display_name") ?? ""));
   const avatarKey = String(formData.get("avatar_key") ?? "");
   const next = safeNextPath(String(formData.get("next") ?? ""));
 
   if (!firstName) {
-    return { error: "Diga como te chamam." };
-  }
-  if (firstName.length > MAX_FIRST_NAME_LENGTH) {
-    return { error: `Nome com no máximo ${MAX_FIRST_NAME_LENGTH} letras.` };
+    return { error: `Diga como te chamam, com até ${MAX_FIRST_NAME_LENGTH} letras.` };
   }
   if (!isAvatarKey(avatarKey)) {
     return { error: "Escolha um avatar." };

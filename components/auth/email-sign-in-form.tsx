@@ -4,8 +4,8 @@ import { useEffect, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { SheetCell, SheetGrid, SheetInput, SheetValue } from "@/components/auth/sheet-grid";
+import { TextMorph } from "@/components/ui/text-morph";
 import { createClient } from "@/lib/supabase/client";
 
 // Espera mínima do Supabase entre dois envios pro mesmo e-mail.
@@ -17,12 +17,28 @@ type Step = { kind: "email" } | { kind: "code"; email: string };
 // aqui mesmo. Código em vez de link porque o link loga o navegador em que é
 // aberto (no celular, muitas vezes o navegador interno do app de e-mail), não
 // este aqui.
-export function EmailSignInForm({ next }: { next?: string }) {
+export function EmailSignInForm({
+  next,
+  onCodeStep,
+}: {
+  next?: string;
+  // Na etapa do código o resto da folha (Google, "ou") sai de cena.
+  onCodeStep?: (isCodeStep: boolean) => void;
+}) {
   const router = useRouter();
   const [step, setStep] = useState<Step>({ kind: "email" });
+  const [lastEmail, setLastEmail] = useState("");
+
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [cooldown, setCooldown] = useState(0);
+
+  function goToStep(nextStep: Step) {
+    setError(null);
+    if (nextStep.kind === "code") setLastEmail(nextStep.email);
+    setStep(nextStep);
+    onCodeStep?.(nextStep.kind === "code");
+  }
 
   useEffect(() => {
     if (cooldown <= 0) return;
@@ -61,7 +77,7 @@ export function EmailSignInForm({ next }: { next?: string }) {
     event.preventDefault();
     const email = String(new FormData(event.currentTarget).get("email") ?? "").trim();
     if (await sendCode(email)) {
-      setStep({ kind: "code", email });
+      goToStep({ kind: "code", email });
     }
   }
 
@@ -91,65 +107,70 @@ export function EmailSignInForm({ next }: { next?: string }) {
 
   if (step.kind === "email") {
     return (
-      <form onSubmit={handleEmailSubmit} className="flex flex-col gap-3">
-        <div className="flex flex-col gap-2">
-          <Label htmlFor="email">E-mail</Label>
-          <Input
-            id="email"
-            name="email"
-            type="email"
-            autoComplete="email"
-            inputMode="email"
-            required
-          />
-        </div>
+      <form onSubmit={handleEmailSubmit} className="flex flex-col gap-4">
+        <SheetGrid>
+          <SheetCell label="E-mail" htmlFor="email">
+            <SheetInput
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              defaultValue={lastEmail}
+              required
+            />
+          </SheetCell>
+        </SheetGrid>
         {error && <p className="text-destructive text-sm">{error}</p>}
-        <Button type="submit" variant="outline" disabled={isPending} className="w-full">
-          {isPending ? "Enviando..." : "Receber código por e-mail"}
+        <Button type="submit" variant="outline" disabled={isPending} className="h-11 w-full">
+          <TextMorph>{isPending ? "Enviando..." : "Receber código por e-mail"}</TextMorph>
         </Button>
       </form>
     );
   }
 
   return (
-    <form onSubmit={handleCodeSubmit} className="flex flex-col gap-3">
-      <p className="text-muted-foreground text-sm">
-        Mandamos um código para <span className="text-foreground font-medium">{step.email}</span>.
-      </p>
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="code">Código</Label>
-        <Input
-          id="code"
-          name="code"
-          autoComplete="one-time-code"
-          inputMode="numeric"
-          pattern="[0-9 ]{6,10}"
-          maxLength={10}
-          required
-          autoFocus
-          className="font-mono tracking-[0.3em]"
-        />
-      </div>
+    <form onSubmit={handleCodeSubmit} className="flex flex-col gap-4">
+      <SheetGrid>
+        <SheetCell label="E-mail">
+          <SheetValue
+            action={
+              <button
+                type="button"
+                onClick={() => goToStep({ kind: "email" })}
+                className="h-9 shrink-0 text-[11px] font-semibold tracking-wide uppercase underline underline-offset-[3px]"
+              >
+                Trocar
+              </button>
+            }
+          >
+            {step.email}
+          </SheetValue>
+        </SheetCell>
+        <SheetCell label="Código do e-mail" htmlFor="code">
+          <SheetInput
+            id="code"
+            name="code"
+            autoComplete="one-time-code"
+            inputMode="numeric"
+            pattern="[0-9 ]{6,10}"
+            maxLength={10}
+            required
+            autoFocus
+            className="tracking-[0.2em]"
+          />
+        </SheetCell>
+      </SheetGrid>
       {error && <p className="text-destructive text-sm">{error}</p>}
-      <Button type="submit" disabled={isPending} className="w-full">
-        {isPending ? "Conferindo..." : "Entrar"}
+      <Button type="submit" disabled={isPending} className="h-11 w-full">
+        <TextMorph>{isPending ? "Conferindo..." : "Entrar"}</TextMorph>
       </Button>
-      <div className="flex justify-between gap-2">
+      <div className="flex justify-end">
         <Button
           type="button"
           variant="ghost"
           size="sm"
-          onClick={() => {
-            setError(null);
-            setStep({ kind: "email" });
-          }}
-        >
-          Trocar e-mail
-        </Button>
-        <Button
-          type="button"
-          variant="ghost"
-          size="sm"
+          className="h-11"
           disabled={isPending || cooldown > 0}
           onClick={() => sendCode(step.email)}
         >

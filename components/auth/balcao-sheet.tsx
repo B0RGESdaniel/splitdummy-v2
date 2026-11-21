@@ -2,33 +2,33 @@ import { archivoNarrow, bitter, kalam } from "@/app/fonts";
 import { BrandWordmark } from "@/components/brand-wordmark";
 import { ThemeScope } from "@/components/theme-scope";
 
-// Telas de antes de entrar no app (login, primeiro acesso, convite): o mesmo
-// balcão do histórico, com a marca da casa impressa no alto e uma folha de
-// papel com o que a pessoa precisa preencher.
+// Telas de antes de entrar no app (login, primeiro acesso, convite): uma
+// comanda em branco, arrancada do bloco (picote no topo), sobre o mesmo
+// balcão do histórico. O topo é o impresso de toda comanda — "Divide/ai Nº" —
+// e o número só existe quando já há uma conta (convite).
 export function BalcaoSheet({
   label,
-  tagline,
+  number,
   children,
 }: {
   label: string;
-  tagline?: string;
+  number?: number;
   children: React.ReactNode;
 }) {
   return (
     <ThemeScope
       className={`${archivoNarrow.variable} ${bitter.variable} ${kalam.variable} paper-check balcao flex flex-1 flex-col items-center justify-center px-5 py-10`}
     >
-      <main className="flex w-full max-w-sm flex-col gap-8">
-        <div className="flex flex-col items-center gap-2 text-center">
-          <BrandWordmark className="text-5xl" />
-          {tagline && <p className="text-[color:var(--balcao-soft)] text-sm">{tagline}</p>}
-        </div>
-
-        <div className="balcao-folha flex flex-col gap-4 px-5 pt-3 pb-5 text-foreground">
-          <h1 className="-mx-5 border-b-[1.5px] border-border px-5 pb-2.5 text-[11px] font-semibold tracking-[0.08em] uppercase">
-            {label}
-          </h1>
-          {children}
+      <main className="balcao-bloco w-full max-w-sm">
+        <div className="balcao-folha flex flex-col text-foreground">
+          <div className="flex items-baseline gap-2 border-b-[1.5px] border-border px-5 pt-3 pb-2.5">
+            <BrandWordmark className="text-[26px]" />
+            <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
+              Nº {number ? String(number).padStart(3, "0") : "———"}
+            </span>
+          </div>
+          <h1 className="sr-only">{label}</h1>
+          <div className="flex flex-col gap-4 px-5 pt-4 pb-5">{children}</div>
         </div>
       </main>
     </ThemeScope>

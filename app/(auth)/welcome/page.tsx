@@ -4,6 +4,7 @@ import { connection } from "next/server";
 import { BalcaoSheet } from "@/components/auth/balcao-sheet";
 import { WelcomeForm } from "@/components/auth/welcome-form";
 import { safeNextPath } from "@/lib/auth/safe-next";
+import { isAvatarKey } from "@/lib/profile/validate";
 import { createClient } from "@/lib/supabase/server";
 
 export const instant = false;
@@ -37,7 +38,11 @@ export default async function WelcomePage({
 
   return (
     <BalcaoSheet label="Primeira vez por aqui">
-      <WelcomeForm defaultName={profile?.display_name ?? ""} next={next} />
+      <WelcomeForm
+        defaultName={profile?.display_name ?? ""}
+        defaultAvatar={profile?.avatar_key && isAvatarKey(profile.avatar_key) ? profile.avatar_key : undefined}
+        next={next}
+      />
     </BalcaoSheet>
   );
 }

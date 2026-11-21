@@ -852,11 +852,9 @@
  * Papel em cima do balcão: a única sombra ambiente do app, e só aqui —
  * metáfora física (folha apoiada numa superfície), como a viga e o selo.
  * Comanda usa box-shadow; o cupom usa drop-shadow porque a serrilha é
- * recorte (pseudo-elementos) e box-shadow ignoraria os dentes. A folha
- * (login) é o mesmo papel, só que parada: não afunda no toque.
+ * recorte (pseudo-elementos) e box-shadow ignoraria os dentes.
  */
-.balcao-comanda,
-.balcao-folha {
+.balcao-comanda {
   background-color: var(--background);
   background-image: var(--paper-grain);
   background-repeat: repeat;
@@ -867,6 +865,26 @@
 
 .balcao-cupom {
   filter: drop-shadow(0 8px 8px oklch(0 0 0 / 50%));
+}
+
+/*
+ * Folha de entrada (login, primeiro acesso, convite): comanda arrancada do
+ * bloco, com o picote no topo. O picote é recorte (máscara), então a sombra
+ * de papel no balcão fica num drop-shadow do pai, como no cupom. Parada: não
+ * afunda no toque (é formulário).
+ */
+.balcao-bloco {
+  filter: drop-shadow(0 1px 0 oklch(0 0 0 / 30%)) drop-shadow(0 8px 8px oklch(0 0 0 / 50%));
+}
+
+.balcao-folha {
+  padding-top: 8px;
+  background-color: var(--background);
+  background-image: var(--paper-grain);
+  background-repeat: repeat;
+  --picote: radial-gradient(circle 5px at 7px 0, transparent 98%, #000) 0 0 / 14px 100% repeat-x;
+  -webkit-mask: var(--picote);
+  mask: var(--picote);
 }
 
 /*

@@ -26,7 +26,7 @@ export function GoogleSignInButton({ next }: { next?: string }) {
   }
 
   return (
-    <Button onClick={handleSignIn} disabled={isLoading} className="w-full">
+    <Button onClick={handleSignIn} disabled={isLoading} className="h-11 w-full">
       {isLoading ? "Redirecionando..." : "Entrar com Google"}
     </Button>
   );

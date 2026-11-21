@@ -3,45 +3,32 @@
 import { useActionState } from "react";
 
 import { completeProfile } from "@/app/(auth)/welcome/actions";
-import { AvatarPicker } from "@/components/bills/avatar-picker";
+import { ProfileFields } from "@/components/auth/profile-fields";
+import { SheetGrid } from "@/components/auth/sheet-grid";
+import type { AvatarKey } from "@/components/bills/avatar-icon";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { TextMorph } from "@/components/ui/text-morph";
-import { MAX_FIRST_NAME_LENGTH } from "@/lib/auth/first-name";
 
 export function WelcomeForm({
   defaultName,
+  defaultAvatar,
   next,
 }: {
   defaultName: string;
+  defaultAvatar?: AvatarKey;
   next: string;
 }) {
   const [state, formAction, isPending] = useActionState(completeProfile, null);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5">
+    <form action={formAction} className="flex flex-col gap-4">
       <input type="hidden" name="next" value={next} />
-      <div className="flex flex-col gap-2">
-        <Label htmlFor="display_name">Como te chamam?</Label>
-        <Input
-          id="display_name"
-          name="display_name"
-          defaultValue={defaultName}
-          autoComplete="given-name"
-          maxLength={MAX_FIRST_NAME_LENGTH}
-          required
-          autoFocus={!defaultName}
-          className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
-        />
-        <p className="text-muted-foreground text-xs">Só o primeiro nome, é o que aparece na mesa.</p>
-      </div>
-      <div className="flex flex-col gap-2">
-        <Label>Seu avatar</Label>
-        <AvatarPicker name="avatar_key" />
-      </div>
+      <SheetGrid>
+        <ProfileFields defaultName={defaultName} defaultAvatar={defaultAvatar} />
+      </SheetGrid>
+      <p className="text-sm">Só o primeiro nome, é o que aparece na mesa.</p>
       {state?.error && <p className="text-destructive text-sm">{state.error}</p>}
-      <Button type="submit" disabled={isPending} className="w-full">
+      <Button type="submit" disabled={isPending} className="h-11 w-full">
         <TextMorph>{isPending ? "Salvando..." : "Continuar"}</TextMorph>
       </Button>
     </form>

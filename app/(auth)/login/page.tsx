@@ -22,7 +22,7 @@ export default async function LoginPage({
   }
 
   return (
-    <BalcaoSheet label="Entrar" tagline="A conta do bar, dividida entre a mesa.">
+    <BalcaoSheet label="Entrar">
       {erro === "link" && (
         <p className="text-destructive text-sm">
           Esse link de login venceu ou já foi usado. Peça um código novo.
