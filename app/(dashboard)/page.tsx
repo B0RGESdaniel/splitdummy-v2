@@ -34,12 +34,6 @@ function groupByBill<T extends { bill_id: string }>(rows: T[]) {
   return groups;
 }
 
-// Papéis entram no balcão em cascata, só na primeira carga da sessão: o
-// script roda antes de os papéis serem pintados (por isso inline, e não um
-// effect, que chegaria depois do primeiro quadro e faria os papéis piscarem).
-// Navegação pelo app não executa script inserido pelo React, então voltar de
-// uma conta não repete a entrada.
-const ENTRANCE_SCRIPT = `try{if(!sessionStorage.getItem("balcao-entrada")){sessionStorage.setItem("balcao-entrada","1");var el=document.currentScript.parentElement;el.setAttribute("data-balcao-entrada","");setTimeout(function(){el.removeAttribute("data-balcao-entrada")},1500)}}catch(e){}`;
 
 function SectionHeading({ label, count }: { label: string; count: number }) {
   return (
@@ -116,9 +110,7 @@ export default async function DashboardPage() {
   const entrance = () => ({ "--i": entranceIndex++ }) as React.CSSProperties;
 
   return (
-    // `contents`: o atributo da entrada mora aqui sem mexer no layout do main.
-    <div className="contents" suppressHydrationWarning>
-      <script dangerouslySetInnerHTML={{ __html: ENTRANCE_SCRIPT }} />
+    <div className="contents">
       <h1 className="text-xl font-semibold tracking-[0.04em]">
         {firstName ? `Olá, ${firstName}` : "Olá"}
       </h1>
