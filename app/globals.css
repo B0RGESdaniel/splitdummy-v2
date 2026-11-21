@@ -852,9 +852,11 @@
  * Papel em cima do balcão: a única sombra ambiente do app, e só aqui —
  * metáfora física (folha apoiada numa superfície), como a viga e o selo.
  * Comanda usa box-shadow; o cupom usa drop-shadow porque a serrilha é
- * recorte (pseudo-elementos) e box-shadow ignoraria os dentes.
+ * recorte (pseudo-elementos) e box-shadow ignoraria os dentes. A folha
+ * (login) é o mesmo papel, só que parada: não afunda no toque.
  */
-.balcao-comanda {
+.balcao-comanda,
+.balcao-folha {
   background-color: var(--background);
   background-image: var(--paper-grain);
   background-repeat: repeat;

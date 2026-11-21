@@ -1,8 +1,8 @@
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
 
+import { BalcaoSheet } from "@/components/auth/balcao-sheet";
 import { WelcomeForm } from "@/components/auth/welcome-form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { safeNextPath } from "@/lib/auth/safe-next";
 import { createClient } from "@/lib/supabase/server";
 
@@ -36,15 +36,8 @@ export default async function WelcomePage({
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>Boas-vindas ao Divide/ai</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <WelcomeForm defaultName={profile?.display_name ?? ""} next={next} />
-        </CardContent>
-      </Card>
-    </div>
+    <BalcaoSheet label="Primeira vez por aqui">
+      <WelcomeForm defaultName={profile?.display_name ?? ""} next={next} />
+    </BalcaoSheet>
   );
 }

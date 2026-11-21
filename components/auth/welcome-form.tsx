@@ -32,6 +32,7 @@ export function WelcomeForm({
           maxLength={MAX_FIRST_NAME_LENGTH}
           required
           autoFocus={!defaultName}
+          className="font-handwritten text-lg text-[color:var(--ink-handwritten)]"
         />
         <p className="text-muted-foreground text-xs">Só o primeiro nome, é o que aparece na mesa.</p>
       </div>

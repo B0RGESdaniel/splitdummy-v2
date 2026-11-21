@@ -2,7 +2,7 @@ import { connection } from "next/server";
 import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { BalcaoSheet } from "@/components/auth/balcao-sheet";
 import { SignInOptions } from "@/components/auth/sign-in-options";
 import { redirectIfProfileIncomplete } from "@/lib/auth/profile-gate";
 import { createClient } from "@/lib/supabase/server";
@@ -31,11 +31,11 @@ export default async function JoinPage({
 
   const supabase = await createClient();
   const { data: claims } = await supabase.auth.getClaims();
-  const fallbackHref = claims?.claims ? "/dashboard" : "/login";
+  const fallbackHref = claims?.claims ? "/" : "/login";
 
   if (!bill) {
     return (
-      <JoinCard title="Convite inválido">
+      <JoinCard>
         <p className="text-muted-foreground text-sm">
           Esse link de convite não existe, expirou ou foi revogado.
         </p>
@@ -48,7 +48,7 @@ export default async function JoinPage({
 
   if (bill.status !== "open") {
     return (
-      <JoinCard title={bill.name}>
+      <JoinCard billName={bill.name}>
         <p className="text-muted-foreground text-sm">
           Essa conta já foi paga e não aceita novos participantes.
         </p>
@@ -61,7 +61,7 @@ export default async function JoinPage({
 
   if (!claims?.claims) {
     return (
-      <JoinCard title={bill.name}>
+      <JoinCard billName={bill.name}>
         <p className="text-muted-foreground text-sm">
           Entre para participar dessa conta.
         </p>
@@ -79,7 +79,7 @@ export default async function JoinPage({
     .is("profile_id", null);
 
   return (
-    <JoinCard title={bill.name}>
+    <JoinCard billName={bill.name}>
       <p className="text-muted-foreground text-sm">
         {unclaimed && unclaimed.length > 0
           ? "Você é um dos participantes abaixo, ou é novo por aqui?"
@@ -117,20 +117,24 @@ export default async function JoinPage({
 }
 
 function JoinCard({
-  title,
+  billName,
   children,
 }: {
-  title: string;
+  billName?: string;
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-1 items-center justify-center p-4">
-      <Card className="w-full max-w-sm">
-        <CardHeader>
-          <CardTitle>{title}</CardTitle>
-        </CardHeader>
-        <CardContent className="flex flex-col gap-4">{children}</CardContent>
-      </Card>
-    </div>
+    <BalcaoSheet label={billName ? "Convite" : "Convite inválido"}>
+      {billName && (
+        // A casa é o Divide/ai: o nome da conta é campo escrito à mão.
+        <div>
+          <div className="text-[11px] uppercase tracking-wide">Conta</div>
+          <div className="font-handwritten text-xl leading-[1.15] break-words text-[color:var(--ink-handwritten)]">
+            {billName}
+          </div>
+        </div>
+      )}
+      {children}
+    </BalcaoSheet>
   );
 }
