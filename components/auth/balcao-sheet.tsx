@@ -5,14 +5,15 @@ import { ThemeScope } from "@/components/theme-scope";
 // Telas de antes de entrar no app (login, primeiro acesso, convite): uma
 // comanda em branco, arrancada do bloco (picote no topo), sobre o mesmo
 // balcão do histórico. O topo é o impresso de toda comanda — "Divide/ai Nº" —
-// e o número só existe quando já há uma conta (convite).
+// e o número só existe quando já há uma conta (convite) — pode chegar depois
+// da folha, por isso aceita um pedaço em streaming no lugar do número.
 export function BalcaoSheet({
   label,
   number,
   children,
 }: {
   label: string;
-  number?: number;
+  number?: number | React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -24,7 +25,7 @@ export function BalcaoSheet({
           <div className="flex items-baseline gap-2 border-b-[1.5px] border-border px-5 pt-3 pb-2.5">
             <BrandWordmark className="text-[26px]" />
             <span className="text-[11px] font-semibold tracking-[0.08em] tabular-nums">
-              Nº {number ? String(number).padStart(3, "0") : "———"}
+              Nº {typeof number === "number" ? String(number).padStart(3, "0") : (number ?? "———")}
             </span>
           </div>
           <h1 className="sr-only">{label}</h1>

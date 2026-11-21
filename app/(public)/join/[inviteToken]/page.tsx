@@ -1,59 +1,108 @@
-import { connection } from "next/server";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
+import { Suspense, cache } from "react";
 
 import { BalcaoSheet } from "@/components/auth/balcao-sheet";
 import { JoinSeatPicker } from "@/components/auth/join-seat-picker";
 import { SheetCell, SheetGrid, SheetValue } from "@/components/auth/sheet-grid";
 import { SignInOptions } from "@/components/auth/sign-in-options";
 import { Button } from "@/components/ui/button";
+import { getProfile, getUserId } from "@/lib/auth/session";
 import { getBillNumber } from "@/lib/bill/bill-number";
 import { isAvatarKey } from "@/lib/profile/validate";
-import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
-export const instant = false;
+type Params = Promise<{ inviteToken: string }>;
+type SearchParams = Promise<{ erro?: string }>;
 
-export default async function JoinPage({
-  params,
-  searchParams,
-}: {
-  params: Promise<{ inviteToken: string }>;
-  searchParams: Promise<{ erro?: string }>;
-}) {
+// Convite resolvido via service-role (quem chega pelo link ainda não
+// participa da conta, então a RLS não deixaria ler). Uma vez por requisição:
+// o Nº do masthead e o conteúdo da folha leem o mesmo convite.
+const getInviteBill = cache(async (inviteToken: string) => {
+  // Validade do convite é comparada com a hora da requisição.
   await connection();
-  const { inviteToken } = await params;
-  const { erro } = await searchParams;
-
-  const serviceRole = createServiceRoleClient();
-  const { data: invite } = await serviceRole
+  const { data: invite } = await createServiceRoleClient()
     .from("bill_invites")
     .select("bill_id, bills(id, name, status, owner_id, created_at, profiles(display_name))")
     .eq("token", inviteToken)
     .is("revoked_at", null)
     .gt("expires_at", new Date().toISOString())
     .single();
+  return invite?.bills ?? null;
+});
 
-  const bill = invite?.bills;
+// A folha sai na hora, com Conta e Dono ainda em branco; o Nº e o resto do
+// convite chegam quando o convite for lido.
+export default function JoinPage({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  return (
+    <BalcaoSheet
+      label="Convite"
+      number={
+        <Suspense fallback="———">
+          <JoinBillNumber params={params} />
+        </Suspense>
+      }
+    >
+      <Suspense fallback={<BlankBillGrid />}>
+        <JoinContent params={params} searchParams={searchParams} />
+      </Suspense>
+    </BalcaoSheet>
+  );
+}
 
-  const supabase = await createClient();
-  const { data: claims } = await supabase.auth.getClaims();
-  const userId = claims?.claims.sub;
+function BlankBillGrid() {
+  return (
+    <SheetGrid>
+      <SheetCell label="Conta">
+        <SheetValue>&nbsp;</SheetValue>
+      </SheetCell>
+      <SheetCell label="Dono">
+        <SheetValue>&nbsp;</SheetValue>
+      </SheetCell>
+    </SheetGrid>
+  );
+}
+
+async function JoinBillNumber({ params }: { params: Params }) {
+  const bill = await getInviteBill((await params).inviteToken);
+  if (!bill) {
+    return "———";
+  }
+  return String(await getBillNumber(bill.owner_id, bill.created_at)).padStart(3, "0");
+}
+
+async function JoinContent({
+  params,
+  searchParams,
+}: {
+  params: Params;
+  searchParams: SearchParams;
+}) {
+  const { inviteToken } = await params;
+  const { erro } = await searchParams;
+  const bill = await getInviteBill(inviteToken);
+  const userId = await getUserId();
   const fallbackHref = userId ? "/" : "/login";
 
   if (!bill) {
     return (
-      <BalcaoSheet label="Convite inválido">
+      <>
         <p className="text-sm">Esse link de convite não existe, expirou ou foi revogado.</p>
         <Button asChild variant="outline" className="h-11 w-full">
           <Link href={fallbackHref}>Voltar</Link>
         </Button>
-      </BalcaoSheet>
+      </>
     );
   }
 
   const ownerName = bill.profiles?.display_name || "—";
-  const billNumber = await getBillNumber(bill.owner_id, bill.created_at);
   const billGrid = (
     <SheetGrid>
       <SheetCell label="Conta">
@@ -67,32 +116,32 @@ export default async function JoinPage({
 
   if (bill.status !== "open") {
     return (
-      <BalcaoSheet label="Convite" number={billNumber}>
+      <>
         {billGrid}
         <p className="text-sm">Essa conta já foi paga e não aceita novos participantes.</p>
         <Button asChild variant="outline" className="h-11 w-full">
           <Link href={fallbackHref}>Voltar</Link>
         </Button>
-      </BalcaoSheet>
+      </>
     );
   }
 
   if (!userId) {
     return (
-      <BalcaoSheet label="Convite" number={billNumber}>
+      <>
         {billGrid}
         <p className="text-sm">Entre para participar dessa conta.</p>
         <SignInOptions next={`/join/${inviteToken}`} />
-      </BalcaoSheet>
+      </>
     );
   }
 
-  const [{ data: participants }, { data: profile }] = await Promise.all([
-    serviceRole
+  const [{ data: participants }, profile] = await Promise.all([
+    createServiceRoleClient()
       .from("bill_participants")
       .select("id, profile_id, display_name, avatar_key")
       .eq("bill_id", bill.id),
-    supabase.from("profiles").select("display_name, avatar_key").eq("id", userId).single(),
+    getProfile(userId),
   ]);
 
   // Já está na mesa (link aberto de novo): vai direto pra conta.
@@ -113,7 +162,7 @@ export default async function JoinPage({
     profile?.avatar_key && isAvatarKey(profile.avatar_key) ? profile.avatar_key : null;
 
   return (
-    <BalcaoSheet label="Convite" number={billNumber}>
+    <>
       {erro === "perfil" && (
         <p className="text-destructive text-sm">Confira o nome e o avatar e tente de novo.</p>
       )}
@@ -128,6 +177,6 @@ export default async function JoinPage({
           isComplete: Boolean(profile?.display_name.trim() && profileAvatar),
         }}
       />
-    </BalcaoSheet>
+    </>
   );
 }
