@@ -24,6 +24,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { MAX_ITEM_DESCRIPTION_LENGTH } from "@/lib/bill/item-description";
 import type { ExtractedReceiptItem } from "@/lib/receipt/schema";
+import { shake } from "@/lib/ui/shake";
 
 // Mesma cascata da lista de Itens: as linhas lidas entram uma após a outra.
 const ROW_STAGGER_S = 0.05;
@@ -184,9 +185,11 @@ export function ExtractedItemsReviewTable({
                     className="text-right"
                     aria-invalid={!(item.quantity > 0) || undefined}
                     value={item.quantity}
-                    onChange={(event) =>
-                      updateItem(index, { quantity: Number(event.target.value) })
-                    }
+                    onChange={(event) => {
+                      const quantity = Number(event.target.value);
+                      if (item.quantity > 0 && !(quantity > 0)) shake(event.currentTarget);
+                      updateItem(index, { quantity });
+                    }}
                   />
                 </td>
                 <td className="px-1 py-2">
@@ -199,9 +202,11 @@ export function ExtractedItemsReviewTable({
                     className="text-right"
                     aria-invalid={!(item.unitPrice > 0) || undefined}
                     value={item.unitPrice}
-                    onChange={(event) =>
-                      updateItem(index, { unitPrice: Number(event.target.value) })
-                    }
+                    onChange={(event) => {
+                      const unitPrice = Number(event.target.value);
+                      if (item.unitPrice > 0 && !(unitPrice > 0)) shake(event.currentTarget);
+                      updateItem(index, { unitPrice });
+                    }}
                   />
                 </td>
                 <td className="px-1 py-2 text-center">

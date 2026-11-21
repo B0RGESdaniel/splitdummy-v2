@@ -15,12 +15,13 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { usePortalContainer } from "@/components/theme-scope";
+import { TextMorph } from "@/components/ui/text-morph";
 
 function ConfirmButton({ disabled }: { disabled: boolean }) {
   const { pending } = useFormStatus();
   return (
     <Button type="submit" variant="destructive" disabled={pending || disabled}>
-      {pending ? "Marcando..." : "Marcar como paga"}
+      <TextMorph>{pending ? "Marcando..." : "Marcar como paga"}</TextMorph>
     </Button>
   );
 }

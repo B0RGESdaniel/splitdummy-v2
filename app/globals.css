@@ -216,6 +216,76 @@
 }
 
 /*
+ * Campo com erro sacode (shake() em lib/ui/shake.ts): quatro idas e voltas
+ * curtas, 280ms no total ao todo.
+ */
+.is-shaking {
+  animation: input-shake calc(var(--duration-micro) * 2 + 60ms * 2) linear;
+}
+@keyframes input-shake {
+  0% {
+    transform: translateX(0);
+    animation-timing-function: var(--ease-smooth-out);
+  }
+  28.57% {
+    transform: translateX(var(--distance-small));
+    animation-timing-function: var(--ease-smooth-out);
+  }
+  57.14% {
+    transform: translateX(calc(var(--distance-small) * -1));
+    animation-timing-function: var(--ease-smooth-out);
+  }
+  78.57% {
+    transform: translateX(var(--distance-micro));
+    animation-timing-function: var(--ease-smooth-out);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .is-shaking {
+    animation: none !important;
+  }
+}
+
+/*
+ * Rótulo que troca guardando as letras em comum (TextMorph): só o trecho
+ * que muda esmaece no mesmo lugar, e a largura acompanha. Sem desfoque.
+ */
+.text-morph {
+  white-space: nowrap;
+}
+.text-morph-swap {
+  display: inline-grid;
+  vertical-align: bottom;
+  justify-items: start;
+  transition: width var(--duration-fast) var(--ease-smooth-out);
+}
+.text-morph-swap > span {
+  grid-area: 1 / 1;
+  white-space: pre;
+  transition: opacity var(--duration-fast) var(--ease-smooth-out);
+}
+.text-morph-new {
+  opacity: 0;
+}
+.text-morph-swap.is-morphing .text-morph-old {
+  opacity: 0;
+}
+.text-morph-swap.is-morphing .text-morph-new {
+  opacity: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .text-morph-swap,
+  .text-morph-swap > span {
+    transition: none !important;
+  }
+}
+
+/*
  * Dois ícones no mesmo lugar (ex.: copiar → copiado): troca por escala e
  * opacidade, sem o desfoque do original (papel e tinta).
  */
